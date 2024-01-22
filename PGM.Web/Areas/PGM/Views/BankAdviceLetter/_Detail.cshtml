@@ -1,0 +1,45 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetter.BankAdviceLetterDetailModel
+@using PGM.Web.Helpers
+@if (Model != null)
+{
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.BankLetterId)
+
+}
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("BankLetterDetails"))
+    {       
+        <td id='@Model.EmpID'>
+            @Html.CheckBoxFor(model => model.Ischecked, new { @class = "eachChecked" })            
+        </td>
+        
+        <td style="display:none;">
+            @Html.DisplayFor(model => model.EmployeeId)
+        </td>
+        
+        <td style="text-align: center">
+            @Html.DisplayFor(model => model.EmpID)
+        </td>    
+             
+        <td style="text-align: center">
+            @Html.DisplayFor(model => model.EmployeeInitial)
+        </td>   
+              
+        <td style="text-align: left; padding-left: 2px;">
+            @Html.DisplayFor(model => model.FullName)
+        </td>
+        
+        <td style="text-align: center">
+            @Html.DisplayFor(model => model.AccountNo)
+        </td>
+
+        <td style="text-align: center; padding-left: 2px;">
+            @Html.DisplayFor(model => model.BankName)
+        </td>
+
+        <td style="text-align: right;">
+            @Html.HiddenFor(model => model.NetPayable, new { @class="NetPayable"})
+            @Html.DisplayFor(model => model.NetPayable)
+        </td>         
+    }
+</tr>

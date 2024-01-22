@@ -1,0 +1,407 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetterTemplate.BankAdviceLetterTemplateViewModel
+
+<script type="text/javascript">
+
+    var strCopyText = "";
+
+    $(document).ready(function () {
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+
+        showErrMsg();
+      
+        //if ($("#Mode").val() == "Edit") {
+        //    //$('#LetterType').attr("disabled", true); //ddlBonusTypeId.attr("disabled", true);
+        //    $('#LetterType').addClass('read-only');
+        //    $('#LetterType').attr("readonly", true);
+        //}
+
+        $('#btnCopy').live('click', function () {
+            strCopyText = ' ' + $(this).attr("name") + ' ';
+        });
+
+        function showErrMsg() {
+            if ('@Model.IsError' == "1") {
+                var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+                $("#message").html("<b>" + msg + "</b>").css("color", "red");
+
+            }
+            else {
+                var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+                $("#message").html("<b>" + msg + "</b>").css("color", "green");
+
+            }
+        }
+
+        var menu1 = [{ 'Paste': function (menuItem, menu) { $(this).val($(this).val() + strCopyText) } }];
+        $(function () { $('#LetterSubject,#Body1,#Body2').contextMenu(menu1, { theme: 'xp' }); });
+
+        // Validation Color Properties
+
+        //$('#btnSave').live('click', function () {
+
+        //    if ($('#LetterSubject').val() == '') {
+        //        $('#LetterSubject').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+        //    }
+
+        //    if ($('#Body1').val() == '') {
+        //        $('#Body1').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+        //    }
+
+        //    //if ($('#Body2').val() == '') {
+        //    //    $('#Body2').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+        //    //}
+
+        //});
+
+        $('#LetterSubject').live('blur', function () {
+            $('#LetterSubject').css({ 'border-color': '#C4C4C4', 'background-color': '#FFFFFF' });
+
+            if ($('#LetterSubject').val() == '') {
+                $('#LetterSubject').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+            }
+        })
+
+        $('#Body1').live('blur', function () {
+            $('#Body1').css({ 'border-color': '#C4C4C4', 'background-color': '#FFFFFF' });
+
+            if ($('#Body1').val() == '') {
+                $('#Body1').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+            }
+        })
+
+        $('#Body2').live('blur', function () {
+            $('#Body2').css({ 'border-color': '#C4C4C4', 'background-color': '#FFFFFF' });
+
+            //if ($('#Body2').val() == '') {
+            //    $('#Body2').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+            //}
+        })
+
+    });
+
+    //Signatory 1
+    function open1Employee() {
+        var url = '@Url.Action("EmployeeSearchTwo", "Employee")?UseTypeEmpId=1';
+        url = url.replace('PGM', 'PRM');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+    //Signatory 2
+
+    function open2Employee() {
+        var url = '@Url.Action("EmployeeSearchTwo", "Employee")?UseTypeEmpId=2';
+        url = url.replace('PGM', 'PRM');
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+
+    //function setData(id) {
+    //    GetEmployeeInfo(id);
+    //    $("#divEmpSearchList").dialog('close');
+    //}
+    function setEmpData(id, useTypeEmpId) {
+        //Signatory 1
+        if (useTypeEmpId == 1) {
+            $('#Signatory1Id').val(id);
+            Get1EmployeeInfo(id);
+            $("#divEmpList").dialog('close');
+        }
+        //Signatory 2
+        if (useTypeEmpId == 2) {
+            $('#Signatory2Id').val(id);
+            Get2EmployeeInfo(id);
+            $("#divEmpList").dialog('close');
+        }
+
+    }
+    function Get1EmployeeInfo(empId) {
+        var url = '@Url.Action("GetEmployeeInfoTemp", "BankAdviceLetterTemplate")';
+        if (empId > 0) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ empId: empId }),
+                contentType: "application/json; charset=utf-8",
+                success: function (obj) {
+                    $('#Signatory1').val(obj.EmpId);
+                    $('#Signatory1Designation').val(obj.Designation);
+                },
+                failure: function (response) {
+                    //alert(response.d);
+                }
+            });
+        }
+    }
+    //Approval Employee Info
+    function Get2EmployeeInfo(empId) {
+        var url = '@Url.Action("GetEmployeeInfoTemp", "BankAdviceLetterTemplate")';
+        if (empId > 0) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ empId: empId }),
+                contentType: "application/json; charset=utf-8",
+                success: function (obj) {
+                    $('#Signatory2').val(obj.EmpId);
+                    $('#Signatory2Designation').val(obj.Designation);
+                },
+                failure: function (response) {
+                    //alert(response.d);
+                }
+            });
+        }
+    }
+
+    function Closing() { }
+
+</script>
+
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+<div class="GroupBox col-lg-12">
+    <div class="GroupBoxSmall" style="width:78%;float:left">
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.BankId)
+                <label style='color: red'>
+                    *
+                </label>
+                </span>
+                <span class="field" style="width:100%">
+                    @Html.DropDownListFor(m => m.BankId, Model.BankList, @String.Format("{0}", Content.DDLOptionalAllLabel()), new { @maxLength = "1000", @style = "width:40%;" })
+                </span>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.HiddenFor(model => model.Mode)
+                @Html.LabelFor(model => model.LetterType)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%">
+            @{
+                if(Model.Mode == "Edit"){
+                    @*<span style="background-color:lightgray;width:100%">@Model.LetterType</span>*@
+                @Html.TextBoxFor(model => model.LetterType)
+                }
+                else
+                {
+                @Html.DropDownListFor(m => m.LetterType, Model.LetterTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @maxLength = "1000", @style = "width:40%;" })    
+                }
+            }
+                
+            </span>
+            <div class="clear"></div>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Addressee)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%">
+                @Html.TextBoxFor(model => model.Addressee, new { @maxLength = "1000", @style = "width:40%;" })
+            </span>
+            <div class="clear"></div>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.LetterSubject)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%">
+                @Html.TextAreaFor(model => model.LetterSubject, new { @maxLength = "1000", @style = "width:100%;height:50px;" })
+            </span>
+            <div class="clear"></div>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Salutation)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%">
+                @Html.TextBoxFor(model => model.Salutation, new { @maxLength = "1000", @style = "width:40%;" })
+            </span>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Body1)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%">
+                @Html.TextAreaFor(model => model.Body1, new { @maxLength = "3000", @style = "width:100%;height:100px;" })
+            </span>
+            <div class="clear">
+            </div>
+        </div>
+        @*<div class="rowSmall">
+             <span class="label">
+                    @Html.Label("Payee List")
+               </span><span class="field" style="margin-top:5px;font-size:14px;">
+               List Of Payee Information
+               </span>
+            </div>*@
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Body2)
+
+            </span><span class="field" style="width:100%">
+                @Html.TextAreaFor(model => model.Body2, new { @maxLength = "3000", @style = "width:100%;height:100px;" })
+            </span>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="rowSmall" style="margin-left:230px;">
+            <span class="label">
+                @Html.LabelFor(model => model.Complementary)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%;">
+                @Html.TextBoxFor(model => model.Complementary, new { @style = "width:40%;" })
+            </span>
+        </div>
+        <br />
+        <br />
+        <div class="rowSmall">
+            <table style="width:75%; margin-left:50px">
+                <tr>
+                    <td width="40%">
+                        <span class="label" style="width:100%">
+                            @Html.LabelFor(model => model.Signatory1)
+                            <label class="required-field">
+                                *
+                            </label>
+                        </span><span class="field" style="width:100%">
+                            @Html.HiddenFor(model => Model.Signatory1Id)
+                            @*@Html.HiddenFor(model => Model.SignatoryName)*@
+                            @*@Html.HiddenFor(model => model.SignatoryId)*@
+
+                            @Html.EditorFor(model => model.Signatory1, new { @class = "read-only", @readonly = true })
+                            <img src='@Url.Content("~/Content/Images/btn_search.gif")' onclick="return open1Employee();" alt="EMP" />
+                        </span>
+                    </td>
+                    <td width="40%">
+                        <span class="label" style="width:100%">
+                            @Html.LabelFor(model => model.Signatory2)
+                            <label class="required-field">
+                                *
+                            </label>
+                        </span><span class="field" style="width:100%">
+                            @Html.HiddenFor(model => Model.Signatory2Id)
+                            @*@Html.HiddenFor(model => Model.SignatoryName)*@
+                            @*@Html.HiddenFor(model => model.SignatoryId)*@
+
+                            @Html.EditorFor(model => model.Signatory2, new { @class = "read-only", @readonly = true })
+                            <img src='@Url.Content("~/Content/Images/btn_search.gif")' onclick="return open2Employee();" alt="EMP" />
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="40%">
+                        <span class="label" style="width:100%">
+                            @Html.LabelFor(model => model.Signatory1Designation)
+                            <label class="required-field">
+                                *
+                            </label>
+                        </span><span class="field" style="width:100%">
+                            @Html.TextBoxFor(model => model.Signatory1Designation, new { @class = "read-only", @readonly = true })
+                        </span>
+                    </td>
+                    <td width="40%">
+                        <span class="label" style="width:100%">
+                            @Html.LabelFor(model => model.Signatory2Designation)
+                            <label class="required-field">
+                                *
+                            </label>
+                        </span><span class="field" style="width:100%">
+                            @Html.TextBoxFor(model => model.Signatory2Designation, new { @class = "read-only", @readonly = true })
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Enclosure)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field" style="width:100%;">
+                @Html.TextAreaFor(model => model.Enclosure, new { @style = "width:100%;height:50px;" })
+            </span>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    <div class="GroupBoxSmallRight" style="width:20%">
+        <div class="rowSmall" align="center">
+            <table id="grid" class="contenttable">
+                <thead>
+                    <tr>
+                        <th align="center" style="font-size:14px;">
+                            Variable List
+                        </th>
+                        @* <th align="center" style="font-size:14px;">
+                                Copy
+                            </th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.BankLetterBodyVariableList != null)
+                    {
+                        foreach (var x in Model.BankLetterBodyVariableList)
+                        {
+                            @Html.Partial("_ClipBoard", x);
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white; padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+

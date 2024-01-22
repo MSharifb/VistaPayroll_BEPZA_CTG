@@ -1,0 +1,316 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustment.OtherAdjustmentModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    @if (Model.strMode == "Add")
+    {
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.FromMonth)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.FromYear, Model.SalaryYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 127px;", @required = "required" })
+                @Html.DropDownListFor(m => m.FromMonth, Model.SalaryMonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 128px;", @required = "required" })
+            </span>
+            <span class="label-right">
+                &nbsp;
+            </span>
+            <span class="field">
+                &nbsp;
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ToMonth)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.ToYear, Model.SalaryYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 127px;", @required = "required" })
+                @Html.DropDownListFor(m => m.ToMonth, Model.SalaryMonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 128px;", @required = "required" })
+            </span>
+            <span class="label-right">
+                &nbsp;
+            </span>
+            <span class="field">
+                &nbsp;
+            </span>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EmployeeId)
+            </span>
+            <span class="field-LargeWidth">
+                @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "form-control select-single required" })
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.SalaryYear)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.SalaryYear, Model.SalaryYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required" })
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.SalaryMonth)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.SalaryMonth, Model.SalaryMonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required" })
+            </span>
+        </div>
+    }
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.HeadType)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.HeadType, Model.AdjustmentTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.SalaryHead)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(m => m.Remarks, new { @style = "width:300px" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.Amount)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.Amount, new { @maxLength = "8", @required = "required" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            &nbsp;
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(m => m.IsOverrideStructureAmount) @Html.LabelFor(model => model.IsOverrideStructureAmount)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+@if (Model.strMode == "Add")
+{
+    <div class="GroupBox">
+        <div class="row">
+            @{ Html.RenderPartial("_MasterDetail", Model); }
+        </div>
+    </div>
+    <div class="GroupBox">
+        <div class="button-crude button-center">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+            {
+                <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+            }
+        </div>
+        <div class="clear"></div>
+    </div>
+}
+
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white; padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+
+
+<script type="text/javascript">
+
+    $(function () {
+        //cascading dropdown Adjustment Type->Salary Head
+        $("select#HeadType").change(function () {
+            LoadSalaryHeadByAdjustmentType();
+        });
+
+        $("#btnAddNewEmployee").click(function () {
+            LoadEmployeeList();
+        });
+
+        $("#Amount").keydown(function (event) {
+            ValidateAmount(event);
+        });
+
+    });
+
+    $("#grid tbody tr td .deleteRow").live("click",
+        function () {
+            $(this).closest("tr").fadeOut("slow", function () {
+                $(this).closest("tr").remove();
+            });
+        });
+
+    function LoadSalaryHeadByAdjustmentType() {
+
+        var FromId = $('select#HeadType').val();
+
+        var ToId = $('select#SalaryHeadId');
+        ToId.empty();
+        ToId.append($('<option/>', {
+            value: '',
+            text: '@Content.DDLOptionalLabel()'
+        }));
+
+        if (FromId != null && FromId != '') {
+            $.getJSON('@Url.Action("GetSalaryHeadByHeadType", "OtherAdjustment")',
+                { pHeadType: FromId },
+                function (data) {
+                    $.each(data.SalaryHeadList,
+                        function (index, entity) {
+                            ToId.append($('<option/>',
+                            {
+                                value: entity.Id,
+                                text: entity.HeadName
+                            }));
+                        });
+                });
+        } else {
+            $("#SalaryHeadId>option").remove();
+            $("#SalaryHeadId").html("<option value=\"" + "" + "\">" + "[Select One]" + "</option>");
+            $('#SalaryHeadId').val(0);
+        }
+    }//---
+
+    function LoadEmployeeList() {
+        var selectedEmployeeId = $('#EmployeeId').val();
+        var selectedSalaryHeadId = $('#SalaryHeadId').val();
+        var isEntryFound = false;
+        var employeeIdInRow;
+        var selectedEmpIdAndNameInRow = $('option:selected', $('#EmployeeId')).text();
+        var salaryHeadIdInRow;
+        var row;
+
+        $("#grid tbody tr td.tDataWithId").each(function () {
+
+            employeeIdInRow = $(this).find(':input[type="hidden"]').val();
+
+            row = $(this).closest('tr');
+            salaryHeadIdInRow = row.find('.tdSalaryHead').val();
+
+            if (selectedEmployeeId == employeeIdInRow
+                && selectedSalaryHeadId == salaryHeadIdInRow) {
+                isEntryFound = true;
+            }
+
+        });
+
+
+        if (!isEntryFound) {
+
+            var amount = $("#Amount").val();
+
+            var type = $('select#HeadType').val();
+            var salaryHeadId = $('select#SalaryHeadId').val();
+            var isOverrideStructureAmount = $("#IsOverrideStructureAmount").prop('checked');
+
+            var url = '@Url.Action("AddEmployee", "OtherAdjustment")';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: JSON.stringify({
+                    Id: selectedEmployeeId,
+                    Amount: amount,
+                    Type: type,
+                    SalaryHeadId: salaryHeadId,
+                    IsOverrideStructureAmount: isOverrideStructureAmount
+                }),
+                contentType: "application/json; charset=utf-8",
+                cache: false,
+                error: function (errorMsg) {
+                    $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span>System Error!</span>  </div> ");
+                },
+                success: function (response) {
+                    $("#message").html("");
+                    if (selectedEmployeeId != 0) {
+                        $('#grid tbody').append("<tr>" + response + "</tr>");
+                    } else {
+                        $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span>Please select an employee.</span>  </div> ");
+                    }
+                }
+            });
+            //---
+        } else {
+            $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span>This employee(" + selectedEmpIdAndNameInRow + ") with same salary head have already entered.</span>  </div> ");
+        }
+    } //---
+
+
+    function ValidateAmount(event) {
+        // Allow: backspace, delete, tab, escape, and enter
+        if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        }
+        else {
+            // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+        }
+    }//---
+
+
+</script>
+
+<script type="text/javascript">
+    function getSalaryHead(obj) {
+        var type = obj.value;
+
+        var row = $(obj).closest('tr');
+        var ToId = row.find('.tdSalaryHead');
+
+        ToId.empty();
+        ToId.append($('<option/>', {
+            value: '',
+            text: '@Content.DDLOptionalLabel()'
+        }));
+
+        if (type != null && type != '') {
+            $.getJSON('@Url.Action("GetSalaryHeadByHeadType", "OtherAdjustment")',
+                { pHeadType: type },
+                function (data) {
+                    $.each(data.SalaryHeadList,
+                        function (index, entity) {
+                            ToId.append($('<option/>',
+                            {
+                                value: entity.Id,
+                                text: entity.HeadName
+                            }));
+                        });
+                });
+        }
+    }
+</script>

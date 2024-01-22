@@ -1,0 +1,50 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustmentStyleOne.OtherAdjustmentStyleOneModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm(Model.strMode, "OtherAdjustmentStyleOne", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+
+        <div class="GroupBox" id="message" style="min-height:15px;">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+
+        @Html.Partial("_CreateOrEdit", Model)
+        
+        <div class="GroupBox">
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Save" style="margin-right:8px" />
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+
+    </fieldset>
+}
+
+<div class="button-crude">
+    <div class="button-left">
+        @Html.ActionLink("Back to List", "GoToDetails", null, new { @idYearMonth = Model.SalaryYear + "-" + Model.SalaryMonth }, null)
+    </div>
+    
+    <div class="button-right">
+        <input type="button" value="Previous Employee" name="PreviousEmployee" id="PreviousEmployee"/>
+        <input type="button" value="Next Employee" name="NextEmployee" id="NextEmployee"/>
+    </div>
+</div>
+
+
+
+
+

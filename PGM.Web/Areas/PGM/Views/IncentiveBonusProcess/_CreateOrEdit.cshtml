@@ -1,0 +1,530 @@
+﻿@model PGM.Web.Areas.PGM.Models.IncentiveBonusProcess.IncentiveBonusViewModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+
+<div class="GroupBox">
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BonusTypeId)
+            <label class="required-field">*</label>
+            &nbsp;
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.BonusTypeId, Model.BonusTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })            &nbsp;
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.OrderDate)
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.OrderDate)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.IncentiveBonusDate)
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.IncentiveBonusDate)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.OrderRefNo)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.OrderRefNo)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remark)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(model => model.Remark)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.RevenueStamp)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.RevenueStamp, new { @class = "doubleNZ", @maxlength = "18", @style = "text-align:right;" })
+        </span>
+    </div>
+
+    <div class="clear">
+    </div>
+</div>
+
+<fieldset>
+    <legend>Calculation According to Financial Year</legend>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.FinancialYearForFormula)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.FinancialYearForFormula, Model.FinancialYearList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BasicSalaryCalFromFinancialYear)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.BasicSalaryCalFromFinancialYear, new { @readonly = "true", @style = "width:100px;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.Label("Formula A")
+        </span>
+        <span class="field">
+            @Html.RadioButtonFor(m => m.FormulaSelect, "F1")
+            Incentive Bonus = (Basic Salary /
+            @Html.TextBoxFor(model => model.DayOfMonthF1, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" }) )
+            X Incentive Bonus Day(s)
+            @Html.TextBoxFor(model => model.IncentiveBonusDayF1, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.Label("Formula B")
+        </span>
+        <span class="field">
+            @Html.RadioButtonFor(m => m.FormulaSelect, "F2")
+            Incentive Bonus = { (Basic Salary X @Html.TextBoxFor(model => model.TotalNumOfMonth, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" }) )
+            /
+            @Html.TextBoxFor(model => model.DayOfYearF2, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" }) }
+            X Incentive Bonus Day(s)
+            @Html.TextBoxFor(model => model.IncentiveBonusDayF2, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" })
+
+        </span>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>Calculation According to Calender Year</legend>
+
+    <div class="row">
+        <span class="label">
+            @Html.Label("Pro-rata based calculation")
+        </span>
+        <span class="field">
+            @Html.RadioButtonFor(m => m.FormulaSelect, "F3")
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.CalenderYearForFormula)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.CalenderYearForFormula, Model.CalenderYearList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BasicSalaryCalFromCalenderYear)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.BasicSalaryCalFromCalenderYear, new { @readonly = "true", @style = "width:100px;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.DayOfYear)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.DayOfYearF3, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.LEELDOY)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.LEELDOY, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.TDoYWELD)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.TDoYWELD, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;", @readonly = "true", })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.IncentiveBonusDay)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.IncentiveBonusDayF3, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.Label("Formula C")
+        </span>
+        <span class="field">
+            Incentive Bonus = ( Basic Salary / @Html.TextBoxFor(model => model.DayOfMonthF3, new { @class = "doubleNZ", @maxlength = "6", @style = "width:70px; text-align:right;" }) )
+            X Incentive Bonus Day(s) based on Pro-rata
+        </span>
+    </div>
+
+</fieldset>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.DepartmentId)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.DepartmentId, Model.DepartmentList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            @Html.RadioButtonFor(m => m.InfoType, "All")
+            @Html.Label("All Employees")
+            @Html.RadioButtonFor(m => m.InfoType, "Individual")
+            @Html.Label("Individual Employee")
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.StaffCategoryId)
+        </span>
+        <span class="field" id="ddl-section">
+            @Html.DropDownListFor(model => model.StaffCategoryId, Model.StuffCategoryList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EmpID)
+        </span>
+        <span class="field">
+            @Html.HiddenFor(model => model.EmployeeId)
+            @Html.EditorFor(m => m.EmpID)
+            <img src='@Url.Content("~/Content/Images/btn_search.gif")' id="imgEmpSearch" alt="Search" onclick="return openEmployee();" />
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmploymentTypeId)
+        </span>
+        <span class="field" id="ddl-category">
+            @Html.DropDownListFor(model => model.EmploymentTypeId, Model.EmploymentTypeList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EmployeeName)
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.EmployeeName)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.DesignationName)
+        </span>
+        <span class="field">
+            @Html.EditorFor(m => m.DesignationName)
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white; padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+<br />
+
+<div class="clear">
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        @*$('#BonusTypeId').live('change', function (index) {
+
+            $('#BonusTypeId').val($(this).val());
+
+            if ($(this).val() != '' && $(this).val() > 0) {
+
+                $.getJSON('@Url.Action("GetReligionByBonusTypeID", "BonusProcess")', { typeId: $(this).val() }, function (data) {
+                    if (data != 'NoData') {
+                        $('#Religion').val(data.religion);
+                        $('#ReligionId').val(data.ReligionId);
+                    }
+                    else {
+                        $('#Religion').val('');
+                        alert('No data found.');
+                    }
+                });
+            }
+            else {
+                $('#Religion').val('');
+            }
+        });*@
+
+        //$('#AmountType').live('change', function (index) {
+
+        //    if ($(this).val() == 'Fixed')
+        //        $("label[for*='lblBonusAmount']").html("");
+        //    else
+        //        $("label[for*='lblBonusAmount']").html("% of Basic Salary");
+        //});
+
+        $('#DayOfYearF3').keyup(function () {
+            AddTwoValue();
+        });
+
+        $('#LEELDOY').keyup(function () {
+            AddTwoValue();
+        });
+
+        $('#FinancialYearForFormula').live('change', function (index) {
+
+            $('#BasicSalaryCalFromFinancialYear').val("");
+
+            var financialYear = $(this).val();
+            var fyArray = financialYear.split('-');
+            if (fyArray != '') {
+                $('#BasicSalaryCalFromFinancialYear').val(fyArray[0] + "-06-30");
+            }
+        });
+
+        $('#CalenderYearForFormula').live('change', function (index) {
+
+            $('#BasicSalaryCalFromCalenderYear').val("");
+            var financialYear = $(this).val();
+            var fyArray = financialYear.split('-');
+
+            if (fyArray != '') {
+                var year = parseInt(fyArray[0], 10);
+                year = year - 1;
+                $('#BasicSalaryCalFromCalenderYear').val(year + "-12-31");
+            }
+        });
+
+        // Select radio button where value in F1
+        $("input[name=FormulaSelect][value=F1]").attr('checked', 'checked');
+
+        showErrMsg();
+    });
+
+    function AddTwoValue() {
+        var v1 = 0;
+        var v2 = 0;
+
+        if ($('#DayOfYearF3').val() != '') {
+            v1 = parseInt($('#DayOfYearF3').val());
+        }
+
+        if ($('#LEELDOY').val() != '') {
+            v2 = parseInt($('#LEELDOY').val());
+        }
+
+        $('#TDoYWELD').val(v1 - v2);
+    }
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#BonusAmount , #RevenueStamp").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#BonusAmount, #RevenueStamp').live('blur', function () {
+
+            var Bonus = $('#BonusAmount').val();
+            var stamp = $('#RevenueStamp').val();
+            var amountType = $('#AmountType option:selected').val();
+
+            if (amountType != '') {
+                if (amountType == 'Fixed') {
+                    if (Bonus >= 0)
+                        Bonus = parseFloat(Bonus);
+                    if (stamp >= 0)
+                        stamp = parseFloat(stamp);
+                    if (Bonus < stamp) {
+
+                        $('#BonusAmount').val(0);
+                        $('#RevenueStamp').val(0);
+
+                        $("#message").html("<b>" + 'Incentive Bonus amount must be greater than R/S.' + "</b>").css("color", "red");
+                    }
+                    else {
+                        $("#message").html("");
+                    }
+                }
+                else {
+                }
+            }
+            else {
+                $('#BonusAmount').val(0);
+                $('#RevenueStamp').val(0);
+                $("#message").html("<b>" + 'Must be select amount type.' + "</b>").css("color", "red");
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+    });
+
+    function openEmployee() {
+        var url = '@Url.Action("EmployeeSearchForPGM", "Employee")?searchEmpType=active';
+        url = url.replace('PGM', 'PRM');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+
+    function setData(id) {
+        $('#EmployeeId').val(id);
+        GetEmployeeInfo();
+        $("#divEmpList").dialog('close');
+    }
+
+    function GetEmployeeInfo() {
+        var empId = $('#EmployeeId').val();
+        var url = '@Url.Action("GetEmployeeInfo", "IncentiveBonusProcess")';
+
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        $('#EmpID').val('');
+        $('#EmployeeName').val('');
+
+        if (empId > 0) {
+            $.post(url, serializedForm, function (obj) {
+                if (obj.Result == 'InActiveEmployee') {
+                    alert('Inactive employee is not allowed for incentive bonus.');
+                }
+                else if (obj.Result == false) {
+                    alert('System is unable to load data please try again.');
+                }
+                else if (obj.Result != undefined) {
+                    alert(obj.Result);
+                }
+                else {
+                    $("#EmpID").val(obj.EmpID);
+                    $("#EmployeeId").val(obj.EmployeeId);
+                    $('#EmployeeName').val(obj.FullName);
+                    $('#DesignationName').val(obj.DesignationName);
+                }
+            }, "json");
+        }
+
+        return false;
+    }
+
+    function Closing() {
+
+    }
+
+    function EnableDisable(val) {
+        if (val == 'All') {
+            $('#EmpID').val('');
+            $('#EmployeeId').val(0);
+            $('#EmployeeName').val('');
+            $('#DesignationName').val('');
+            $('#EmploymentTypeId').val(0);
+
+            $('#DepartmentId').removeAttr('disabled');
+            $('#StaffCategoryId').removeAttr('disabled');
+            $('#EmploymentTypeId').removeAttr('disabled');
+
+            $("input[name=InfoType][value='All']").attr("checked", 'checked');
+        }
+        else {
+            $('#DepartmentId').attr('disabled', true);
+            $('#StaffCategoryId').attr('disabled', true);
+            $('#EmploymentTypeId').attr('disabled', true);
+
+            $("input[name=InfoType][value='Individual']").attr("checked", 'checked');
+        }
+    }
+
+    $('input[name=InfoType]:radio').change(function () {
+        var val = $("input[name=InfoType]:checked").val();
+        EnableDisable(val);
+    });
+
+    EnableDisable('@Model.InfoType.ToString()');
+
+</script>

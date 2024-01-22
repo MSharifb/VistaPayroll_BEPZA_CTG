@@ -1,0 +1,76 @@
+﻿@model PGM.Web.Areas.PGM.Models.ArrearAdjustment.ArrearAdjustmentModel
+@using PGM.Web.Helpers
+
+<table id="ArrearAdjustmentList" class="contenttable fixedcontenttable custom-grid">
+    <tr>
+        <td>
+            <div class="row">
+                <div class="leftColumn" title="Addition" style="width:49%">
+                    <table id="Addition" class="contenttable">
+                        <tr>
+                            <td align="center" colspan="5" bgcolor="#BBD0E5">Addition</td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                Salary Head
+                            </td>
+                            <td class="td-calType" align="center">
+                                Calculation Type
+                            </td>
+                            <td class="td-basedOn" align="center">
+                                Based On
+                            </td>
+                            <td class="td-amount" align="center">
+                                Percent / Fixed Amount
+                            </td>
+                            <td class="td-totalamount" align="center">
+                                Total Amount
+                            </td>
+                        </tr>
+                        @if (Model.SalaryStructureDetail != null)
+                        {
+                            foreach (var item in Model.SalaryStructureDetail.Where(d => d.HeadType == "Addition"))
+                            {
+                                @Html.Partial("_SalaryStructureAdditionDetails", item)
+                            }
+                        }
+
+                    </table>
+                </div>
+                <div class="rightColumn" style="width:49%">
+                    <table id="Deduction" class="contenttable" title="Deduction">
+                        <tr>
+                            <td align="center" colspan="5" bgcolor="#FFE5E5">Deduction</td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                Salary Head
+                            </td>
+                            <td class="td-calType" align="center">
+                                Calculation Type
+                            </td>
+                            <td class="td-basedOn" align="center">
+                                Based On
+                            </td>
+                            <td class="td-amount" align="center">
+                                Percent / Fixed Amount
+                            </td>
+                            <td class="td-totalamount" align="center">
+                                Total Amount
+                            </td>
+                        </tr>
+
+                        @if (Model.SalaryStructureDetail != null)
+                        {
+                            foreach (var item in Model.SalaryStructureDetail.Where(d => d.HeadType == "Deduction"))
+                            {
+                                @Html.Partial("_SalaryStructureDeductionDetails", item)
+                            }
+                        }
+
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>

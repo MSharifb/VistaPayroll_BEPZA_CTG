@@ -1,0 +1,242 @@
+﻿@model PGM.Web.Areas.PGM.Models.HouseRentWaterBillDeduct.HouseRentWaterBillDeductModel
+
+@using PGM.Web.Helpers
+@using PGM.Web.Utility
+
+<script src="@Url.Content("~/Scripts/listEditor.js")" type="text/javascript"></script>
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmpID)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.HiddenFor(model => model.EmployeeId)
+            @Html.EditorFor(m => m.EmpID)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmployeeName)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(m => m.EmployeeName)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EmployeeDesignation)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.EmployeeDesignation)
+        </span>
+    </div>
+
+</div>
+
+<fieldset>
+    <legend> Date Range </legend>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EffectiveDateFrom)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(m => m.EffectiveDateFrom)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EffectiveDateTo)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(m => m.EffectiveDateTo)
+        </span>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend> Water Bill </legend>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.WaterBillSalaryHeadDeductId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.WaterBillSalaryHeadDeductId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.WaterBillAmount)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.WaterBillAmount)
+        </span>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend> House rent </legend>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.HouseRentDeductionType)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field" style="width: 300px;">
+            @Html.RadioButtonFor(model => model.HouseRentDeductionType, PGMEnum.HouseRentDeductionType.Fixed, new { id = PGMEnum.HouseRentDeductionType.Fixed.ToString(), @class = "doDisabled" })
+            @Html.Label(PGMEnum.HouseRentDeductionType.Fixed.ToString())
+
+            @Html.RadioButtonFor(model => model.HouseRentDeductionType, PGMEnum.HouseRentDeductionType.HRA, new { id = PGMEnum.HouseRentDeductionType.HRA.ToString(), @class = "doDisabled" })
+            @Html.Label("Same as House Rent Allowance (HRA)")
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.HouseRentSalaryHeadDeductId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.HouseRentSalaryHeadDeductId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.HouseRentAmount, new { @class = "clsHouseRentFixed" })
+            <label style='color: red' class="clsHouseRentFixed">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.HouseRentAmount, new { @class = "clsHouseRentFixed" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.ResidenceAddress)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(m => m.ResidenceAddress, new { @style = "width:300px" })
+        </span>
+        <span class="label-right">
+        </span>
+        <span class="field">
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</fieldset>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#Amount").keydown(function (event) {
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        $('#EffectiveDateFrom').attr('readonly', 'true');
+        $('#EffectiveDateTo').attr('readonly', 'true');
+
+        $('#EffectiveDateFrom').change(function () {
+            var valDate = $('#EffectiveDateFrom').val();
+            var valNew = valDate.split('-');
+
+            $('#EffectiveDateFrom').val(valNew[0] + '-' + valNew[1] + '-' + '01');
+        });
+
+        $('#EffectiveDateTo').change(function () {
+            var valDate = $('#EffectiveDateTo').val();
+            var valNew = valDate.split('-');
+
+            var date = new Date(valNew[0] + '/' + valNew[1] + '/' + valNew[2]);
+            var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+            $('#EffectiveDateTo').val(valNew[0] + '-' + valNew[1] + '-' + lastDate.getDate());
+        });
+
+        //$("#Fixed, #HRA").change(function () {
+        //    alert();
+        //});
+
+        $("#Fixed, #HRA").change(function () {
+
+            if ($("#Fixed").attr("checked")) {
+
+                $(".clsHouseRentFixed").show();
+            }
+            else {
+                $(".clsHouseRentFixed").hide();
+            }
+        });
+
+    });//End Document Ready
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+    }
+
+    $(function () {
+        //cascading dropdown Adjustment Type->Salary Head
+        $("select#Type").change(function () {
+            LoadSalaryHeadByAdjustmentType();
+        })
+    });
+
+    function LoadSalaryHeadByAdjustmentType() {
+
+        var FromId = $('select#Type').val();
+
+        var ToId = $('select#SalaryHeadId');
+        ToId.empty();
+        ToId.append($('<option/>', {
+            value: '',
+            text: '@Content.DDLOptionalLabel()'
+        }));
+
+        if (FromId != null && FromId != '') {
+            $.getJSON('@Url.Action("GetSalaryHeadByHeadType", "OtherAdjustment")', { pHeadType: FromId }, function (data) {
+                $.each(data.SalaryHeadList, function (index, entity) {
+                    ToId.append($('<option/>', {
+                        value: entity.Id,
+                        text: entity.HeadName
+                    }));
+                });
+            });
+        }
+        else {
+            $("#SalaryHeadId>option").remove();
+            $("#SalaryHeadId").html("<option value=\"" + "" + "\">" + "[Select One]" + "</option>");
+            $('#SalaryHeadId').val(0);
+        }
+    }
+
+</script>
+

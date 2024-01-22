@@ -1,0 +1,182 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.GratuitySettlement.GratuitySettlementViewModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(m => m.EmployeeId, new { @class = "label-required" })
+        </span>
+        <span class="field" style="width: 50%;">
+            @Html.DropDownListFor(model => model.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Designation)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.Designation, new { @class = "read-only", @readonly = true })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.DateofJoining)
+
+        </span><span class="field">
+            @Html.EditorFor(model => model.DateofJoining)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.DateofConfirmation)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(m => m.DateofConfirmation)
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.DateofSeperation)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.DateofSeperation)
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.ServiceLength)
+        </span><span class="field-LargeWidth">
+            @Html.TextBoxFor(m => m.ServiceLength, new { @class = "read-only", @readonly = true, @style = "width:100%;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.GratuityGrossSalary)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.GratuityGrossSalary, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.PayableAmount)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.PayableAmount, new { @style = "width:100px; text-align:right;" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.DateofPayment)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.DateofPayment)
+        </span>
+
+        <span class="label-right" style="width:100px">
+            @Html.CheckBoxFor(model => model.isPaid)
+            @Html.LabelFor(model => model.isPaid)
+        </span>
+        <span class="label" style="width:235px">
+            @Html.CheckBoxFor(model => model.isPaidWithFinalSettlement)
+            @Html.LabelFor(model => model.isPaidWithFinalSettlement)
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span><span class="field">
+            @Html.TextAreaFor(model => model.Remarks, new { @style = "width:570px", @maxLength = "200" })
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        
+        //$('input[name=isPaid]').attr('checked', true);
+
+        //$('#isPaid , #isPaidWithFinalSettlement').live('click',
+        //    function() {
+        //        var isP = $(this).attr('name');
+        //        if (isP == 'isPaid') {
+        //            $('input[name=isPaid]').attr('checked', true);
+        //            $('input[name=isPaidWithFinalSettlement]').attr('checked', false);
+        //        } else {
+        //            $('input[name=isPaid]').attr('checked', false);
+        //            $('input[name=isPaidWithFinalSettlement]').attr('checked', true);
+        //        }
+        //    });
+
+        $("select#EmployeeId").change(function () {
+            $("#message").html('');
+
+            var url = '@Url.Action("GetEmployeeInfo", "PGMCommon")' + '?employeeId=' + $(this).val();
+
+            $("#Designation").val('');
+            $("#DateofJoining").val('');
+            $("#DateofConfirmation").val('');
+            $("#DateofSeperation").val('');
+            $.get(url,
+                function (data) {
+                    if (data.Success) {
+                        $("#Designation").val(data.EmployeeDesignation);
+                        $("#DateofJoining").val(moment(data.JoiningDate).format('YYYY-MM-DD'));
+                        $("#DateofConfirmation").val(moment(data.ConfirmationDate).isValid() ? moment(data.ConfirmationDate).format('YYYY-MM-DD'): '');
+                        $("#DateofSeperation").val(moment(data.InactiveDate).isValid() ? moment(data.InactiveDate).format('YYYY-MM-DD') : '');
+
+                    } else {
+                        $("#message").html('Unable to load employee data').css('color', 'red');
+                    }
+                });
+
+
+            $("#ServiceLength").val('');
+            $("#GratuityGrossSalary").val('');
+            $("#PayableAmount").val('');
+            var urlsl = '@Url.Action("GetServiceLengthAndGratuityAmount", "GratuitySettlement")' + '?employeeId=' + $(this).val();
+            $.get(urlsl, function (data) {
+                if (data.Success) {
+                    $("#ServiceLength").val(data.ServiceLength);
+                    $("#GratuityGrossSalary").val(data.GratuityAmount);
+                    $("#PayableAmount").val(data.GratuityAmount);
+                } else {
+                    if (data.Message == 'EligibleAfterMonthDoesNotReachYet'){
+                        $("#message").html('Employee service length does not reach {Eligible After Month} yet!').css('color', 'red');
+                    }
+                    else if (data.Message == 'EmployeeIsActiveYet'){
+                        $("#message").html('Only inactive employee can settle gratuity!').css('color', 'red');
+                        }
+                    else if (data.Message == 'NoGratuityPolicyFound'){
+                        $("#message").html('Gratuity policy does not setup yet!').css('color', 'red');
+                        }
+                    else if (data.Message == 'NoEmployeeFound'){
+                        $("#message").html('No employee found!').css('color', 'red');
+                        }
+                    else{
+                        $("#message").html('Unable to show employee service length!').css('color', 'red');
+                        }
+                }
+            });
+
+        });
+    });
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+        }
+    }
+
+</script>

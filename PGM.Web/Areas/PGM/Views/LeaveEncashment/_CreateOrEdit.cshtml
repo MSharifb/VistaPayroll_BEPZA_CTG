@@ -1,0 +1,529 @@
+﻿@model PGM.Web.Areas.PGM.Models.LeaveEncashment.LeaveEncashmentViewModel
+@using PGM.Web.Helpers
+
+<script type="text/javascript">
+
+    // ******** functions for open popup *************
+    $(document).ready(function () {
+
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+        showErrMsg();
+
+    });
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+        }
+    }
+
+    function openEmployee() {
+        var url = '@Url.Action("EmployeeSearchForPGM", "Employee")?searchEmpType=active';
+        url = url.replace('PGM', 'PRM');
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 20000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+
+    function setData(id) {
+        $('#EmployeeId').val(id)
+        GetEmployeeInfo();
+        $("#divEmpList").dialog('close');
+    }
+
+
+    function Closing() {
+
+    }
+
+
+    function GetEmployeeInfo() {
+        var empId = $('#EmployeeId').val();
+        var url = '@Url.Action("GetEmployeeInfo", "LeaveEncashment")';
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        $('#EmpID').val('');
+        $('#EmployeeInitial').val('');
+        $('#FullName').val('');
+        $('#Division').val('');
+        $('#AccountNo').val('');
+        $('#hfBankId').val('');
+        $('#hfBranchId').val('');
+        $('#BasicSalary').val('');
+        $('#hfGrossSalary').val('');
+
+        $('#BankNBranch').val('');
+        $('#EncashmentRate').val('');
+
+        if (empId > 0) {
+            $.post(url, serializedForm, function (obj) {
+                if (obj.Result == 'InactiveEmployee') {
+                    alert('The Employee is Inactive.');
+                }
+
+                else if (obj.Result == 'PermanentEmp') {
+                    alert('The Employee is not permanent.');
+                }
+
+                else if (obj.Result == false) {
+                    alert('System is unable to load data please try again.');
+                }
+
+                else {
+                    $("#EmpID").val(obj.EmpId);
+                    $("#EmployeeInitial").val(obj.EmployeeInitial);
+                    $("#FullName").val(obj.FullName);
+                    $("#Division").val(obj.Division);
+                    $('#AccountNo').val(obj.AccountNo);
+                    $('#hfBankId').val(obj.BankId);
+                    $('#hfBranchId').val(obj.BranchId);
+                    $('#BasicSalary').val(obj.BasicSalary);
+                    $('#hfGrossSalary').val(obj.GrossSalary);
+                    $('#BankNBranch').val(obj.BankNBranch);
+                    $('#EncashmentRate').val(obj.Rate.toFixed(2));
+
+                }
+
+            }, "json");
+
+        }
+        return false;
+    }
+
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#ProjectId').live('change', function (index) {
+            var pID = $(this).val();
+
+            $('#ProjectId').val(pID);
+
+            if (pID != '' && pID > 0) {
+
+                $.getJSON('@Url.Action("GetProjectByID", "LeaveEncashment")', { pID: pID }, function (project) {
+
+                    $('#ProjectTitle').val(project);
+                });
+            }
+            else {
+                $('#ProjectTitle').val('');
+            }
+        });
+
+        //Select Leave Type
+        $('#LeaveTypeId').live('change', function (index) {
+
+            var leaveId = $(this).val();
+
+            var year = $('#SalaryYear').val();
+            var EmployeeId = $('#EmployeeId').val();
+
+            if (year != '' & year > 0) {
+                if (leaveId != '' && leaveId > 0) {
+                    $.getJSON('@Url.Action("GetLeaveTypeByID", "LeaveEncashment")', { year: year, leaveId: leaveId, EmployeeId: EmployeeId }, function (result) {
+
+                        $('#LeaveBalance').val(result.LeaveDays);
+                        $('#LeaveYear').val(result.LeaveYear);
+                        $('#intLeaveYearID').val(result.LeaveYearID);
+
+                        //$('#LeaveBalance').val(10);
+                        //$('#LeaveYear').val(2016);
+                        //$('#intLeaveYearID').val(3);
+
+                    });
+                }
+                else {
+                    $('#LeaveBalance').val(0);
+                    $('#LeaveYear').val('');
+                    $('#intLeaveYearID').val(0);
+                    alert('Please select leave type.');
+                }
+            }
+            else {
+                $('#LeaveTypeId').val('');
+                alert('You must select year & month at first.');
+
+            }
+        });
+        $('#EncashmentDays').live('change', function (index) {
+            var encashDays = $(this).val();
+            var rate = $('#EncashmentRate').val();
+            var LeaveBalance = $('#LeaveBalance').val();
+            if (LeaveBalance != '') {
+                LeaveBalance = parseFloat(LeaveBalance);
+            }
+            if (encashDays != '') {
+                encashDays = parseFloat(encashDays);
+            }
+
+            if (LeaveBalance > 0) {
+                if (LeaveBalance >= encashDays) {
+                    if ((encashDays > 0)) {
+                        rate = parseFloat(rate);
+                        var amount = (encashDays * rate).toFixed(2);
+                        $('#EncashmentAmount').val(amount);
+                    }
+                    else {
+                        $('#EncashmentAmount').val('');
+                        alert('Encashment days must be needed.');
+                    }
+                }
+                else {
+                    $('#EncashmentAmount').val('');
+                    $('#EncashmentDays').val(0);
+                    alert('Encashment days must be less than or equal to balance(days).');
+                }
+            }
+            else {
+                $('#EncashmentAmount').val('');
+                $('#EncashmentDays').val(0);
+                alert('Employee has no encash balance.');
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#EncashmentDays, #EmpId").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        $('.divSalaryHeadId').hide();
+        $('#IsAdjustWithSalary').change(function () {
+            var ischecked = $(this).is(':checked');
+            if (ischecked) {
+                $('.divSalaryHeadId').show();
+                $('.divPaymentDate').hide();
+            } else {
+                $('.divSalaryHeadId').hide();
+                $('.divPaymentDate').show();
+            }
+        });
+
+
+    });
+
+</script>
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryYear)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.SalaryYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.SalaryMonth)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.SalaryMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmpID)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.HiddenFor(model => model.EmployeeId)
+            @Html.TextBoxFor(model => model.EmpID, new { @class = "read-only", @readonly = true })
+            <img src='@Url.Content("~/Content/Images/btn_search.gif")' onclick="return openEmployee();" />
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.FullName)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.FullName, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Division)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.Division, new { @class = "read-only", @readonly = true })
+        </span><span class="label-right">
+            &nbsp;
+        </span><span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.IsAdjustWithSalary)
+        </span><span class="field">
+            @Html.CheckBoxFor(model => model.IsAdjustWithSalary)
+        </span><span class="label-right">
+            &nbsp;
+        </span><span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row divSalaryHeadId">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryHeadId)
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span><span class="label-right">
+            &nbsp;
+        </span><span class="field">
+            &nbsp;
+        </span>
+    </div>
+    
+    <div class="row divPaymentDate">
+        <span class="label">
+            @Html.LabelFor(model => model.PaymentDate)
+        </span><span class="field">
+            @Html.EditorFor(model => model.PaymentDate)
+        </span><span class="label-right">
+            &nbsp;
+        </span><span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    @*<div class="row">
+        <span class="label">*@
+    @*@Html.HiddenFor(model => model.BankId, new { id = "hfBankId" })
+        @Html.HiddenFor(model => model.BranchId, new { id = "hfBranchId" })*@
+    @Html.HiddenFor(model => model.GrossSalary, new { id = "hfGrossSalary" })
+    @Html.HiddenFor(model => model.EncashmentRate)
+    @*@Html.LabelFor(model => model.AccountNo)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.AccountNo, new { @class = "read-only", @readonly = true })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.BankNBranch)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.BankNBranch, new { @class = "read-only", @readonly = true })
+        </span>*@
+    @*</div>*@
+
+    <div class="row">
+        <span class="label">
+
+            @Html.LabelFor(model => model.OrderNo)
+        </span><span class="field">
+            @Html.EditorFor(model => model.OrderNo)
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.OrderDate)
+        </span><span class="field">
+            @Html.EditorFor(model => model.OrderDate)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.LeaveTypeId)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.LeaveTypeId, Model.LeaveTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.LeaveBalance)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.LeaveBalance, new { @class = "read-only", @readonly = true, @style = "text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EncashmentDays)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.EncashmentDays, new { @class = "doubleNZ", @style = "text-align:right;", @maxlength = "5" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.BasicSalary)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.BasicSalary, new { @class = "read-only", @readonly = true, @style = "text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EncashmentAmount)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.EncashmentAmount, new { @class = "read-only", @readonly = true, @style = "text-align:right;" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.LeaveYear)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.LeaveYear, new { @class = "read-only", @readonly = true, @style = "text-align:left;" })
+            @Html.HiddenFor(model => model.intLeaveYearID)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span><span class="field">
+            @Html.TextAreaFor(model => model.Remarks, new { @style = "width:570px", @maxLength = "200" })
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white;
+        padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+<div id="divProjectList">
+    <iframe id="styleAdvanceP" src="" width="100%" height="100%" style="border: 0px solid white;
+        padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        $("#divProjectList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Project Searching', beforeclose: function (event, ui) { Closing(); } });
+
+        // Start Autocomplete
+        $("#ProjectNo").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("AutoCompleteForProjectSearching", "BonusProcess")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { projectNo: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.ProjectNo, value: item.Id };
+                        }))
+                    }
+                })
+            },
+            select: function (event, ui) {
+                GetProjectInformation(ui.item ? ui.item.value : 0);
+            }
+        });
+        $("#ProjectNo").keydown(function (event) {
+            if (event.keyCode == 46 || event.keyCode == 8) {
+
+                $('#ProjectTitle').val('');
+
+            }
+        });
+        //    End Auto Complete
+
+    });
+
+    function OpenProjectInformation() {
+
+        var url = '@Url.Action("SearchActiveProject", "ProjectList")';
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divProjectList').html(result);
+            }
+        });
+        $("#divProjectList").dialog('open');
+        return false;
+    }
+
+    function SetProjectIdForSearching(id) {
+
+        GetProjectInformation(id);
+
+        $("#divProjectList").dialog('close');
+    }
+
+
+    function Closing() { }
+
+
+    function GetProjectInformation(projectId) {
+
+        if (projectId > 0) {
+
+
+            url = '@Url.Action("GetProjectInformationbyID", "BonusProcess", new { id = "_id_" })'
+            url = url.replace(/_id_/, projectId);
+
+            $.get(url, function (data) {
+                $('#ProjectId').val(data.ProjectId);
+                $('#ProjectNo').val(data.ProjectNo);
+                $('#ProjectTitle').val(data.ProjectName);
+
+            });
+        }
+        else {
+
+        }
+        return false;
+    }
+
+</script>

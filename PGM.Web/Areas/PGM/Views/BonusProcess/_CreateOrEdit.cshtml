@@ -1,0 +1,334 @@
+﻿@model PGM.Web.Areas.PGM.Models.BonusProcess.BonusProcessViewModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BonusYear)
+            <label class="required-field">*</label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.BonusYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BonusMonth)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.BonusMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BonusType)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.BonusTypeId, Model.BonusTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.ReligionId)
+        </span>
+        <span class="field">
+            @Html.HiddenFor(model => model.ReligionId)
+            @Html.TextBoxFor(model => model.Religion, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.AmountType)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.AmountType, Model.AmountTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BonusAmount)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.BonusAmount, new { @class = "doubleNZ required", @style = "text-align:right;", @maxlength = "18" })
+            @Html.Label("lblBonusAmount", " ")
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BasicCalculationMonth)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.BasicCalculationMonth, Model.BasicCalculationMonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EffectiveDate)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(m => m.EffectiveDate, new { @style = "width:100px;height:18px;text-align:right;", @class = "required" })
+        </span>
+    </div>
+
+    <div class="row">
+
+        <span class="label">
+            @Html.LabelFor(model => model.RevenueStamp)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.RevenueStamp, new { @class = "doubleNZ", @style = "text-align:right;", @maxlength = "18" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.Remarks)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(model => model.Remarks, new { @maxLength = "100" })
+        </span>
+    </div>
+
+    <div class="clear">
+    </div>
+
+    <div class="GroupBox">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DepartmentId)
+            </span>
+            <span class="field">
+                @*@Html.HiddenFor(model => model.DepId)*@
+                @Html.DropDownListFor(model => model.DepartmentId, Model.DepartmentList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+            </span>
+            <span class="label-right">
+                &nbsp;
+            </span>
+            <span class="field">
+                @Html.RadioButtonFor(m => m.InfoType, "All")
+                @Html.Label("All Employees")
+                @Html.RadioButtonFor(m => m.InfoType, "Individual")
+                @Html.Label("Individual Employee")
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.SectionId)
+            </span>
+            <span class="field" id="ddl-section">
+                @Html.DropDownListFor(model => model.SectionId, Model.SectionList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(m => m.EmployeeId, new { @class = "label-required" })
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(model => model.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.StaffCategoryId)
+            </span>
+            <span class="field" id="ddl-category">
+                @Html.DropDownListFor(model => model.StaffCategoryId, Model.StuffCategoryList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.DesignationName)
+            </span>
+            <span class="field">
+                @Html.EditorFor(m => m.DesignationName)
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.JobGradeId)
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(model => model.JobGradeId, Model.JobGradeList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+            </span>
+            <span class="label-right">
+                &nbsp;
+            </span>
+            <span class="field">
+                &nbsp;
+            </span>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#BonusTypeId').live('change', function (index) {
+
+            $('#BonusTypeId').val($(this).val());
+
+            if ($(this).val() != '' && $(this).val() > 0) {
+
+                $.getJSON('@Url.Action("GetReligionByBonusTypeID", "BonusProcess")', { typeId: $(this).val() }, function (data) {
+                    if (data != 'NoData') {
+                        $('#Religion').val(data.religion);
+                        $('#ReligionId').val(data.ReligionId);
+                    }
+                    else {
+                        $('#Religion').val('');
+                        alert('No data found.');
+                    }
+                });
+            }
+            else {
+                $('#Religion').val('');
+            }
+        });
+
+        SetGetBasicFromDDLStatus($('#AmountType').val());
+       
+        $('#AmountType').live('change', function (index) {
+            var amountType = $(this).val();
+            SetGetBasicFromDDLStatus(amountType);
+        });
+
+        showErrMsg();
+    });
+
+    function SetGetBasicFromDDLStatus(amountType) {
+        if (amountType == 'Fixed') {
+            $("label[for*='lblBonusAmount']").html("");
+            $('#BasicCalculationMonth').attr('disabled', true);
+        }
+        else {
+            $("label[for*='lblBonusAmount']").html("% of Basic Salary");
+            $('#BasicCalculationMonth').removeAttr('disabled');
+        }
+    }
+
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            ShowMessage(msg, "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            ShowMessage(msg, "green");
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#BonusAmount , #RevenueStamp").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#BonusAmount, #RevenueStamp').live('blur', function () {
+
+            var Bonus = $('#BonusAmount').val();
+            var stamp = $('#RevenueStamp').val();
+            var amountType = $('#AmountType option:selected').val();
+
+            if (amountType != '') {
+                if (amountType == 'Fixed') {
+                    if (Bonus >= 0)
+                        Bonus = parseFloat(Bonus);
+                    if (stamp >= 0)
+                        stamp = parseFloat(stamp);
+                    if (Bonus < stamp) {
+
+                        $('#BonusAmount').val(0);
+                        $('#RevenueStamp').val(0);
+
+                        ShowMessage('Bonus amount must be greater than  R/S.', "red");
+                    }
+                    else {
+                        ShowMessage('', "white");
+                    }
+                }
+            }
+            else {
+                $('#BonusAmount').val(0);
+                $('#RevenueStamp').val(0);
+                ShowMessage('Must be select amount type.', "red");
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function EnableDisable(val) {
+        //console.log(val);
+
+        if (val == 'All') {
+            $('#EmpID').val('');
+            $('#EmployeeId').val(0);
+            $('#DesignationName').val('');
+
+            $('#DepartmentId').removeAttr('disabled');
+            $('#SectionId').removeAttr('disabled');
+            $('#StaffCategoryId').removeAttr('disabled');
+            $('#JobGradeId').removeAttr('disabled');
+
+            $("input[name=InfoType][value='All']").attr("checked", 'checked');
+        }
+        else {
+            $('#DepartmentId').attr('disabled', true);
+            $('#SectionId').attr('disabled', true);
+            $('#StaffCategoryId').attr('disabled', true);
+            $('#JobGradeId').attr('disabled', true);
+
+            $("input[name=InfoType][value='Individual']").attr("checked", 'checked');
+        }
+    }
+
+    $('input[name=InfoType]:radio').change(function () {
+        var val = $("input[name=InfoType]:checked").val();
+        EnableDisable(val);
+    });
+
+    EnableDisable('@Model.InfoType.ToString()');
+
+    function ShowMessage(messageText, foreColor) {
+        $("#message").html("<b>" + messageText + "</b>").css("color", foreColor);
+    }
+
+    $("select#EmployeeId").change(function () {
+
+        var url = '@Url.Action("GetEmployeeInfo", "PGMCommon")' + '?employeeId=' + $(this).val();
+
+        $.get(url,
+            function (data) {
+                if (data.Success) {
+                    $("#DesignationName").val(data.EmployeeDesignation);
+                } else {
+                    $("#message").html('Unable to load employee data').css('color', 'red');
+                }
+            });
+    });
+
+
+</script>

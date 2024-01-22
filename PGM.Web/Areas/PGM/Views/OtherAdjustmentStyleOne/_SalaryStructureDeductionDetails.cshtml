@@ -1,0 +1,63 @@
+﻿@model PGM.Web.Areas.PGM.Models.SalaryStructure.SalaryStructureDetailsModel
+@using PGM.Web.Helpers
+@using (Html.BeginCollectionItem("SalaryStructureDetail"))
+{
+    <tr>
+        @Html.HiddenFor(model => model.HeadType)
+        @Html.HiddenFor(model => model.HeadId)
+        @Html.HiddenFor(model => model.DisplayHeadName)
+
+        <td class='@Model.cssSalaryHeadClass'>
+            @Html.DisplayFor(model => model.DisplayHeadName)
+        </td>
+
+        <td style="display: none;">
+            <span class="selected-val">@Model.AmountType</span>
+        </td>
+        
+        <td>
+            @Html.HiddenFor(m => m.AmountType, new {@class = "hdn-disable"})
+            @Html.DropDownListFor(model => model.AmountType, Model.HeadAmountTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new {@class = "required ddl-deduction", @style = "width:100px;"})
+        </td>
+
+        <td class="td-right">
+            @if (Model.DisplayHeadName.Contains("Provident Fund"))
+            {
+                <span class="pf-amount"> @Html.EditorFor(model => model.Amount) </span>
+            }
+            else
+            {
+                @Html.EditorFor(model => model.Amount)
+            }
+        </td>
+
+        <td class="td-rightPercentAmount">
+            @Html.EditorFor(model => model.Amount)
+        </td>
+
+    </tr>
+}
+
+<style>
+    #Deduction .td-right input[type="text"], input[type="password"] {
+        text-align: right;
+        width: 100px;
+    }
+
+    #Deduction .td-rightPercentAmount input[type="text"], input[type="password"] {
+        text-align: right;
+        width: 80px;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.ddl-deduction').change(function () {
+        $('input#' + $(this).attr('id')).val($(this).val());
+    });
+
+    $(function () {
+        $('.td-rightPercentAmount :input').attr('disabled', true);
+        
+        $('.cssSalaryHeadClass').css('color', 'red');
+    });
+</script>

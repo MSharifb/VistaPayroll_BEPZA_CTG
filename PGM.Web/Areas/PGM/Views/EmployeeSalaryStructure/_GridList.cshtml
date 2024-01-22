@@ -1,0 +1,109 @@
+﻿@model PGM.Web.Areas.PGM.Models.EmployeeSalaryStructure.EmployeeInfoModel
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $("a.deleteItem").live("click", function () {
+            deleteLinkObj = $(this);  //for future use
+            $('#delete-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+        $('#delete-dialog').dialog({
+            autoOpen: false, width: 320, resizable: false, modal: true, //Dialog options
+            overlay: {
+                backgroundColor: '#000',
+                opacity: 0.5
+            },
+            buttons: {
+                "Yes": function () {
+
+                    $.post(deleteLinkObj[0].href, function (obj) {  //Post to action
+
+                        if (obj.Success) {
+                            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+                            $('#sButton').trigger('click');
+                        }
+                        else {
+                            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetList", "EmployeeSalaryStructure", new {area ="PGM"})',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['Id', 'Name', 'Employee ID', 'Designation', 'Account No.', 'Grade', 'Joining Date', 'Confirm Date', 'Employment Type', 'Staff Category', 'Employee Status', 'Working Zone', 'Bonus', 'Overtime', 'Refreshment', 'G.P.F'],
+            colModel: [
+                { name: 'Id', index: 'Id', align: 'left', search: false, edittype: 'text', hidden: true },
+                { name: 'FullName', index: 'FullName', align: 'left', search: true, edittype: 'text', width: '140px', formatter: viewformatEdiorLink },
+                { name: 'EmpID', index: 'EmpID', align: 'center', search: true, edittype: 'text', width: '60px' },
+                { name: 'Designation', index: 'DesignationId', align: 'left', search: true, edittype: 'select', width: '60px', surl: '@Url.Action("GetDesignation", "EmployeeSalaryStructure", new { area = "PGM" })' },
+                { name: 'BankAccountNo', index: 'BankAccountNo', align: 'center', search: false, edittype: 'text', width: '60px' },
+                { name: 'JobGradeName', index: 'JobGradeId', align: 'center', search: true, edittype: 'select', width: '40px', surl: '@Url.Action("GetGrade", "EmployeeSalaryStructure", new { area = "PGM" })' },
+                { name: 'DateofJoining', index: 'DateofJoining', align: 'center', search: false, edittype: 'text', width: '60px', formatter: 'date', formatoptions: { newformat: "Y-m-d" } },
+                { name: 'DateofConfirmation', index: 'DateofConfirmation', align: 'center', search: false, edittype: 'text', width: '60px', formatter: 'date', formatoptions: { newformat: "Y-m-d" } },
+                { name: 'EmploymentType', index: 'EmploymentTypeId', align: 'left', hidden: false, search: true, edittype: 'select', width: '80px', surl: '@Url.Action("GetEmploymentType", "EmployeeSalaryStructure", new { area = "PGM" })' },
+                { name: 'StaffCategoryName', index: 'StaffCategoryId', align: 'left', hidden: true, search: true, edittype: 'select', surl: '@Url.Action("GetStaffCategory", "EmployeeSalaryStructure", new { area = "PGM" })' },
+                { name: 'EmployeeStatus', index: 'EmployeeStatusId', align: 'left', hidden: false, search: true, edittype: 'select', width: '80px', surl: '@Url.Action("GetEmployeeStatus", "EmployeeSalaryStructure", new { area = "PGM" })' },
+                { name: 'WorkingZoneName', index: 'WorkingZoneName', align: 'left', hidden: false, search: true, edittype: 'text', width: '80px' },
+                { name: 'IsBonusEligible', index: 'IsBonusEligible', align: 'center', width: '40px', search: true, hidden: false, edittype: 'select', surl: '@Url.Action("GetYesNoAsList", "EmployeeSalaryStructure", new { area = "PGM" })', formatter: 'checkbox' },
+                { name: 'IsOvertimeEligible', index: 'IsOvertimeEligible', align: 'center', width: '40px', search: true, hidden: false, edittype: 'select', surl: '@Url.Action("GetYesNoAsList", "EmployeeSalaryStructure", new { area = "PGM" })', formatter: 'checkbox' },
+                { name: 'IsRefreshmentEligible', index: 'IsRefreshmentEligible', align: 'center', width: '40px', search: true, hidden: false, edittype: 'select', surl: '@Url.Action("GetYesNoAsList", "EmployeeSalaryStructure", new { area = "PGM" })', formatter: 'checkbox' },
+                { name: 'IsGPFEligible', index: 'IsGPFEligible', align: 'center', width: '35px', search: true, hidden: false, edittype: 'select', surl: '@Url.Action("GetYesNoAsList", "EmployeeSalaryStructure", new { area = "PGM" })', formatter: 'checkbox' }
+            ],
+            autowidth: true,
+            caption: "Employee List",
+            rowList: [20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 20,
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+    });
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink("_name_", Model.ActionName, new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+</script>
+
+

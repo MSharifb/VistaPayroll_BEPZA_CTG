@@ -1,0 +1,123 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.IncomeTaxComputation.IncomeTaxComputationViewModel
+@using PGM.Web.Helpers
+
+@using (Html.BeginForm("IncomeTaxComputationProcess", "IncomeTaxComputation", FormMethod.Post, new { id = "frm" }))
+{<fieldset>
+        <div class="GroupBox" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.IncomeYear)
+                    <label class="required-field">
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.DropDownListFor(y => y.IncomeYear, Model.IncomeYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+                </span><span class="label-right">
+                    @Html.LabelFor(model => model.AssessmentYear)
+                    <label class="required-field">
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.TextBoxFor(model => model.AssessmentYear, new { @class = "read-only", @readonly = true })
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.SalaryYear)
+                    <label class="required-field">
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.DropDownListFor(y => y.SalaryYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+                </span><span class="label-right">
+                    @Html.LabelFor(model => model.SalaryMonth)
+                    <label class="required-field">
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.DropDownListFor(m => m.SalaryMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+                </span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+     <div class="GroupBox">
+         <div class="button-crude">
+             @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+             {
+                 <input type="button" value="Process" id="btnAdd" name="btnSubmit" style="margin-right: 8px;" />
+             }
+         </div>
+         <div class="clear"></div>
+     </div>
+    </fieldset>
+}
+<script type="text/javascript">
+    $(function () {
+
+        $('#btnAdd').click(function () {
+
+            var incomeYear = $('#IncomeYear').val();
+            var year = $('#SalaryYear').val();
+            var month = $('#SalaryMonth').val();
+
+            var url = '@Url.Action("IncomeTaxComputationProcess", "IncomeTaxComputation")';
+
+            var form = $('#frm');
+            var serializedForm = form.serialize();
+
+            if (incomeYear != '' && year != '' && month != '') {
+
+                $.post(url, { incomeYear: incomeYear, year: year, month: month }, function (obj) {
+
+                    if (obj.Success == true) {
+                        alert(obj.Message);
+                        $("#divEmpList").dialog('close');
+                        $('#jqGrid').trigger('click');
+                    }
+                    else {
+                        alert(obj.Message);
+                        $("#divEmpList").dialog('close');
+                        $('#jqGrid').trigger('click');
+                    }
+                    var url = '@Url.Action("Index", "IncomeTaxComputation")';
+                    window.location.href = url;
+                }, "json");
+            }
+            else {
+                if (incomeYear == '') {
+                    alert('Please select Income Year.');
+                }
+
+                if (year == '') {
+                    alert('Please select year.');
+                }
+
+                if (month == '') {
+                    alert('Please select month.');
+                }
+            }
+           
+        });
+
+        $('#IncomeYear').live('change', function () {
+
+            var incomeArrey = [];
+            var incomeYear = $(this).val();
+            var incomeArrey = incomeYear.split('-');
+
+            var startYear = parseInt(incomeArrey[0]) + 1;
+            var endYear = parseInt(incomeArrey[1]) + 1;
+
+            var assessmentYear = startYear + '-' + endYear;
+
+            $('#AssessmentYear').val(assessmentYear);
+
+        });
+    });
+</script>

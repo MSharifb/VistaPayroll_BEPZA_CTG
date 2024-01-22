@@ -1,0 +1,27 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustment.OtherAdjustmentModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "OtherAdjustment", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+
+        <div class="GroupBox" id="message" style="min-height:15px;">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+
+        @Html.Partial("_CreateOrEdit", Model)
+
+    </fieldset>
+}
+<div class="button-crude button-left">
+    @Html.ActionLink("Back to List", "GoToDetails", null, new { @idYearMonth = Model.SalaryYear + "-" + Model.SalaryMonth }, null)
+</div>

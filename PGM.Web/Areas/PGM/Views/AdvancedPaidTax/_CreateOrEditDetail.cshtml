@@ -1,0 +1,240 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxAdvancedPaid.AdvancedTaxPaidDetailViewModel
+
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+<fieldset>
+    @using (Html.BeginForm(Model.strMode, "AdvancedPaidTax", FormMethod.Post, new { id = "frm", @encType = "multipart/form-data" }))
+    {
+        <div class="GroupBox" id="message">
+            @if (Model != null && !string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+        <div class="GroupBox">
+            <legend>Advanced Paid Tax Details</legend>
+
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.EitityId)
+            @Html.HiddenFor(model => model.strMode)
+
+            <div class="row">
+                <span class="label">
+
+                    @Html.LabelFor(model => model.IncomeYear)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(m => m.IncomeYear, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.AssessmentYear)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(m => m.AssessmentYear, new { @class = "read-only", @readonly = true })
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmpId)
+                </span>
+                <span class="field">
+                    @Html.HiddenFor(model => model.EmployeeId)
+                    @Html.TextBoxFor(model => model.EmpId, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.EmployeeName)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(m => m.EmployeeName, new { @class = "read-only", @readonly = true })
+                </span>
+            </div>
+
+        </div>
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EntityEntryDate)
+                </span>
+                <span class="field">
+                    @Html.EditorFor(model => model.EntityEntryDate)
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.EntityAmount)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.EntityAmount)
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EntityDescription)
+                </span>
+                <span class="field-LargeWidth">
+                    @Html.TextAreaFor(model => model.EntityDescription)
+                </span>
+            </div>
+            <div class="row">
+                &nbsp;
+            </div>
+            <div class="attachment-area">
+                <div class="row">
+                    <span class="label">@Html.LabelFor(m => m.AdvanceDetailDocumentList.FirstOrDefault().Attachment)</span>
+                    <span class="field">
+                        @Html.HiddenFor(model => model.AdvanceDetailDocumentList.FirstOrDefault().Attachment)
+
+                        @Html.TextBoxFor(model => model.AdvanceDetailDocumentList.FirstOrDefault().File, new { type = "file" })
+                    </span>
+                    <span class="button">
+                        <div class="fixedAddButton" style="align-content:flex-start">
+                            <input id="btnUpload" type="button" value="Upload" />
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="row" align="center">
+                <div style="width: 70%">
+                    <div class="clear" style="height: 20px">
+                    </div>
+                    <table id="grid" class="contenttable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Document Name
+                                </th>
+                                <th>
+                                    Document Upload Date
+                                </th>
+                                <th>
+                                    Delete
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                    if (Model.AdvanceDetailDocumentList.Any())
+                                    {
+                                        Html.RenderPartial("_Details", Model);
+                                    }
+                            }
+                        </tbody>
+                    </table>
+                    <div class="clear" style="height: 20px">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="clear"></div>
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+            {
+                if (Model.strMode == "Create")
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                }
+                else
+                {
+                    <input type="submit" value="Update" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                }
+            }
+        </div>
+    }
+</fieldset>
+<div class="button-crude button-left">
+    @Html.ActionLink("Back to List", "Edit", new { @id = Model.EitityId }, Model)
+</div>
+
+<script type="text/javascript">
+
+
+    $('#btnClear').live('click',
+        function () {
+            document.getElementById('frm').reset();
+            $('#btnAdd').show();
+        });
+
+    $('#btnUpload').live('click', function (e) {
+        try {
+            e.preventDefault();
+            var url = '@Url.Action("AddAttachment", "AdvancedPaidTax", Model)';
+
+            //another way
+            var xhr = new XMLHttpRequest();
+            var fd = new FormData();
+            fd.append("file", document.getElementById('File').files[0]);
+
+            xhr.open("POST", url, true);
+            xhr.send(fd);
+            xhr.addEventListener("load", function (event) {
+
+                if (event.target.response != 'Invalid') {
+
+                    $("#grid tbody").append(event.target.response);
+
+                }
+
+            }, false);
+        }
+        catch (err) {
+            console.log(err.message);
+        }
+    });
+
+
+    function RemoveDb(el, id, detailId, url) {
+
+        if (confirm("Do you want to delete this document?")) {
+            if (id == 0 || id == undefined) {
+                $(el).parent().parent().remove();
+            }
+            else {
+                var compositeId = id + ',' + detailId;
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: JSON.stringify({ Id: compositeId }),
+                    contentType: "application/json; charset=utf-8",
+                    error: function () {
+                        $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span> System Error!</span>  </div> ");
+                    },
+                    success: function (result) {
+                        var errMsg = result.Message;
+                        var errg = result.Success;
+                        if (errg) {
+                            $("#message").html('<b style=\"color:Green\">' + errMsg + '</b>');
+                            $(el).parent().parent().remove();
+                        }
+                        else {
+                            $("#message").html('<b style=\"color:red\">' + errMsg + '</b>');
+                        }
+                    }
+                });
+            }
+        }// end confirm if
+    }
+
+
+</script>
+
+
+<style type="text/css">
+    .attachment-area .row a {
+        padding: 7px 20px;
+        border: 1px solid #2980b9;
+        background: #2980b9;
+        border-radius: 4px;
+        color: #FFFFFF;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .attachment-area .row a:hover {
+            background: #3498db;
+        }
+</style>
+

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsMonthlySalaryDiffReport" targetNamespace="http://tempuri.org/dsMonthlySalaryDiffReport.xsd" xmlns:mstns="http://tempuri.org/dsMonthlySalaryDiffReport.xsd" xmlns="http://tempuri.org/dsMonthlySalaryDiffReport.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection ConnectionStringObject="Data Source=MGDEVLAP02\SQL2012;Initial Catalog=ERP_BEPZA_AccDBMigration;Persist Security Info=True;User ID=sa;Password=sa1234" IsAppSettingsProperty="false" Modifier="Assembly" Name="DBConnectionString (PGM.Web)" ParameterPrefix="@" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsMonthlySalaryDiffReport" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="dsMonthlySalaryDiffReport" msprop:Generator_UserDSName="dsMonthlySalaryDiffReport">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="SP_PGM_RptSalaryDifference" msprop:Generator_TableClassName="SP_PGM_RptSalaryDifferenceDataTable" msprop:Generator_TableVarName="tableSP_PGM_RptSalaryDifference" msprop:Generator_TablePropName="SP_PGM_RptSalaryDifference" msprop:Generator_RowDeletingName="SP_PGM_RptSalaryDifferenceRowDeleting" msprop:Generator_RowChangingName="SP_PGM_RptSalaryDifferenceRowChanging" msprop:Generator_RowEvHandlerName="SP_PGM_RptSalaryDifferenceRowChangeEventHandler" msprop:Generator_RowDeletedName="SP_PGM_RptSalaryDifferenceRowDeleted" msprop:Generator_UserTableName="SP_PGM_RptSalaryDifference" msprop:Generator_RowChangedName="SP_PGM_RptSalaryDifferenceRowChanged" msprop:Generator_RowEvArgName="SP_PGM_RptSalaryDifferenceRowChangeEvent" msprop:Generator_RowClassName="SP_PGM_RptSalaryDifferenceRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="EmpId" msprop:Generator_ColumnVarNameInTable="columnEmpId" msprop:Generator_ColumnPropNameInRow="EmpId" msprop:Generator_ColumnPropNameInTable="EmpIdColumn" msprop:Generator_UserColumnName="EmpId" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="15" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="FullName" msprop:Generator_ColumnVarNameInTable="columnFullName" msprop:Generator_ColumnPropNameInRow="FullName" msprop:Generator_ColumnPropNameInTable="FullNameColumn" msprop:Generator_UserColumnName="FullName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="DesigName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnDesigName" msprop:Generator_ColumnPropNameInRow="DesigName" msprop:Generator_ColumnPropNameInTable="DesigNameColumn" msprop:Generator_UserColumnName="DesigName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="DesigSortOrder" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnDesigSortOrder" msprop:Generator_ColumnPropNameInRow="DesigSortOrder" msprop:Generator_ColumnPropNameInTable="DesigSortOrderColumn" msprop:Generator_UserColumnName="DesigSortOrder" type="xs:int" minOccurs="0" />
+              <xs:element name="StaffCategoryName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnStaffCategoryName" msprop:Generator_ColumnPropNameInRow="StaffCategoryName" msprop:Generator_ColumnPropNameInTable="StaffCategoryNameColumn" msprop:Generator_UserColumnName="StaffCategoryName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="HeadName" msprop:Generator_ColumnVarNameInTable="columnHeadName" msprop:Generator_ColumnPropNameInRow="HeadName" msprop:Generator_ColumnPropNameInTable="HeadNameColumn" msprop:Generator_UserColumnName="HeadName">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="SalaryHeadSortOrder" msprop:Generator_ColumnVarNameInTable="columnSalaryHeadSortOrder" msprop:Generator_ColumnPropNameInRow="SalaryHeadSortOrder" msprop:Generator_ColumnPropNameInTable="SalaryHeadSortOrderColumn" msprop:Generator_UserColumnName="SalaryHeadSortOrder" type="xs:int" minOccurs="0" />
+              <xs:element name="HeadType" msprop:Generator_ColumnVarNameInTable="columnHeadType" msprop:Generator_ColumnPropNameInRow="HeadType" msprop:Generator_ColumnPropNameInTable="HeadTypeColumn" msprop:Generator_UserColumnName="HeadType">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="50" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="PrevMonthName" msprop:Generator_ColumnVarNameInTable="columnPrevMonthName" msprop:Generator_ColumnPropNameInRow="PrevMonthName" msprop:Generator_ColumnPropNameInTable="PrevMonthNameColumn" msprop:Generator_UserColumnName="PrevMonthName" type="xs:string" minOccurs="0" />
+              <xs:element name="CurrentMonthName" msprop:Generator_ColumnVarNameInTable="columnCurrentMonthName" msprop:Generator_ColumnPropNameInRow="CurrentMonthName" msprop:Generator_ColumnPropNameInTable="CurrentMonthNameColumn" msprop:Generator_UserColumnName="CurrentMonthName" type="xs:string" minOccurs="0" />
+              <xs:element name="PrevMonthAmount" msprop:Generator_ColumnVarNameInTable="columnPrevMonthAmount" msprop:Generator_ColumnPropNameInRow="PrevMonthAmount" msprop:Generator_ColumnPropNameInTable="PrevMonthAmountColumn" msprop:Generator_UserColumnName="PrevMonthAmount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="CurrentMonthAmount" msprop:Generator_ColumnVarNameInTable="columnCurrentMonthAmount" msprop:Generator_ColumnPropNameInRow="CurrentMonthAmount" msprop:Generator_ColumnPropNameInTable="CurrentMonthAmountColumn" msprop:Generator_UserColumnName="CurrentMonthAmount" type="xs:decimal" />
+              <xs:element name="DifferenceBetweenMonth" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnDifferenceBetweenMonth" msprop:Generator_ColumnPropNameInRow="DifferenceBetweenMonth" msprop:Generator_ColumnPropNameInTable="DifferenceBetweenMonthColumn" msprop:Generator_UserColumnName="DifferenceBetweenMonth" type="xs:decimal" minOccurs="0" />
+              <xs:element name="OnlyPreviousMonth" msprop:Generator_ColumnVarNameInTable="columnOnlyPreviousMonth" msprop:Generator_ColumnPropNameInRow="OnlyPreviousMonth" msprop:Generator_ColumnPropNameInTable="OnlyPreviousMonthColumn" msprop:Generator_UserColumnName="OnlyPreviousMonth" type="xs:boolean" minOccurs="0" />
+              <xs:element name="OnlyCurrentMonth" msprop:Generator_ColumnVarNameInTable="columnOnlyCurrentMonth" msprop:Generator_ColumnPropNameInRow="OnlyCurrentMonth" msprop:Generator_ColumnPropNameInTable="OnlyCurrentMonthColumn" msprop:Generator_UserColumnName="OnlyCurrentMonth" type="xs:boolean" minOccurs="0" />
+              <xs:element name="InBothMonth" msprop:Generator_ColumnVarNameInTable="columnInBothMonth" msprop:Generator_ColumnPropNameInRow="InBothMonth" msprop:Generator_ColumnPropNameInTable="InBothMonthColumn" msprop:Generator_UserColumnName="InBothMonth" type="xs:boolean" minOccurs="0" />
+              <xs:element name="IsDetails" msprop:Generator_ColumnVarNameInTable="columnIsDetails" msprop:Generator_ColumnPropNameInRow="IsDetails" msprop:Generator_ColumnPropNameInTable="IsDetailsColumn" msprop:Generator_UserColumnName="IsDetails" type="xs:boolean" minOccurs="0" />
+              <xs:element name="IsSummary" msprop:Generator_ColumnVarNameInTable="columnIsSummary" msprop:Generator_ColumnPropNameInRow="IsSummary" msprop:Generator_ColumnPropNameInTable="IsSummaryColumn" msprop:Generator_UserColumnName="IsSummary" type="xs:boolean" minOccurs="0" />
+              <xs:element name="SalaryMonthSortOrder" msprop:Generator_ColumnVarNameInTable="columnSalaryMonthSortOrder" msprop:Generator_ColumnPropNameInRow="SalaryMonthSortOrder" msprop:Generator_ColumnPropNameInTable="SalaryMonthSortOrderColumn" msprop:Generator_UserColumnName="SalaryMonthSortOrder" type="xs:int" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

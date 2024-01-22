@@ -1,0 +1,11 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxExemptionRule.TaxExemptionRuleViewModel
+@using PGM.Web.Helpers
+
+@if (Model != null && Model.DetailList!= null)
+{
+    foreach (var x in Model.DetailList)
+    {
+        @Html.Partial("_PartialDetail", x);
+    }
+
+}

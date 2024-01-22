@@ -1,0 +1,224 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAccount.BankAccountModel
+
+@using (Ajax.BeginForm("Index", null, new AjaxOptions { HttpMethod = "POST", OnComplete = "OnComplete" }, new { id = "frm", action = Url.Action(Model.Mode == "Create" ? "Create" : "Edit") }))
+{
+    <fieldset>
+        <div class="GroupBox" style="max-height: 15px" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        </div>
+        @Html.HiddenFor(m => m.Id)
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BankId)
+                    <label style='color: red'>
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.DropDownListFor(m => m.BankId, Model.BankNameList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                </span><span class="label-right">
+                    @Html.LabelFor(model => model.BankAccountId)
+                    <label style='color: red'>
+                        *
+                    </label>
+                </span><span class="field ddl-acc-no">
+                    @Html.DropDownListFor(m => m.BankAccountId, Model.BankAccountNoList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BranchName)
+                </span><span class="field">
+                    @Html.EditorFor(model => model.BranchName)
+                </span><span class="label-right">
+                    @Html.LabelFor(model => model.AccountFor)
+                    <label style='color: red'>
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.DropDownListFor(m => m.AccountFor, Model.AccountForList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "salary-head" })
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BankAddress)
+                    <label style='color: red'>
+                        *
+                    </label>
+                </span><span class="field">
+                    @Html.TextAreaFor(model => model.BankAddress, new { @class = "read-only", @readonly = true })
+                </span><span class="label-right">
+                </span><span class="field">
+                </span>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="GroupBox">
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="display: none;" />
+                }
+                else
+                {
+                }
+                @if ((new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+                {
+                    <input type="submit" value="Update" id="btnUpdate" name="btnUpdate" style="display: none;" />
+                }
+                @if ((new PGM.Web.Utility.AppConstant()).IsDeleteAssigned)
+                {
+                    <input type="submit" value="Delete" id="btnDelete" name="btnDelete" style="display: none;" onclick="return Delete();" />
+                }
+                <input type="button" value="Clear" id="btnClear" name="btnClear" onclick="document.getElementById('frm').reset();" />
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+    </fieldset>
+}
+<div class="button-crude button-left">
+    @Ajax.ActionLink("Back to List", "BackToList", new AjaxOptions { OnComplete = "OnCompleteBacktoList" })
+</div>
+<div class="clear">
+</div>
+<script type="text/javascript">
+
+    function Delete() {
+        $('#frm').attr('action', '@Url.Action("Delete")');
+        return true;
+    }
+
+    $(function () {
+
+        $('#btnSave').live('click', function () {
+            var BankAddress = $('#BankAddress').val();
+            if (BankAddress == '') {
+                $('#BankAddress').css({ 'border-color': '#FF0000', 'background-color': '#FFF2F2' });
+            }
+
+        });
+
+        $('#BankId').live('change', function () {
+            var accId = $(this).val();
+            $.get(
+                    "@Url.Action("GetBankAccNo")",
+                    { 'id': accId },
+                    function (r) {
+                        if (r != '') {
+
+                            $('.ddl-acc-no').html(r);
+                        }
+                        else {
+                            $("#message").show();
+                            $('#message').text(data).css({ 'color': 'red' });
+                            $("#message").delay(3000).hide();
+
+                        }
+                    }
+                );
+        });
+
+        $('#BankAccountId').live('change', function () {
+            var accId = $(this).val();
+            getBankBranchAddress(accId);
+
+            $.get(
+                    "@Url.Action("GetBranchName")", { 'id': accId }, function (r) {
+
+                        if (r != '') {
+                            $('#BranchName').val(r);
+                        }
+                        else {
+                            $('#BranchName').val('');
+                        }
+                    }
+                );
+        })
+
+        function getBankBranchAddress(accId) {
+            $.get(
+                   "@Url.Action("GetBankBranchAddress")", { 'id': accId }, function (r) {
+
+                       if (r != '') {
+                           $('#BankAddress').val(r);
+                       }
+                       else {
+                           $('#BankAddress').val('');
+                       }
+                   }
+                );
+        }
+
+        var mode = '@Model.Mode';
+        $.validator.unobtrusive.parse('#frm');
+
+        if (mode == 'Create') {
+            $('#btnSave').show();
+            $('#btnUpdate').hide();
+            $('#btnDelete').hide();
+        }
+        else {
+            $('#btnUpdate').show();
+            $('#btnDelete').show();
+            $('#btnSave').hide();
+        }
+    })
+
+    function OnCompleteBacktoList(content) {
+        if (content.statusText == 'success') {
+            $('.search-content').hide();
+            $('.frm-content').html(content.responseText);
+        } else {
+            $('#message').text('An error has occoured. Please try again.').css({ 'color': 'red' });
+        }
+    }
+
+
+
+    function OnComplete(content) {
+        var data = content.responseText;
+
+        if (data.toLowerCase().indexOf("updated") >= 0 || data.toLowerCase().indexOf("deleted") >= 0) {
+            $("#message").show();
+            $('#message').text(data).css({ 'color': 'green' });
+
+            $.get(
+                    "@Url.Action("BackToList")",
+                    {},
+                    function (r) {
+                        if (r != '') {
+                            $('.frm-content').html(r);
+                        }
+                        else {
+                            $("#message").show();
+                            $('#message').text(data).css({ 'color': 'red' });
+                        }
+                    }
+                );
+        }
+        else if (data.toLowerCase().indexOf("saved") >= 0) {
+
+            $("#message").show();
+            $('#message').text(data).css({ 'color': 'green' });
+            $.get(
+                    "@Url.Action("BackToList")",
+                    {},
+                    function (r) {
+                        if (r != '') {
+                            $('.frm-content').html(r);
+                        }
+                        else {
+                            $("#message").show();
+                            $('#message').text(data).css({ 'color': 'green' });
+                        }
+                    }
+                );
+        }
+        else {
+
+            $("#message").show();
+            $('#message').text(data).css({ 'color': 'red' });
+        }
+    }
+</script>

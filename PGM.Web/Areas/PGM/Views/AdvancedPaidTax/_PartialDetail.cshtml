@@ -1,0 +1,35 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxAdvancedPaid.AdvancedTaxPaidDetailViewModel
+@using PGM.Web.Helpers
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("AdvanceDetailList"))
+    {
+        if (@Model != null)
+        {
+            <td class="detailInfo" style="display:none;">
+                @Html.HiddenFor(model => model.EitityId)
+                @Html.TextBoxFor(model => model.EntityEntryDate)
+            </td>
+            @Html.HiddenFor(model => model.Id)
+        }
+        <td style="text-align: center;">
+            
+            @Html.ActionLink(Model.EntityEntryDate.Value.ToString("yyyy-MM-dd")
+                                    , "EditDetail", "AdvancedPaidTax"
+                                    , new { id = Model.Id }, Model)
+
+        </td>
+        <td style="text-align: left;">
+            @Html.Encode(Model.EntityDescription)
+        </td>
+        <td style="text-align: right;">
+            @Html.Encode(Model.EntityAmount)
+        </td>
+        <td>
+            <a href="#" class="deleteRow" title="delete" 
+               onclick="RemoveDb(this,@Model.Id,'@Url.Action("DeleteDetail")')">
+                <img src='@Url.Content("~/Content/Images/Delete.png")' alt="Delete" style="border: none; " />
+            </a>
+        </td>
+    }
+</tr>

@@ -1,0 +1,119 @@
+﻿@model PGM.Web.Areas.PGM.Models.SalaryAutoIncrement.SalaryAutoIncrementViewModel
+
+@using (Html.BeginForm("SalaryIncrementProcess", "SalaryAutoIncrement", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        <div class="GroupBox" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(m => m.ProcessDate)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.EditorFor(m => m.ProcessDate, new { @class = "required" })
+                </span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+        @if (Model.IsError == 0)
+        {
+            <div class="GroupBox" style="text-align:center">
+                <label style="color:darkred ; font-size:medium">N.B. This Salary auto increment will effect from now.</label>
+                <br />
+                <label style="color:darkred; font-size:medium">And you will not able to rollback after process!</label>
+                <div class="button-crude">
+                    @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                    {
+                        <input type="button" value="Process" id="btnAdd" name="btnSubmit" style="margin-right: 8px;" />
+                    }
+                </div>
+                <div class="clear"></div>
+            </div>
+        }
+        else
+        {
+            <div class="GroupBox"  style="text-align:center" id="business_message">
+            </div>
+        }
+        <div class="GroupBox" id="busyIndicator">
+            <span style="font-size: larger; color: blue; font-weight: bold;">Processing...</span>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+        <div class="GroupBox" style="text-align:center">
+            <label style="color:forestgreen">N.B. This Salary auto increment will effect on Basic, House Rent and PF own contribution only.</label>
+        </div>
+    </fieldset>
+}
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $('#busyIndicator').hide();
+
+        $('.select-single').chosen({
+            allow_single_deselect: true
+            //, width: "95%"
+        });
+
+        // For Auto Complete
+        ///-----Start for PL------------
+
+        $("#SignatoryInitial").keydown(function (event) {
+            if (event.keyCode == 46 || event.keyCode == 8) {
+                $('#SignatoryDesignation').val('');
+            }
+        });
+
+        ///------End for PL-------------
+
+        //    End Auto Complete
+        showErrMsg();
+    });
+
+    $('#btnAdd').live('click', function () {
+
+        var year = $('#ProcessDate').val();
+
+        var url = '@Url.Action("SalaryAutoIncrementProcess", "SalaryAutoIncrement")';
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        if (year == '') {
+            alert('Please select date.');
+            return;
+        }
+        var answer = window.confirm("Are you sure want to process auto increment?")
+        if (answer) {
+            $('#busyIndicator').show("fast", function () {
+                $.post(url, { financialYear: year }, function (obj) {
+                    alert(obj.Message);
+                    if (obj.Success === true) {
+                        $("#divEmpList").dialog('close');
+                        var url = '@Url.Action("Index", "SalaryAutoIncrement")';
+                        window.location.href = url;
+                    } else {
+                        $('#busyIndicator').hide();
+                    }
+
+                }, "json");
+            });
+        }
+        else {
+            return;
+        }
+    });
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#business_message").html("<b>" + msg + "</b>").css("color", "red");
+
+        }
+    }
+</script>

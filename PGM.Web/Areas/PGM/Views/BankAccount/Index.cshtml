@@ -1,0 +1,30 @@
+﻿@using PGM.Web.Areas.PGM.Models.BankAccount
+@model BankAccountModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+<div class="GroupBox">
+    <div class="GroupBox" id="message">
+        @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        @if (!string.IsNullOrEmpty(Model.ErrMsg))
+        {
+            <div id="ErrMsg" class="@Model.errClass">
+                @Model.ErrMsg
+            </div>
+        }
+    </div>
+    @Html.Partial("_Search",Model.BankAccountList)    
+</div>
+<script type="text/javascript">
+    function OnCompleteAddnew(content) {
+        
+        if (content.statusText == 'success') {
+            $('.search-content').hide();
+            $('.frm-content').html(content.responseText);
+        } else {
+            $('#message').text('An error has occoured. Please try again.').css({ 'color': 'red' });
+        }
+    }
+
+</script>

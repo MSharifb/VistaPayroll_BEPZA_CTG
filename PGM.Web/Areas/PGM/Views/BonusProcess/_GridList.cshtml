@@ -1,0 +1,74 @@
+﻿<script type="text/javascript">
+    $(function () {
+        $("a.refreshIcon").live("click", function () {
+            rollbackLinkObj = $(this);  //for future use
+            $('#rollback-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+
+</script> 
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetList")',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Year', 'Month', 'Payment Date', 'Payment Category', 'Bonus Type', 'Bonus Amount', 'Amount Type', 'R/S', 'Details', 'Rollback'],
+            colModel: [
+                        { name: 'ID', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+                        { name: 'BonusYear', index: 'BonusYear', align: 'center', width: '90px', search: true, edittype: 'select', surl: '@Url.Action("GetYearList")' },
+                        { name: 'BonusMonth', index: 'BonusMonth', align: 'center', width: '95px', search: true, edittype: 'select', surl: '@Url.Action("GetMonthList")' },
+                        { name: 'EffectiveDate', index: 'EffectiveDate', width: '110px', align: 'center', search: false, edittype: 'text' },
+
+                        { name: 'PaymentCategory', index: 'PaymentCategory', align: 'left', search: false, edittype: 'text' },
+                        { name: 'BonusType', index: 'BonusType', align: 'left', search: false, edittype: 'text' },
+
+                        { name: 'BonusAmount', index: 'BonusAmount', align: 'right', width: '100px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                        { name: 'AmountType', index: 'AmountType', align: 'center', width: '100px', search: false, hidden: false, edittype: 'text' },
+                        { name: 'RevenueStamp', index: 'RevenueStamp', align: 'right', width: '50px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                        { name: 'Details', index: 'Details', width: '50px', align: 'center', search: false, sortable: false, edittype: 'image', formatter: DetailsformateadorLink },
+                        { name: 'Rollback', index: 'Rollback', align: 'center', search: false, hidden: IsDeleteAssigned, sortable: false, width: '60px', edittype: 'image', formatter: deleteformateadorLink }
+            ],
+
+            autowidth: true,
+            caption: "Bonus Information",
+            rowList: [10, 20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 10,
+            sortname: 'ID',
+            sortorder: 'asc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+    });
+
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "Rollback", new { idRollback = "_idRollback_" }, new { @class = "refreshIcon" })';
+        url = url.replace(/_idRollback_/, rowObject[0]);
+        return url;
+    }
+    
+    function DetailsformateadorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink(" ", "BonusDetail", new { idBonusDetail = "_idBonusDetail_" }, new { @class = "mSalaryPDetails" })';
+        url = url.replace(/_idBonusDetail_/, rowObject[0]);
+        return url;
+    }
+
+</script>

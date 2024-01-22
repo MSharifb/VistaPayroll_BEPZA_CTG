@@ -1,0 +1,88 @@
+﻿<script type="text/javascript">
+    $(function () {
+
+        $("a.refreshIcon").live("click", function () {
+            // alert($(this));
+
+            rollbackLinkObj = $(this);  //for future use
+            $('#rollback-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetList")',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['Process Date'],
+            colModel: [
+                            { name: 'YearName', index: 'YearName', align: 'center', width: '60px', search: false, edittype: 'text'},
+            ],
+            autowidth: true,
+            caption: "Salary Auto Increment Information",
+            rowList: [20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 20,
+            sortname: 'ID',
+            sortorder: 'desc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        //$("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+    });
+
+    function rollbackformateadorLink(cellvalue, options, rowObject) {
+        
+        if (rowObject[3] != '1') {
+            var url = '@Html.ActionLink(" ", "Rollback", new { idYearMonth = "_idYearMonth_" }, new { @class = "refreshIcon" })';
+            url = url.replace(/_idYearMonth_/, rowObject[0]);
+            return url;
+        }
+        return "";
+    }
+
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink("_name_", "Edit", new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+    function generateformateadorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink(" ", "GoToDetails", new { idYearMonth = "_idYearMonth_" }, new { @class = "mSalaryPDetails" })';
+        url = url.replace(/_idYearMonth_/, rowObject[0]);
+
+        return url;
+    }
+
+
+</script>

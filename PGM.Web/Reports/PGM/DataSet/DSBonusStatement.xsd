@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DSBonusStatement" targetNamespace="http://tempuri.org/DSBonusStatement.xsd" xmlns:mstns="http://tempuri.org/DSBonusStatement.xsd" xmlns="http://tempuri.org/DSBonusStatement.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="DBConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="DBConnectionString (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.DBConnectionString.ConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DSBonusStatement" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DSBonusStatement" msprop:Generator_UserDSName="DSBonusStatement">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="PGM_SP_BonusStatement" msprop:Generator_TableClassName="PGM_SP_BonusStatementDataTable" msprop:Generator_TableVarName="tablePGM_SP_BonusStatement" msprop:Generator_TablePropName="PGM_SP_BonusStatement" msprop:Generator_RowDeletingName="PGM_SP_BonusStatementRowDeleting" msprop:Generator_RowChangingName="PGM_SP_BonusStatementRowChanging" msprop:Generator_RowEvHandlerName="PGM_SP_BonusStatementRowChangeEventHandler" msprop:Generator_RowDeletedName="PGM_SP_BonusStatementRowDeleted" msprop:Generator_UserTableName="PGM_SP_BonusStatement" msprop:Generator_RowChangedName="PGM_SP_BonusStatementRowChanged" msprop:Generator_RowEvArgName="PGM_SP_BonusStatementRowChangeEvent" msprop:Generator_RowClassName="PGM_SP_BonusStatementRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="BankName" msprop:Generator_ColumnVarNameInTable="columnBankName" msprop:Generator_ColumnPropNameInRow="BankName" msprop:Generator_ColumnPropNameInTable="BankNameColumn" msprop:Generator_UserColumnName="BankName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BranchName" msprop:Generator_ColumnVarNameInTable="columnBranchName" msprop:Generator_ColumnPropNameInRow="BranchName" msprop:Generator_ColumnPropNameInTable="BranchNameColumn" msprop:Generator_UserColumnName="BranchName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Address" msprop:Generator_ColumnVarNameInTable="columnAddress" msprop:Generator_ColumnPropNameInRow="Address" msprop:Generator_ColumnPropNameInTable="AddressColumn" msprop:Generator_UserColumnName="Address" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="EmpID" msprop:Generator_ColumnVarNameInTable="columnEmpID" msprop:Generator_ColumnPropNameInRow="EmpID" msprop:Generator_ColumnPropNameInTable="EmpIDColumn" msprop:Generator_UserColumnName="EmpID" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="FullName" msprop:Generator_ColumnVarNameInTable="columnFullName" msprop:Generator_ColumnPropNameInRow="FullName" msprop:Generator_ColumnPropNameInTable="FullNameColumn" msprop:Generator_UserColumnName="FullName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Designation" msprop:Generator_ColumnVarNameInTable="columnDesignation" msprop:Generator_ColumnPropNameInRow="Designation" msprop:Generator_ColumnPropNameInTable="DesignationColumn" msprop:Generator_UserColumnName="Designation" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="EmpBasicSalary" msprop:Generator_ColumnVarNameInTable="columnEmpBasicSalary" msprop:Generator_ColumnPropNameInRow="EmpBasicSalary" msprop:Generator_ColumnPropNameInTable="EmpBasicSalaryColumn" msprop:Generator_UserColumnName="EmpBasicSalary" type="xs:decimal" minOccurs="0" />
+              <xs:element name="EmpBonusAmount" msprop:Generator_ColumnVarNameInTable="columnEmpBonusAmount" msprop:Generator_ColumnPropNameInRow="EmpBonusAmount" msprop:Generator_ColumnPropNameInTable="EmpBonusAmountColumn" msprop:Generator_UserColumnName="EmpBonusAmount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="EmpRevenueStamp" msprop:Generator_ColumnVarNameInTable="columnEmpRevenueStamp" msprop:Generator_ColumnPropNameInRow="EmpRevenueStamp" msprop:Generator_ColumnPropNameInTable="EmpRevenueStampColumn" msprop:Generator_UserColumnName="EmpRevenueStamp" type="xs:decimal" minOccurs="0" />
+              <xs:element name="EmpNetPayable" msprop:Generator_ColumnVarNameInTable="columnEmpNetPayable" msprop:Generator_ColumnPropNameInRow="EmpNetPayable" msprop:Generator_ColumnPropNameInTable="EmpNetPayableColumn" msprop:Generator_UserColumnName="EmpNetPayable" type="xs:decimal" minOccurs="0" />
+              <xs:element name="StaffCategory" msprop:Generator_ColumnVarNameInTable="columnStaffCategory" msprop:Generator_ColumnPropNameInRow="StaffCategory" msprop:Generator_ColumnPropNameInTable="StaffCategoryColumn" msprop:Generator_UserColumnName="StaffCategory" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BonusWithdrawFromZoneId" msprop:Generator_ColumnVarNameInTable="columnBonusWithdrawFromZoneId" msprop:Generator_ColumnPropNameInRow="BonusWithdrawFromZoneId" msprop:Generator_ColumnPropNameInTable="BonusWithdrawFromZoneIdColumn" msprop:Generator_UserColumnName="BonusWithdrawFromZoneId" type="xs:int" minOccurs="0" />
+              <xs:element name="ZoneName" msprop:Generator_ColumnVarNameInTable="columnZoneName" msprop:Generator_ColumnPropNameInRow="ZoneName" msprop:Generator_ColumnPropNameInTable="ZoneNameColumn" msprop:Generator_UserColumnName="ZoneName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="BonusType" msprop:Generator_ColumnVarNameInTable="columnBonusType" msprop:Generator_ColumnPropNameInRow="BonusType" msprop:Generator_ColumnPropNameInTable="BonusTypeColumn" msprop:Generator_UserColumnName="BonusType" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,134 @@
+﻿@model PGM.Web.Areas.PGM.Models.MonthlySalaryInfo.MonthlySalaryViewModel
+
+@using (Html.BeginForm("SalaryProcess", "MonthlySalary", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        <div class="GroupBox" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.SalaryYear)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.DropDownListFor(y => y.SalaryYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.SalaryMonth)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.DropDownListFor(m => m.SalaryMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmployeeId)
+                </span>
+                <span class="field-LargeWidth">
+                    @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalAllLabel()), new { @class = "form-control select-single" })
+
+                    @Html.Label("(Single Employee Process)")
+                </span>
+            </div>
+            <div class="clear">
+                &nbsp;
+            </div>
+            <div class="row">
+                <span class="label">
+                    &nbsp;
+                </span>
+                <span class="field-LargeWidth">
+                    @Html.CheckBoxFor(model => model.ProcessTaxWithSalary)
+
+                    @Html.Label("Process Tax with Salary")
+                </span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+
+        <div class="GroupBox">
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="button" value="Process" id="btnAdd" name="btnSubmit" style="margin-right: 8px;" />
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="GroupBox" id="busyIndicator">
+            <span style="font-size: larger; color: blue; font-weight: bold;">Processing...</span>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+}
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $('#busyIndicator').hide();
+
+        $('.select-single').chosen({
+            allow_single_deselect: true
+            //, width: "95%"
+        });
+
+        // For Auto Complete
+        ///-----Start for PL------------
+
+        $("#SignatoryInitial").keydown(function (event) {
+            if (event.keyCode == 46 || event.keyCode == 8) {
+                $('#SignatoryDesignation').val('');
+            }
+        });
+
+        ///------End for PL-------------
+
+        //    End Auto Complete
+    });
+
+    $('#btnAdd').live('click', function () {
+
+        var year = $('#SalaryYear').val();
+        var month = $('#SalaryMonth').val();
+        var employeeId = $('#EmployeeId').val();
+        var processTaxwithSalary = $('#ProcessTaxWithSalary').is(':checked');
+
+        var url = '@Url.Action("SalaryProcess", "MonthlySalary")';
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        if (year == '') {
+            alert('Please select year.');
+            if (month == '') {
+                alert('Please select month.');
+            }
+        }
+        else {
+            $('#busyIndicator').show("fast", function () {
+                $.post(url, { year: year, month: month, employeeId: employeeId, processTaxWithSalary: processTaxwithSalary }, function (obj) {
+                    alert(obj.Message);
+
+                    if (obj.Success === true) {
+                        $("#divEmpList").dialog('close');
+                        var url = '@Url.Action("Index", "MonthlySalary")';
+                        window.location.href = url;
+                    } else {
+                        $('#busyIndicator').hide();
+                    }
+
+                }, "json");
+            });
+
+        }
+    });
+
+</script>

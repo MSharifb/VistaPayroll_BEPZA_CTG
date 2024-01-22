@@ -1,0 +1,691 @@
+﻿@model PGM.Web.Areas.PGM.Models.FinalSettlement.FinalSettlementViewModel
+@using PGM.Web.Helpers
+
+
+<script type="text/javascript">
+
+    $(function () {
+        $(".addItem").click(function () {
+            $(".validation-summary-errors ").empty();
+        });
+    });
+    // ******** functions for open popup *************
+    $(document).ready(function () {
+
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+        showErrMsg();
+
+    });
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+        }
+    }
+
+    function openEmployee() {
+        var url = '@Url.Action("EmployeeSearchForPGM", "Employee")?searchEmpType=inactive';
+        url = url.replace('PGM', 'PRM');
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                console.log(result);
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+
+    function setData(id) {
+        console.log(id);
+        $('#EmployeeId').val(id);
+        GetEmployeeInfo();
+        $("#divEmpList").dialog('close');
+    }
+
+
+    function Closing() {
+
+    }
+
+
+    function GetEmployeeInfo() {
+        console.log($('#EmployeeId').val());
+        var empId = $('#EmployeeId').val();
+        var url = '@Url.Action("GetEmployeeInfo", "FinalSettlement")';
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        $('#EmpID').val('');
+        $('#EmployeeInitial').val('');
+        $('#FullName').val('');
+        $('#Division').val('');
+        $('#Designation').val('');
+        $('#DateofJoining').val('');
+        $('#DateofConfirmation').val('');
+        $('#DateofSeperation').val('');
+        $('#BasicSalary').val('');
+        $('#GrossSalary').val('');
+        $('#SalaryPayable').val('');
+        $('#NetPayable').val('');
+        $('#GratuityPayable').val('');
+        $('#ShortageDays').val('');
+        $('#LastMonthWorkedDays').val('');
+        $('#EarnLeaveBalance').val('');
+        $('#ShortageofNoticePeriod').val('');
+
+        if (empId > 0) {
+            $.post(url, serializedForm, function (obj) {
+
+                if (obj.Result == 'ActiveEmployee') {
+                    alert('The Employee is active till now.');
+                }
+
+                else if (obj.Result == 'SalaryStructure') {
+                    alert('The Employee has no salary structure.');
+                }
+
+                else if (obj.Result == 'FinalSettlementCompleted') {
+                    alert('The Employee already in final settlement.');
+                }
+
+                else if (obj.Result == false) {
+                    alert('System is unable to load data please try again.');
+                }
+
+                else {
+                    $("#EmpID").val(obj.EmpId);
+                    $("#FullName").val(obj.FullName);
+                    $("#Division").val(obj.Division);
+                    $('#Designation').val(obj.Designation);
+                    $('#DateofJoining').val(obj.JoiningDate);
+                    $('#DateofConfirmation').val(obj.DateOfConfirmation);
+                    $('#DateofSeperation').val(obj.DateOfSeperation);
+                    $('#DateofBirth').val(obj.DateOfBirth);
+                    $('#ServiceDuration').val(obj.ServiceDuration);
+                    $('#BasicSalary').val(obj.BasicSalary);
+                    $('#SalaryPayable').val(obj.SalaryPayable);
+                    $('#NetPayable').val((obj.SalaryPayable + obj.LeaveEncashAmount + obj.NetPFBalance).toFixed(2));
+                    $('#GratuityPayable').val(obj.PayableGratuity);
+                    $('#ShortageDays').val(obj.shortageDays);
+                    $('#LastMonthWorkedDays').val(obj.lastMonthWorkedDays);
+
+                    $('#TotalFullEarnLeave').val(obj.TotalFullEarnLeave);
+                    $('#TotalEncashLeave').val(obj.TotalEncashLeave);
+                    $('#EarnLeaveBalance').val(obj.NetEncashLeave);
+                    $('#LeaveEncasement').val(obj.LeaveEncashAmount);
+
+                    $('#EmpContribution').val(obj.EmpContribution);
+                    $('#ComContribution').val(obj.ComContribution);
+                    $('#EmpProftInPeriod').val(obj.EmpProftInPeriod);
+                    $('#ComProftInPeriod').val(obj.ComProftInPeriod);
+                    $('#OtherDeduction').val(obj.OtherDeduction);
+                    $('#ForfeitedAmount').val(obj.ForfeitedAmount);
+                    $('#WithdrawnAmount').val(obj.WithdrawnAmount);
+                    $('#DueLoan').val(obj.DueLoan);
+                    $('#NetPFBalance').val(obj.NetPFBalance);
+
+                    //$('#OtherAdjustment').val(0);
+                }
+
+            }, "json");
+
+        }
+        return false;
+    }
+
+
+</script>
+
+<script type="text/javascript">
+    $('#AdjustLeave').live('change', function (index) {
+
+
+        var adjustedLeave = $(this).val();
+        var netPayable = $('#NetPayable').val();
+
+        var earnLeave = $('#EarnLeaveBalance').val();
+        var shortageLeaveDays = $('#ShortageDays').val();
+        var id = $('#EmployeeId').val();
+
+
+        if (earnLeave != null) {
+            earnLeave = parseFloat(earnLeave);
+        }
+        if (adjustedLeave != null) {
+            adjustedLeave = parseFloat(adjustedLeave);
+        }
+        if (shortageLeaveDays != null) {
+            shortageLeaveDays = parseFloat(shortageLeaveDays);
+        }
+        if (netPayable != null) {
+            netPayable = parseFloat(netPayable);
+        }
+
+        if (earnLeave >= adjustedLeave) {
+
+            if (shortageLeaveDays >= adjustedLeave) {
+
+                var unAdjustedLeave = parseInt((earnLeave - adjustedLeave));
+                $('#UnAdjsutedLeave').val(unAdjustedLeave);
+
+                $.getJSON('@Url.Action("GetLeaveEncashment", "FinalSettlement")', { id: id, unAdjustedLeave: unAdjustedLeave }, function (leaveEncashment) {
+                    $('#LeaveEncasement').val(leaveEncashment);
+                    $('#NetPayable').val((netPayable + leaveEncashment).toFixed(2));
+                });
+            }
+            else {
+                $('#AdjustLeave').val('0');
+                alert('Earn shortage days must be greater than/equal adjusted leave.');
+            }
+        }
+        else {
+            $('#AdjustLeave').val('0');
+            alert('Earn leave balance must be greater than/equal adjusted leave.');
+
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    $('#AdvanceDeduction , #OtherAdjustment , #OtherDeduction').live('blur', function (index) {
+
+        var SalaryPayable = $('#SalaryPayable').val();
+        var leaveEncashment = $('#LeaveEncasement').val();
+        var gratuityPayable = $('#GratuityPayable').val();
+        var shortageofNoticePeriodAmount = $('#ShortageofNoticePeriod').val();
+        var otherAdjustment = $('#OtherAdjustment').val();
+        var otherDeduction = $('#OtherDeduction').val();
+        var advanceDeduction = $('#AdvanceDeduction').val();
+
+        if (SalaryPayable != null) {
+            SalaryPayable = parseFloat(SalaryPayable);
+        }
+
+        if (leaveEncashment != null) {
+            leaveEncashment = parseFloat(leaveEncashment);
+        }
+
+        if (gratuityPayable != null) {
+            gratuityPayable = parseFloat(gratuityPayable);
+        }
+
+        if (otherAdjustment != null) {
+            otherAdjustment = parseFloat(otherAdjustment);
+        }
+
+        if (shortageofNoticePeriodAmount != null) {
+            shortageofNoticePeriodAmount = parseFloat(shortageofNoticePeriodAmount);
+        }
+
+        if (otherDeduction != null) {
+            otherDeduction = parseFloat(otherDeduction);
+        }
+
+        if (advanceDeduction != null) {
+            advanceDeduction = parseFloat(advanceDeduction);
+        }
+
+
+        if (otherAdjustment >= 0) {
+
+            if (otherDeduction >= 0) {
+                if (advanceDeduction >= 0) {
+
+                    var netPayable = leaveEncashment + SalaryPayable + gratuityPayable + otherAdjustment - shortageofNoticePeriodAmount - otherDeduction - advanceDeduction;
+                    $('#NetPayable').empty();
+                    $('#NetPayable').val(netPayable.toFixed(2));
+                }
+                else {
+                    $('#AdvanceDeduction').val('0');
+                    alert('Advance Deduction must be greater than/equal 0.');
+                }
+            }
+            else {
+                $('#OtherDeduction').val('0');
+                alert('Other Deduction must be greater than/equal 0.');
+            }
+        }
+        else {
+            $('#OtherAdjustment').val('0');
+            alert('Other Adjustment must be greater than/equal 0.');
+
+        }
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#AdvanceDeduction , #OtherAdjustment , #OtherDeduction,#AdjustLeave").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+    function FinalSVoucherPosting() {
+        
+        var employeeId = $('#EmployeeId').val();
+        if (employeeId <= 0) {
+            alert('Before prepare voucher, please save this final settlement.');
+            return false;
+        }
+        var url = '@Url.Action("FinalSettlementVoucherPosting", "FinalSettlement")?employeeId=' + employeeId;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            success: function (result) {
+                if (result.redirectUrl != '') {
+                    window.location.href = result.redirectUrl;
+                }
+            },
+            error: function () {
+                alert('System is unable to load data please try again.');
+            }
+        });
+    }
+</script>
+
+<div class="GroupBox">
+    <fieldset>
+        <legend>Employee Basic Info</legend>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EmpID)
+                <label class="required-field">
+                    *
+                </label>
+            </span><span class="field">
+                @Html.HiddenFor(model => model.EmployeeId)
+                @Html.TextBoxFor(model => model.EmpID, new {@class = "read-only", @readonly = true, @style = "width:32%" })
+                <img src='@Url.Content("~/Content/Images/btn_search.gif")' onclick="return openEmployee();" />
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.FullName)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.FullName, new { @class = "read-only", @readonly = true })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.Designation)
+            </span><span class="field">
+                @Html.TextBoxFor(m => m.Designation, new { @class = "read-only", @readonly = true })
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.Division)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.Division, new { @class = "read-only", @readonly = true })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DateofBirth)
+            </span><span class="field">
+                @Html.EditorFor(model => model.DateofBirth)
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.DateofJoining)
+                <label class="required-field">
+                    *
+                </label>
+            </span><span class="field">
+                @Html.EditorFor(model => model.DateofJoining)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DateofConfirmation)
+            </span><span class="field">
+                @Html.EditorFor(model => model.DateofConfirmation)
+            </span><span class="label-right">
+                @Html.LabelFor(model => model.DateofSeperation)
+            </span><span class="field">
+                @Html.EditorFor(model => model.DateofSeperation)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DateofSettlement)
+            </span><span class="field">
+                @Html.EditorFor(m => m.DateofSettlement, new { @style = "width:100px;height:18px;text-align:right;" })
+            </span><span class="label-right">
+                @Html.LabelFor(model => model.BasicSalary)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.BasicSalary, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ServiceDuration)
+            </span><span class="field">
+                @Html.TextBoxFor(m => m.ServiceDuration, new { @class = "read-only", @readonly = true})
+            </span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Gratuity Settlement</legend>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.YearlySalaryIncrease)
+            </span><span class="field">
+                @Html.TextBoxFor(m => m.YearlySalaryIncrease, new {@style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.BasicSalaryIncrease)
+            </span><span class="field">
+                @Html.TextBoxFor(m => m.BasicSalaryIncrease, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.Label("Gratuity Calculation")
+            </span>
+            <span class="field">
+                <label>Basic Salary</label>
+                <label>X</label>
+                @Html.TextBoxFor(m => m.MultipleBy1, new { @style = "width:100px;text-align:right;" })
+                <label>X</label>
+                @Html.TextBoxFor(m => m.MultipleBy2, new { @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.GratuityPayable)
+
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.GratuityPayable, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Earn Leave Info</legend>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.TotalFullEarnLeave)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.TotalFullEarnLeave, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.TotalEncashLeave)
+
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.TotalEncashLeave, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EarnLeaveBalance)
+
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.EarnLeaveBalance, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.LeaveEncasement)
+
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.LeaveEncasement, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>PF Settlement Info</legend>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EmpContribution)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.EmpContribution, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ComContribution)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.ComContribution, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EmpProftInPeriod)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.EmpProftInPeriod, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ComProftInPeriod)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.ComProftInPeriod, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.OtherDeduction)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.OtherDeduction, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ForfeitedAmount)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.ForfeitedAmount, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.WithdrawnAmount)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.WithdrawnAmount, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DueLoan)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.DueLoan, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.NetPFBalance)
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.NetPFBalance, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Salary Info</legend>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.LastMonthWorkedDays)
+                <label class="required-field">
+                    *
+                </label>
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.LastMonthWorkedDays, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.SalaryPayable)
+
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.SalaryPayable, new { @class = "read-only", @readonly = true, @style = "width:100px;text-align:right;" })
+            </span>
+        </div>
+    </fieldset>
+
+    <div class="row">
+        @*<span class="label">
+            @Html.LabelFor(model => model.OtherAdjustment)
+
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.OtherAdjustment, new {@style = "width:100px; text-align:right;", @maxLength = "8" })
+        </span>*@
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.NetPayable)
+
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.NetPayable, new { @class = "read-only", @readonly = true, @style = "width:100px; text-align:right;" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span><span class="field">
+            @Html.TextAreaFor(model => model.Remarks, new { @style = "width:570px", @maxLength = "200" })
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white;
+        padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+<script type="text/javascript">
+    $('#YearlySalaryIncrease').live('blur', function (index) {
+        var BasicSalary = $('#BasicSalary').val();
+        var YearlySalaryIncrease = $('#YearlySalaryIncrease').val();
+
+        if (BasicSalary != null) {
+            BasicSalary = parseFloat(BasicSalary);
+        }
+        if (YearlySalaryIncrease != null) {
+            YearlySalaryIncrease = parseFloat(YearlySalaryIncrease);
+        }
+
+        if (YearlySalaryIncrease >= 0) {
+
+            var basic = BasicSalary + YearlySalaryIncrease;
+                    $('#BasicSalaryIncrease').empty();
+                    $('#BasicSalaryIncrease').val(basic.toFixed(2));
+        }
+        else {
+            $('#YearlySalaryIncrease').val('0');
+            alert('Yearly Salary Increase must be greater than/equal 0.');
+
+        }
+    });
+
+    $('#MultipleBy1, #MultipleBy2').live('blur', function (index) {
+
+        var BasicSalary = $('#BasicSalary').val();
+        var YearlySalaryIncrease = $('#YearlySalaryIncrease').val();
+        var afterBasic = $('#BasicSalaryIncrease').val();
+        var MultipleBy1 = $('#MultipleBy1').val();
+        var MultipleBy2 = $('#MultipleBy2').val();
+
+        if (YearlySalaryIncrease != null) {
+            YearlySalaryIncrease = parseFloat(YearlySalaryIncrease);
+        }
+        if (MultipleBy1 != null) {
+            MultipleBy1 = parseFloat(MultipleBy1);
+        }
+
+        if (MultipleBy2 != null) {
+            MultipleBy2 = parseFloat(MultipleBy2);
+        }
+
+        if (YearlySalaryIncrease >= 0) {
+
+            var gratuity = afterBasic * MultipleBy1 * MultipleBy2;
+            $('#GratuityPayable').empty();
+            $('#GratuityPayable').val(gratuity.toFixed(2));
+
+            var gratuity = $('#GratuityPayable').val();
+            if (gratuity != null) {
+                gratuity = parseFloat(gratuity);
+            }
+
+            if(gratuity>=0){
+                calulateNetPayable(gratuity);
+            }
+        }
+        else {
+            $('#YearlySalaryIncrease').val('0');
+            alert('Yearly Salary Increase must be greater than/equal 0.');
+
+        }
+    });
+
+    function calulateNetPayable(gratuity){
+        var netSalary = $('#SalaryPayable').val();
+        var leaveEncash = $('#LeaveEncasement').val();
+        var pfAmount = $('#NetPFBalance').val();
+
+        if (netSalary != null) {
+            netSalary = parseFloat(netSalary);
+        }
+        if (leaveEncash != null) {
+            leaveEncash = parseFloat(leaveEncash);
+        }
+        if (pfAmount != null) {
+            pfAmount = parseFloat(pfAmount);
+        }
+
+        if (gratuity >= 0) {
+
+            var gratuity = netSalary + leaveEncash + pfAmount + gratuity;
+            $('#NetPayable').empty();
+            $('#NetPayable').val(gratuity.toFixed(2));
+        }
+        else {
+            $('#GratuityPayable').val('0');
+            alert('Gratuity Payable must be greater than/equal 0.');
+        }
+
+
+    };
+
+</script>

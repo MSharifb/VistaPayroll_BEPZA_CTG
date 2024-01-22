@@ -1,0 +1,26 @@
+﻿@using Elmah
+@using PGM.Web.Utility
+
+@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<h3>
+    Sorry, an error occurred while processing your request.
+</h3>
+
+@if (Model != null)
+{
+    <span> Error Description: </span>
+    CommonExceptionMessage.GetExceptionMessage(@Model.Exception, CommonAction.General);
+    <div>
+        <p>
+            <b>Exception Source:</b> @Model.Exception.Source<br />
+            <b>Controller:</b> @Model.ControllerName<br />
+            <b>Action:</b> @Model.ActionName<br />
+            <b>Exception Message:</b> @Model.Exception.Message<br />
+        </p>
+    </div>
+}

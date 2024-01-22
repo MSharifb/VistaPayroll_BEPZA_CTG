@@ -1,0 +1,154 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetterBodySetup.BankLetterBodyViewModel
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        showErrMsg();
+
+        $('#btnCopy').live('copy', function () {
+            var item = $(this).attr("name");
+            
+
+            alert(item);
+            //            var subj = $('#LetterSubject').val();
+            //            subj += item;
+            //            $('#LetterSubject').val(subj);
+
+        });
+    });
+
+    
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+
+        }
+    }
+
+</script>
+<script type="text/javascript">
+    function insertAtCaret(areaId, text) {
+
+        var txtarea = document.getElementById(areaId);
+        var scrollPos = txtarea.scrollTop;
+        var strPos = 0;
+        var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ?
+    	"ff" : (document.selection ? "ie" : false));
+        if (br == "ie") {
+            txtarea.focus();
+            var range = document.selection.createRange();
+            range.moveStart('character', -txtarea.value.length);
+            strPos = range.text.length;
+        }
+        else if (br == "ff") strPos = txtarea.selectionStart;
+
+        var front = (txtarea.value).substring(0, strPos);
+        var back = (txtarea.value).substring(strPos, txtarea.value.length);
+        txtarea.value = front + text + back;
+        strPos = strPos + text.length;
+        if (br == "ie") {
+            txtarea.focus();
+            var range = document.selection.createRange();
+            range.moveStart('character', -txtarea.value.length);
+            range.moveStart('character', strPos);
+            range.moveEnd('character', 0);
+            range.select();
+        }
+        else if (br == "ff") {
+            txtarea.selectionStart = strPos;
+            txtarea.selectionEnd = strPos;
+            txtarea.focus();
+        }
+        txtarea.scrollTop = scrollPos;
+    }
+
+</script>
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+<div class="GroupBox">
+    <div class="GroupBoxSmall">
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.LetterType)
+                <label style='color: red'>
+                    *</label>
+            </span><span class="field">
+                @Html.DropDownListFor(m => m.LetterType, Model.LetterTypeList, @String.Format("{0}", Content.DDLOptionalLabel()))
+            </span>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.LetterSubject)
+                <label style='color: red'>
+                    *</label>
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.LetterSubject, new { @maxLength = "400", @style = "width:495px" })
+            </span>
+        </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Body1)
+            </span><span class="field">
+                @Html.TextAreaFor(model => model.Body1, new { @maxLength = "999", @style = "width:495px;height:100px;" })
+            </span>
+        </div>
+         <div class="rowSmall">
+          <span class="label">
+                 @Html.Label("Payee List")
+            </span><span class="field" style="margin-top:5px;font-size:14px;">
+            Bank Advice Letter Payee List
+              @* @Html.Label("Bank Advice Letter Payee List", new {@style = "width:495px;height:100px;" })*@
+            </span>
+         </div>
+        <div class="rowSmall">
+            <span class="label">
+                @Html.LabelFor(model => model.Body2)
+            </span><span class="field">
+                @Html.TextAreaFor(model => model.Body2, new { @maxLength = "999", @style = "width:495px;height:100px;" })
+            </span>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    <div class="GroupBoxSmallRight">
+        <div class="rowSmall" align="center">
+            <table id="grid" class="contenttable">
+                <thead>
+                    <tr>
+                        <th align="center">
+                            Variable
+                        </th>
+                        <th align="center">
+                            Copy
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.BankLetterBodyVariableList != null)
+                    {
+                        foreach (var x in Model.BankLetterBodyVariableList)
+                        {
+                        @Html.Partial("_ClipBoard", x);
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="clear">
+    </div>
+
+    
+
+</div>
+<div class="clear">
+</div>
+@*<textarea id="textareaid"></textarea>
+ <a href="#" onclick="insertAtCaret('textareaid','text to insert');return false;" >Insert</a>*@

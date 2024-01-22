@@ -1,0 +1,232 @@
+﻿@model PGM.Web.Areas.PGM.Models.HouseRentRule.HouseRentRuleModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryHeadId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EffectiveDateFrom)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.EffectiveDateFrom)
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryScaleId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.SalaryScaleId, Model.SalaryScaleList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EffectiveDateTo)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.EffectiveDateTo)
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.RegionId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.RegionId, Model.RegionList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BaseOn)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.BaseOn, Model.BaseOnList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.NumberOfSlab)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.NumberOfSlab)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+</div>
+
+<div class="GroupBox">
+    <div class="row" align="center">
+        <div style="width: 70%">
+            <table id="grid" class="contenttable" width="95%">
+                <tr>
+                    <th width="5%" align="center">
+                        SL.
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>
+                    <th width="10%" align="center">
+                        Salary From
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>
+                    <th width="10%" align="center">
+                        Salary To
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>
+                    <th width="10%" align="center">
+                        % of Salary
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>
+
+                    <th width="20%" align="center">
+                        Minimum House Rent
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>
+
+                    @*<th width="20%" align="center">
+                        Maximum House Rent
+                        <label style='color: red; font-weight: normal;'>*</label>
+                    </th>*@
+                </tr>
+
+                @if (Model != null && Model.HouseRentRuleDetail != null)
+                {
+                    foreach (var x in Model.HouseRentRuleDetail)
+                    {
+                        @Html.Partial("_Detail", x);
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#EffectiveDateFrom').attr('readonly', 'true');
+        $('#EffectiveDateTo').attr('readonly', 'true');
+
+        $('#EffectiveDateFrom').change(function () {
+            var valDate = $('#EffectiveDateFrom').val();
+            var valNew = valDate.split('-');
+
+            $('#EffectiveDateFrom').val(valNew[0] + '-' + valNew[1] + '-' + '01');
+        });
+
+        $('#EffectiveDateTo').change(function () {
+            var valDate = $('#EffectiveDateTo').val();
+            var valNew = valDate.split('-');
+
+            var date = new Date(valNew[0] + '/' + valNew[1] + '/' + valNew[2]);
+            var lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+            $('#EffectiveDateTo').val(valNew[0] + '-' + valNew[1] + '-' + lastDate.getDate());
+
+            //console.log(lastDay.getDate());
+        });
+
+        showErrMsg();
+
+        if ('@Model.Mode' == "Edit") {
+            $("#NumberOfSlab").css('background-color', '#F2F5F8');
+            $('#NumberOfSlab').attr('readonly', 'true');
+        }
+        else {
+            $('#NumberOfSlab').removeAttr('readonly');
+        }
+
+        $('#NumberOfSlab').live("change", function () {
+
+            $('.dynamicRow').each(function () {
+                $(this).remove();
+            })
+
+            var url = '@Url.Action("AddDetail", "HouseRentRule")'
+            var Value = $(this).val();
+
+            if (Value <= 10) {
+                $('#message').html('');
+
+                for (a = 0; a < Value; a++) {
+
+                    var table = $('#grid')
+                    $.ajax({
+                        url: url,
+                        cache: false,
+                        success: function (html) {
+                            $(table).append(html);
+                        },
+                        complete: function () {
+                            $('.dynamicRow').each(function () {
+                                $(this).find('td:first').find('input:first').val($(this).index());
+                            })
+                        }
+                    });
+                }
+            }
+            else {
+                $('#message').html("<b style='color:Red'>" + 'Too Much Grade Step!' + "</b>");
+            }
+        })
+        if ('@Model.ErrMsg' != "") {
+
+            if ('@Model.IsError ' == "1") {
+                $('#message').html("<b style='color:Red'>" + '@Model.ErrMsg' + "</b>");
+            }
+            else {
+                $('#message').html("<b style='color:Red'>" + '@Model.ErrMsg' + "</b>");
+            }
+        }
+    });
+
+    function showErrMsg() {
+        if ('@Model.IsError' == "1") {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#SalaryFrom, #SalaryTo, #PercentOfSalary, #MinHouseRent, #MaxHouseRent ").keydown(function (event) {
+
+            if (event.keyCode == 46 || event.keyCode == 8
+                || event.keyCode == 9 || event.keyCode == 27
+                || event.keyCode == 13
+                || (event.keyCode == 65 && event.ctrlKey === true)
+                || (event.keyCode >= 35 && event.keyCode <= 39)) {
+                return;
+            }
+            else {
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>
+

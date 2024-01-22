@@ -1,0 +1,325 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxAdvancedPaid.AdvancedTaxPaidViewModel
+
+<div class="GroupBox">
+    <legend>Advanced Paid Tax</legend>
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.strMode)
+
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.IncomeYear)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.IncomeYear, Model.IncomeYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.AssessmentYear)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.AssessmentYear, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmpId)
+            <label class="required-field"> *</label>
+        </span>
+        <span class="field">
+            @Html.HiddenFor(model => model.EmployeeId)
+            @Html.TextBoxFor(model => model.EmpId, new { @class = "required read-only", @readonly = true })
+            <img src='@Url.Content("~/Content/Images/btn_search.gif")' onclick="return openEmployee();" alt="Find" title="Find" />
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EmployeeName)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.EmployeeName, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+    <div class="GroupBox">
+        @if (Model.strMode == "EditDetail" || Model.strMode == "Edit")
+        {
+            <div class="button-crude">
+                <input id="btnSaveMaster" type="button" value="Update" />
+            </div>
+        }
+    </div>
+</div>
+<fieldset>
+
+    <div class="button-crude button-left">
+        @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+        {
+            <input type="submit" value="Add New Advance Tax" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+        }
+    </div>
+
+    <div class="clear"></div>
+    <div class="GroupBox">
+        <div class="row" align="center">
+            <div style="width: 70%">
+                <div class="clear"></div>
+
+                <div class="clear">
+                </div>
+                <table id="grid" class="contenttable">
+                    <thead>
+                        <tr>
+                            <th>
+                                Tax Paid On
+                            </th>
+                            <th>
+                                Comment
+                            </th>
+                            <th>
+                                Paid Amount
+                            </th>
+                            <th>
+                                Delete
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ if (Model.AdvanceDetailList.Count() > 0) { Html.RenderPartial("_MasterDetail", Model); }}
+
+                </table>
+            </div>
+            <div class="clear" style="height:10px">
+            </div>
+        </div>
+    </div>
+</fieldset>
+<div class="clear"></div>
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white; padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 900, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+        showErrMsg();
+
+        LoadAssessmentYear($('option:selected', $('#IncomeYear')).text());
+    });
+
+    function showErrMsg() {
+        if ('@Model.errClass' == "success" && '@Model.IsError' == "0") {
+            $('input[name="btnSave"]').hide();
+        }
+    }
+
+    $(function () {
+        var Url = window.location.href;
+        $("#btnClear").live("click", function (event) {
+            event.preventDefault();
+            window.location.href = Url;
+        });
+    });
+
+
+    function openEmployee() {
+        var url = '@Url.Action("EmployeeSearchForPGM", "Employee")?searchEmpType=active';
+        url = url.replace('PGM', 'PRM');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+        return false;
+    }
+
+    function setData(id) {
+        $('#EmployeeId').val(id);
+        console.log(id);
+        GetEmployeeInfo();
+        $("#divEmpList").dialog('close');
+    }
+
+    function Closing() {
+
+    }
+
+    function GetEmployeeInfo() {
+        var empId = $('#EmployeeId').val();
+        //console.log(empId);
+        var url = '@Url.Action("GetEmployeeInfo", "AdvancedPaidTax")';
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        $('#EmpId').val('');
+
+        if (empId > 0) {
+            $.post(url, serializedForm, function (obj) {
+
+                if (StringHasValue(obj.Result) == true) {
+                    alert(obj.Result);
+                }
+                else if (obj.Result == false) {
+                    alert('System is unable to load data please try again.');
+                }
+                else {
+                    $('#EmpId').val(obj.EmpId);
+                    $("#EmployeeId").val(obj.EmployeeId);
+                    $("#EmployeeName").val(obj.EmployeeName);
+                }
+
+            }, "json");
+        }
+
+        return false;
+    }
+    //Check string has null or empty
+    var StringHasValue = function (strValue) {
+        if ($.trim(strValue) != "" && $.trim(strValue) != null && $.trim(strValue) != undefined)
+            return true;
+        else
+            return false;
+    };
+
+
+</script>
+
+<script type="text/javascript">
+    $('#btnClear').live('click', function () {
+        document.getElementById('frm').reset();
+        $('#btnAdd').show();
+    })
+
+</script>
+
+<script type="text/javascript">
+
+    function RemoveDb(el, id, url) {
+
+        if (id == 0 || id == undefined) {
+            $(el).parent().parent().remove();
+        }
+        else {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify({ Id: id }),
+                contentType: "application/json; charset=utf-8",
+                error: function () {
+                    $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span> System Error!</span>  </div> ");
+                },
+                success: function (result) {
+                    var errMsg = result.Message;
+                    var errg = result.Success;
+                    if (errg) {
+                        $("#message").html('<b style=\"color:Green\">' + errMsg + '</b>');
+                        $(el).parent().parent().remove();
+                    }
+                    else {
+                        $("#message").html('<b style=\"color:red\">' + errMsg + '</b>');
+                    }
+                }
+            });
+        }
+
+    }
+
+    $('#IncomeYear').live('change', function () {
+        LoadAssessmentYear($('option:selected', $(this)).text());
+    });
+
+    function LoadAssessmentYear(incomeYear) {
+        
+        if (incomeYear != '[Select One]') {
+            $.ajax({
+                url: '@Url.Action("GetAssessmentYear", "AdvancedPaidTax")',
+                data: { incomeYear: incomeYear },
+                dataType: "json",
+                type: "POST",
+                error: function () {
+                    console.log("Something Wrong!");
+                },
+                success: function (result) {
+
+                    if (result != '') {
+                        $("#IncomeYear").removeClass("border-red");
+                        $("#AssessmentYear").val(result.assessmentYear);
+                    }
+                }
+
+            });
+        } else {
+            $("#AssessmentYear").val('');
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $('#btnSaveMaster').live('click', function () {
+        var Id = $("#Id").val();
+        var strMode = $("#strMode").val();
+        var IncomeYear = $("#IncomeYear").val();
+        var AssessmentYear = $("#AssessmentYear").val();
+        var EmployeeId = $("#EmployeeId").val();
+
+        var url = '@Url.Action("SaveMaster", "AdvancedPaidTax")';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                Id: Id,
+                strMode: strMode,
+                IncomeYear: IncomeYear,
+                AssessmentYear: AssessmentYear,
+                EmployeeId: EmployeeId
+            },
+            success: function (Result) {
+                var errorMsg = Result.ErrMsg;
+                var errorClss = Result.ErrClss;
+                if (Result.ErrMsg == "Cannot update the information. Please try again.") {
+                    $("#message").html('<b style=\"color:red\">' + Result.ErrMsg + '</b>');
+                    return false;
+                }
+                //alert(errorClss);
+                var redirectUrl = '@Url.Action("Index", "AdvancedPaidTax")' + '?errMsg=' + errorMsg + '&errClss=' + errorClss;
+                //event.preventDefault();
+                window.location.href = redirectUrl;
+            }
+        });
+    })
+</script>
+
+<style type="text/css">
+    .attachment-area .row a {
+        padding: 7px 20px;
+        border: 1px solid #2980b9;
+        background: #2980b9;
+        border-radius: 4px;
+        color: #FFFFFF;
+        font-weight: bold;
+        text-decoration: none;
+    }
+
+        .attachment-area .row a:hover {
+            background: #3498db;
+        }
+</style>
+

@@ -1,0 +1,87 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustmentStyleOne.OtherAdjustmentStyleOneModel
+
+@Html.HiddenFor(m => m.SalaryStructureId)
+<div class="row">
+    <div class="leftColumn" title="Addition" style="width:48%">
+        <table id="Addition" class="contenttable" title="Addition">
+            <tr>
+                <td align="center" colspan="4" bgcolor="#BBD0E5">Addition</td>
+            </tr>
+            <tr>
+                <td align="center">
+                    Salary Head
+                </td>
+                <td align="center">
+                    Amount Type
+                </td>
+                <td align="center">
+                    Amount
+                </td>
+                <td align="center">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            @foreach (var item in Model.SalaryStructureDetail.Where(d => d.HeadType == "Addition"))
+            {
+                @Html.Partial("_SalaryStructureAdditionDetails", item)
+            }
+        </table>
+    </div>
+    <div class="rightColumn" style="width:48%">
+        <table id="Deduction" class="contenttable" title="Deduction">
+            <tr>
+                <td align="center" colspan="4" bgcolor="#FFE5E5">Deduction</td>
+            </tr>
+            <tr>
+                <td align="center">
+                    Salary Head
+                </td>
+                <td align="center">
+                    Amount Type
+                </td>
+                <td align="center">
+                    Amount
+                </td>
+                <td align="center">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+            </tr>
+            @foreach (var item in Model.SalaryStructureDetail.Where(d => d.HeadType == "Deduction"))
+            {
+                @Html.Partial("_SalaryStructureDeductionDetails", item)
+            }
+        </table>
+    </div>
+</div>
+<div class="clear">
+</div>
+<br />
+<p style="float:left; color:red; font-size:14px;">
+    Note: Red color indicates the modified head.
+</p>
+<div class="row">
+    <div class="leftColumn">
+        <span class="labelLeftColumn" style="padding-left: 4px;">
+            @Html.LabelFor(model => model.TotalAddition)
+        </span>
+        <span class="fieldLeftColumn">
+            @Html.EditorFor(model => model.TotalAddition)
+        </span>
+    </div>
+    <div class="rightColumn">
+        <div class="row">
+            <span class="labelLeftColumn">
+                @Html.LabelFor(model => model.TotalDeduction)
+            </span> <span class="fieldLeftColumn">@Html.EditorFor(model => model.TotalDeduction)</span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="leftColumn">
+        <span class="labelLeftColumn" style="padding-left: 4px;">
+            @Html.LabelFor(model => model.NetPay)
+        </span> <span class="fieldLeftColumn">@Html.EditorFor(model => model.NetPay)</span>
+    </div>
+</div>
+<div class="clear">
+</div>

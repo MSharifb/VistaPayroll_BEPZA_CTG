@@ -1,0 +1,57 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxOtherInvestment.InvestmentTypeViewModel
+
+@{
+    ViewBag.Title = "InvestmentType";
+    Layout = null;
+}
+<fieldset>
+    @using (Html.BeginForm("CreateInvestmentType", "OtherInvestment", FormMethod.Post, new { id = "frm" }))
+    {
+        <div class="GroupBox" id="message" style="min-height:15px;">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+        <fieldset>
+            <legend>Investment Type</legend>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.InvestmentTypeName)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(m => m.InvestmentTypeName, new { @class = "text", required = "required" })
+                </span>
+            </div>
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                }
+            </div>
+        </fieldset>
+        <div class="clear"></div>
+    }
+</fieldset>
+<script>
+    $("#btnSave").live('click', function () {
+        var InvestmentTypeName = $('#InvestmentTypeName').val();
+        var url = '@Url.Action("CreateInvestmentType", "OtherInvestment")';
+
+        $.post(url, { InvestmentTypeName: InvestmentTypeName }, function (obj) {
+            if (obj.Result == false) {
+
+                alert('System is unable to load data please try again.');
+            }
+            else {
+                alert(obj.Result);
+                $("#divInvestmentType").dialog('close');
+            }
+        }, "json");
+    });
+</script>

@@ -1,0 +1,349 @@
+﻿@model PGM.Web.Areas.PGM.Models.ImportXl.ImportXlViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.jqGrid.addons-4.1.2.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("ImportData", "ImportXl", FormMethod.Post, new { id = "frm", enctype = "multipart/form-data" }))
+{
+    <fieldset>
+        <div class="GroupBox" id="message" style="min-height: 15px;">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+            <div id="ErrMsg" class="@Model.errClass">
+                @Model.ErrMsg
+            </div>
+            }
+        </div>
+
+        <div class="GroupBox">
+            <div class="form-group">
+                @Html.LabelFor(m => m.Year, new { @class = "col-sm-2 label-required bootstraplabel" })
+                <span class="col-sm-4">
+                    @Html.DropDownListFor(model => model.Year, Model.YearList, new { @class = "form-control" })
+                </span>
+                @Html.LabelFor(m => m.Month, new { @class = "col-sm-2 label-required bootstraplabel" })
+                <span class="col-sm-4">
+                    @Html.DropDownListFor(model => model.Month, Model.MonthList, new { @class = "form-control" })
+                </span>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.FileTypeId, new { @class = "col-sm-2 label-required bootstraplabel" })
+                <span class="col-sm-4">
+                    @Html.DropDownListFor(m => m.FileTypeId, Model.FileTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "form-control required" })
+                </span>
+            </div>
+            <div class="clear">&nbsp;</div>
+            <div class="GroupBox">
+                
+                <div class="form-group row divDailyAllowance">
+                    @Html.LabelFor(m => m.DailyAllowance, new {@class = "col-sm-3 bootstraplabel"})
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.DailyAllowance, new {@class = "form-control"})
+                    </div>
+                </div>
+                <div class="form-group row divRevenueStamp">
+                    @Html.LabelFor(m => m.RevenueStamp, new {@class = "col-sm-3 bootstraplabel"})
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.RevenueStamp, new {@class = "form-control"})
+                    </div>
+                </div>
+                <div class="form-group row divDeductionPercent">
+                    @Html.LabelFor(m => m.DeductionPercentage, new {@class = "col-sm-3 bootstraplabel"})
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.DeductionPercentage, new {@class = "form-control"})
+                    </div>
+                </div>
+                <div class="form-group row divAttDate">
+                    @Html.LabelFor(m => m.AttFromDate, new {@class = "col-sm-2 bootstraplabel1"})
+                    <div class="col-sm-4">
+                        @Html.EditorFor(model => model.AttFromDate, new {@class = "form-control"})
+                    </div>
+                    @Html.LabelFor(m => m.AttToDate, new {@class = "col-sm-2 bootstraplabel1"})
+                    <div class="col-sm-4">
+                        @Html.EditorFor(model => model.AttToDate, new {@class = "form-control"})
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="button-center">
+                    <button class="btn btn-success js-DownloadFile" type="button">
+                        <i class="fa fa-download"> </i> Download Excel File
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="clear" style="height: 10px">
+        </div>
+
+        <div class="GroupBox" style="background-color: aliceblue">
+
+            @*attachemnt-area*@
+            <div class="attachment-area row">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.File, new { @class = "col-sm-2 bootstraplabel1" })
+                    <span class="col-sm-6">
+                        @Html.TextBoxFor(model => model.File, new { type = "file" })
+                    </span>
+                </div>
+
+                <div class="row">
+                    <span class="col-sm-2">&nbsp;</span>
+                    <span class="col-sm-6" id="divUploadedFileInfo">
+                        &nbsp;
+                    </span>
+                </div>
+
+                <div class="row">
+                    <div class="button-center">
+                        <button class="btn btn-primary" type="submit" onclick="return validateFileType();">
+                            <i class="fa fa-upload"></i> Import Excel file
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @*-----------------*@
+        </div>
+
+        <div class="clear" style="height: 10px">
+        </div>
+
+    </fieldset>
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var dailyAllowanceControl = $('#DailyAllowance');
+        var dailyAllowanceDiv = $('.divDailyAllowance');
+        var revenueStampControl = $('#RevenueStamp');
+        var revenueStampDiv = $('.divRevenueStamp');
+        var deductionPercentControl = $('#DeductionPercentage');
+        var deductionPercentDiv = $('.divDeductionPercent');
+        var attFromDateControl = $('#AttFromDate');
+        var attToDateControl = $('#AttToDate');
+        var attDateDiv = $('.divAttDate');
+
+        var fileTypeControl = $('#FileTypeId');
+        var messageControl = $('#message');
+        var divUploadedFileInfoControl = $('#divUploadedFileInfo');
+        var monthControl = $('#Month');
+
+        dailyAllowanceDiv.hide();
+        revenueStampDiv.hide();
+        deductionPercentDiv.hide();
+        attDateDiv.hide();
+        
+
+        enableDisableControl($('option:selected', fileTypeControl).text());
+        
+        $('.js-DownloadFile').click(function () {
+            messageControl.html('');
+            messageControl.css('color', 'red');
+
+            // Get file type text
+            var selectedFileTypeText = $("option:selected", fileTypeControl).text();
+
+            if (selectedFileTypeText === '[Select One]') {
+                messageControl.html('Please select file type.');
+                return false;
+            }
+
+            // Get file type id
+            var selectedFileTypeId = fileTypeControl.val();
+
+            // Get year
+            var selectedYear = $('#Year').val();
+
+            // Get month info
+            var selectedMonthText = $("option:selected", monthControl).text();
+            var selectedMonthValue = monthControl.val();
+
+            // Get per day allowance (for refreshment)
+            var dailyAllowanceValue = parseInt(dailyAllowanceControl.val()) || 0;
+
+            // Get revenue stamp
+            var revenueStampValue = parseInt(revenueStampControl.val()) || 0;
+
+            // Get deduction percentage
+            var deductionPercentageValue = parseInt(deductionPercentControl.val()) || 0;
+
+            var firstDateofSelectedYearMonth = moment(selectedYear + '-' + selectedMonthValue).format('YYYY-MM-DD');
+            var lastDateofSelectedYearMonth = moment(selectedYear + '-' + selectedMonthValue).add(1, 'months').subtract(1, 'days').format('YYYY-MM-DD');
+
+            // Get attendance from date
+            var attFromDateValue = moment().format('YYYY-MM-DD'); // by default today's date
+            if (moment(attFromDateControl.val(), 'YYYY-MM-DD').isValid()) {
+                attFromDateValue = moment(attFromDateControl.val()).format('YYYY-MM-DD');
+
+                if (selectedFileTypeText === 'Attendance') {
+                    if (attFromDateValue > lastDateofSelectedYearMonth) {
+                        messageControl.html('Attendance From Date should be less than ' + lastDateofSelectedYearMonth + '. Please check.');
+                        return false;
+                    }
+                }
+            }
+
+            // Get attendance to date
+            var attToDateValue = moment().format('YYYY-MM-DD'); // by default today's date
+            if (moment(attToDateControl.val(), 'YYYY-MM-DD').isValid()) {
+                attToDateValue = moment(attToDateControl.val()).format('YYYY-MM-DD');
+
+                if (selectedFileTypeText === 'Attendance') {
+                    if (attToDateValue < firstDateofSelectedYearMonth) {
+                        messageControl.html('Attendance To Date must be greater than ' + firstDateofSelectedYearMonth + '. Please check.');
+                        return false;
+                    }
+                }
+            }
+            
+            // arrange parameter value
+            var separator = ',';
+            var passValue = selectedFileTypeId              // file type - 0
+                + separator + selectedYear                  // year - 1
+                + separator + selectedMonthText             // month (text) - 2
+                + separator + selectedMonthValue            // month (value) - 3
+                + separator + dailyAllowanceValue           // daily allowance - 4
+                + separator + revenueStampValue             // revenue stamp - 5
+                + separator + deductionPercentageValue      // deduction percentage - 6
+                + separator + attFromDateValue              // attendance from date - 7
+                + separator + attToDateValue;               // attendance to date - 8
+
+            var downloadUrl = '@Url.Action("DownloadFile"
+                                            , "ImportXl"
+                                            , new { paramValues = "_parameter_value_" })';
+
+            downloadUrl = downloadUrl.replace("_parameter_value_", passValue);
+
+            window.location = downloadUrl;
+
+        }); // End of $('.js-DownloadFile').click
+
+
+
+        $('input[type="file"]').change(function () {
+
+            if (!this.files) return; // Fix browsers that don't support.
+
+            var uploadedFileName = this.files[0];
+            var fileNameArray = uploadedFileName.name.split('_');
+            var fileTypeName = fileNameArray[0].replace('Import', '');
+            var year = fileNameArray[1];
+            var month = fileNameArray[2];
+            var text = 'Importing ' + fileTypeName + ' for ' + year + ' - ' + month;
+
+
+            divUploadedFileInfoControl.html('');
+            divUploadedFileInfoControl.append(text);
+        });
+
+
+        fileTypeControl.live('change', function () {
+            var fileType = $('option:selected', this).text();
+            enableDisableControl(fileType);
+        });
+
+
+        function enableDisableControl(fileType) {
+            revenueStampDiv.hide();
+            revenueStampControl.val('0');
+
+            if (fileType === 'Refreshment') {
+                dailyAllowanceDiv.show();
+                revenueStampDiv.show();
+            }
+            else {
+                dailyAllowanceDiv.hide();
+                dailyAllowanceControl.val('0');
+            }
+
+            if (fileType === 'Overtime') {
+                deductionPercentDiv.show();
+                revenueStampDiv.show();
+            }
+            else {
+                deductionPercentDiv.hide();
+                deductionPercentControl.val('0');
+            }
+
+            if (fileType === 'Attendance') {
+                attDateDiv.show();
+            }
+            else {
+                attDateDiv.hide();
+            }
+        }
+
+
+    }); // End of $(document).ready
+
+    function validateFileType() {
+        var messageControl = $('#message');
+        var fileTypeControl = $('#FileTypeId');
+        var monthControl = $('#Month');
+        
+        messageControl.html('');
+        messageControl.css('color', 'red');
+
+        if ($('#File')[0].files) {
+            var uploadedFileName = $('#File')[0].files;
+
+            // Validation#01 - is there any file uploaded?
+            if (uploadedFileName.length == 0) {
+                messageControl.html('Please upload a file in the attachment first!');
+                return true; // No file is uploaded yet.
+            }
+    
+            var selectedFileType = $("option:selected", fileTypeControl).text();
+            
+            var fileNameArray = uploadedFileName[0].name.split('_'); // Name of uploaded first file
+            
+            // Validation#02 - Comparing uploaded file name with selected file(from filetype combo)
+            if (selectedFileType != '[Select One]') {
+                var fileTypeName = fileNameArray[0].replace('Import', '');
+
+                if (selectedFileType != fileTypeName) {
+                    messageControl.html('Uploaded file type and selected file type are not matching!');
+                    return false; // wrong file type is selected.
+                }
+            }
+
+            var selectedMonthText = $("option:selected", monthControl).text();
+            
+            // Validation#03 - Are selected month and month in uploaded file name same?
+            if (uploadedFileName.length > 0) {
+                var monthInFileName = fileNameArray[2];
+                console.log(selectedMonthText.substring(0, 3));
+                if (monthInFileName != selectedMonthText.substring(0, 3)) {
+                    messageControl.html('Month of uploaded file and selected month are not matching. Please check file name and year-month inside excel file.');
+
+                    return false; // month in file name are not matching with selected month.
+                }
+            }
+
+        }
+
+        // otherwise return for model validation
+        return true;
+    }
+
+
+</script>
+
+<style type="text/css">
+    .bootstraplabel {
+        font-weight: normal;
+        margin-top: 10px;
+    }
+
+    .bootstraplabel1 {
+        font-weight: normal;
+    }
+</style>

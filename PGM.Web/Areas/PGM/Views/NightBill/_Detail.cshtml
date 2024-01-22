@@ -1,0 +1,40 @@
+﻿@model PGM.Web.Areas.PGM.Models.NightBill.NightBillPaymentDetailViewModel
+@using PGM.Web.Helpers
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("NightBillPaymentDetail"))
+    {
+        if (Model != null)
+        {
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model=> model.EmployeeId)
+        @Html.HiddenFor(model=> model.BillId)
+        }
+        <td>
+           @Html.DisplayTextFor(model=> model.ICNo)
+        </td>
+
+        <td>
+            @Html.DisplayTextFor(model => model.EmployeeName)
+        </td>
+        <td>
+            @Html.DisplayTextFor(model => model.Designation)
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TotalDays, new { @class = "Amount required", @readonly = "readonly" })
+        </td>
+
+        <td>
+            @Html.TextBoxFor(model => model.PerDayRate, new { @class = "Amount required clsRate" })
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TotalAmount, new { @class = "Amount required", @readonly="readonly" })
+        </td>
+        <td> 
+            @Html.TextBoxFor(model => model.RevenueStamp, new { @class = "Amount required clsRev" })
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.NetAmount, new { @class = "Amount required", @readonly = "readonly" })
+        </td>
+    }
+</tr>

@@ -1,0 +1,32 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxOtherInvestment.TaxOtherInvestmentDetailViewModel
+@using PGM.Web.Helpers
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("OtherInvestmentDetailList"))
+    {
+        if (@Model != null)
+        {
+            <td class="detailInfo" style="display:none;">
+                @Html.HiddenFor(model => model.EntityId)
+            </td>
+            @Html.HiddenFor(model => model.Id)
+        }
+        <td style="text-align: center;">
+            @Html.HiddenFor(model=>model.EntityEntryDate)
+            @Html.ActionLink((Model.EntityEntryDate).Value.ToString("yyyy-MM-dd"), "EditDetail", "OtherInvestment",
+            new { id = Model.Id }, Model)
+        </td>
+        <td style="text-align: left;">
+            @Html.Encode(Model.EntityDescription)
+        </td>
+        <td style="text-align: right;">
+            @*@Html.HiddenFor(model => model.PaidAmount)*@
+            @Html.Encode(Model.EntityAmount)
+        </td>
+        <td>
+            <a href="#" class="deleteRow" title="delete" onclick="RemoveDb(this,@Model.Id,'@Url.Action("DeleteDetail")')">
+                <img src='@Url.Content("~/Content/Images/Delete.png")' alt="Delete" style="border: none; " />
+            </a>
+        </td>
+    }
+</tr>

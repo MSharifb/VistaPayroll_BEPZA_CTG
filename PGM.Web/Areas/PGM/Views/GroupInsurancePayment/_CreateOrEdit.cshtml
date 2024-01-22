@@ -1,0 +1,166 @@
+﻿@model PGM.Web.Areas.PGM.Models.GroupInsurancePayment.GroupInsurancePaymentViewModel
+@Html.HiddenFor(model => model.Id)
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.OrderNo)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+           @Html.EditorFor(model => model.OrderNo)
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.PaymentDate)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.PaymentDate)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.PaymentTypeId)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+           @Html.DropDownListFor(model => model.PaymentTypeId, Model.PaymentTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.PaymentAmount)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.PaymentAmount, new { @readonly="readonly" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            <label for="PeriodFrom">Employee ID  </label> <label class="required-field">*</label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.ICNo, new { @class = "required", @readonly = "readonly" })
+
+            @Html.HiddenFor(model => model.EmployeeId)
+            <img src='@Url.Content("~/Content/Images/btn_search.gif")' id="imgEmpSearch" alt="Search" onclick="return openEmployee();" />
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.EmployeeName)
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.EmployeeName, new { @readonly = "readonly" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            <label for="PeriodFrom"> Designation  </label> <label class="required-field">*</label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.Designation, new { @readonly = "readonly" })
+        </span>
+
+        <span class="label-right">
+           @Html.LabelFor(model=> model.PayTo)
+        </span><span class="field">
+           @Html.EditorFor(model=> model.PayTo)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Address)
+           
+        </span><span class="field">
+            @Html.TextAreaFor(model => model.Address)
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.Relation)
+        </span><span class="field">
+            @Html.EditorFor(model => model.Relation)
+        </span>
+    </div>
+
+    <div class="clear"></div>
+</div>
+
+<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" height="98%" style="border: 0px solid white;
+        padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>
+
+<script>
+    $(function () {
+        $("#divEmpList").dialog({ autoOpen: false, modal: true, height: 600, width: 940, title: 'Employee', beforeclose: function (event, ui) { Closing(); } });
+        
+        $("#PaymentTypeId").live('change', function (e) {
+            if (parseInt($("#PaymentTypeId").val()) > 0) {
+                $.ajax({
+                    url: '@Url.Action("GetPaymentType", "GroupInsurancePayment", new { area = "PGM" })',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { typeId: $("#PaymentTypeId").val() },
+                    contentType: "application/json; charset=utf-8",
+                    error: function () {
+                        alert('System is unable to load data please try again.');
+                    },
+                    success: function (result) {
+                        $("#PaymentAmount").val(result.PaymentAmount);
+                    }
+                });
+            }
+        });
+    });
+
+    function openEmployee() {
+
+        $.ajax({
+            url: '@Url.Action("EmployeeSearch", "Employee", new { area="PRM"})?searchEmpType=active',
+            type: 'GET',
+            dataType: 'text',
+            timeout: 5000,
+            error: function () {
+                alert('System is unable to load data please try again.');
+            },
+            success: function (result) {
+                $('#divEmpList').html(result);
+            }
+        });
+
+        $("#divEmpList").dialog('open');
+
+        return false;
+    }
+
+    function setData(id) {
+        $('#EmployeeId').val(id)
+        GetEmployeeInfo();
+        $("#divEmpList").dialog('close');
+
+    }
+
+    function GetEmployeeInfo() {
+        var empId = $('#EmployeeId').val();
+        var form = $('#frm');
+        var serializedForm = form.serialize();
+
+        if (empId > 0) {
+            $.post('@Url.Action("GetEmployeeInfo", "EmployeeSeperation", new { area = "PRM" })', serializedForm, function (obj) {
+                $("#ICNo").val(obj.EmpId);
+                $('#EmployeeName').val(obj.EmployeeName);
+                $("#Designation").val(obj.Designation);
+            }, "json");
+        }
+
+        return false;
+    }
+
+    function Closing() {
+
+    }
+
+</script>

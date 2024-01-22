@@ -1,0 +1,263 @@
+﻿@model PGM.Web.Areas.PGM.Models.OverTime.OvertimeModel
+@using PGM.Web.Helpers
+
+@Html.HiddenFor(model => model.Id)
+@Html.HiddenFor(model => model.ZoneIdDuringOvertime)
+
+<fieldset>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(m => m.EmployeeId, new { @class = "label-required" })
+        </span>
+        <span class="field" style="width: 50%;">
+            @Html.DropDownListFor(model => model.EmployeeId, Model.EmployeeListForSearch, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Designation)
+        </span>
+        <span class="field">
+            @Html.HiddenFor(model => model.DesignationId)
+            @Html.TextBoxFor(model => model.Designation, new { @readonly = "readonly", @class = "read-only" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.AccountNo)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.AccountNo, new { @readonly = "readonly", @class = "read-only" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.OTYear)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.OTYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.OTMonth)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.OTMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+
+</fieldset>
+
+<fieldset>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BasicSalary)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.BasicSalary, new { @readonly = "readonly", @class = "read-only" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.OvertimeRate)
+            <label class="required-field">*</label>
+            (Basic)/(30X8)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.OvertimeRate, new { @class = "read-only" })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.WorkedHours)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.WorkedHours)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.DeductionPercentage)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.DeductionPercentage)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.ApprovedHours)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.ApprovedHours)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.RevenueStamp)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.RevenueStamp)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.NetPayable)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.NetPayable, new { @readonly = "readonly", @class = "read-only" })
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(model => model.Remarks)
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+</fieldset>
+
+@*<div id="divEmpList">
+    <iframe id="styleAdvance" src="" width="99%" style="border: 0px solid white;
+        padding-right: 0px;">
+        <p>
+            Your browser does not support iframes.
+        </p>
+    </iframe>
+</div>*@
+
+<script type="text/javascript">
+
+    $(function () {
+
+        yearControl.live('change', function () {
+            GetBasicSalary();
+        });
+
+        monthControl.live('change', function () {
+            GetBasicSalary();
+        });
+        
+        $("#ApprovedHours").live('change', function () {
+            CalculateAmount();
+        });
+
+        $("#OvertimeRate").live('change', function () {
+            CalculateAmount();
+        });
+
+        $("#RevenueStamp").live('change', function () {
+            CalculateAmount();
+        });
+
+
+        function CalculateAmount() {
+
+            var ApprovedHours = parseFloat($("#ApprovedHours").val());
+            ApprovedHours = (isNaN(ApprovedHours)) ? 0 : ApprovedHours;
+
+            var OvertimeRate = parseFloat($("#OvertimeRate").val());
+            OvertimeRate = (isNaN(OvertimeRate)) ? 0 : OvertimeRate;
+
+            var RevenueStamp = parseFloat($("#RevenueStamp").val());
+            RevenueStamp = (isNaN(RevenueStamp)) ? 0 : RevenueStamp;
+
+            var totalAmount = (ApprovedHours * OvertimeRate);
+
+            var NetPayable = (totalAmount - RevenueStamp);
+
+            if (NetPayable < 0) NetPayable = 0;
+
+            $("#NetPayable").val(Math.round(NetPayable));
+        }
+
+
+    });
+
+    var decimalPlaces = 2;
+    var employeeId = 0;
+    var yearControl = $('#OTYear');
+    var monthControl = $('#OTMonth');
+    var basicSalaryControl = $("#BasicSalary");
+
+    function GetBasicSalary() {
+        
+        var empIdPk = employeeId;
+        var yearValue = yearControl.val();
+        var monthValue = $("option:selected", monthControl).text();
+        
+        if (empIdPk > 0 && (yearValue != "") && (monthValue != "[Select One]")) {
+
+            var data = {
+                employeeId: empIdPk,
+                year: yearValue,
+                month: monthValue
+            };
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("GetYearMonthWiseBasicSalary", "Overtime")',
+                data: data
+            })
+            .success(function (result) {
+                var roundedBasic = parseFloat(result).toFixed(decimalPlaces);
+                console.log(roundedBasic);
+                basicSalaryControl.val(roundedBasic);
+
+                var overtimeRate = (roundedBasic / 240).toFixed(decimalPlaces);
+                $('#OvertimeRate').val(overtimeRate);
+            })
+            .error(function () { alert('Something wrong!') });
+        }
+
+    }
+
+    $("select#EmployeeId").change(function () {
+
+        employeeId = $(this).val();
+        var url = '@Url.Action("GetEmployeeInfo", "PGMCommon")' + '?employeeId=' + employeeId;
+
+        $.get(url,
+            function (data) {
+                if (data.Success) {
+                    $("#Designation").val(data.EmployeeDesignation);
+                    $("#AccountNo").val(data.AccountNumber);
+                } else {
+                    $("#message").html('Unable to load employee data').css('color', 'red');
+                }
+            });
+    });
+
+
+</script>

@@ -1,0 +1,50 @@
+﻿@model PGM.Web.Areas.PGM.ViewModel.SalaryStructureDetailsViewModel
+@using PGM.Web.Helpers
+
+@using (Html.BeginCollectionItem("SalaryStructureDetail"))
+{
+    <tr>
+        <td class='td-head'>
+            @Html.HiddenFor(model => model.HeadId)
+            @Html.DisplayFor(model => model.DisplayHeadName)
+            @Html.HiddenFor(model => model.DisplayHeadName)
+            @Html.HiddenFor(model => model.AmountType)
+        </td>
+        <td class="td-calType">
+            @Html.TextBoxFor(model => model.AmountType, new { @readonly = @"readonly" })
+        </td>
+        <td class="td-basedOn">
+            @Html.TextBoxFor(model => model.BasedOn, new { @readonly = @"readonly" })
+        </td>
+        <td class="td-amount">
+            @Html.TextBoxFor(model => model.Amount, "{0:F2}", new { @readonly = @"readonly" })
+        </td>
+        <td class="td-totalamount">
+            @Html.TextBoxFor(model => model.TotalAmount, "{0:F2}", new { @readonly = @"readonly", @style = @"background:#F2F5F8;" })
+        </td>
+
+        <td style="display:none">
+            @Html.HiddenFor(model => model.IsGrossPayHead, new { @class = "grossPayHead" })
+        </td>
+        <td style="display:none">
+            @Html.HiddenFor(model => model.HeadType)
+        </td>
+    </tr>
+}
+
+<style>
+    #Addition .td-right input[type="text"], input[type="password"] {
+        text-align: right;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.ddl-addition').change(function () {
+        $('input#' + $(this).attr('id')).val($(this).val());
+    });
+    $(function () {
+        // $('.basic').attr('disabled', false);
+
+        $('.cssSalaryHeadClass').css('color', 'Red');
+    });
+</script>

@@ -1,0 +1,35 @@
+﻿@model  PGM.Web.Areas.PGM.Models.Document.DocumentViewModel
+
+@using PGM.Web.Helpers
+@using PGM.Web.Utility
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("AdvanceDetailDocumentList"))
+    {
+        <td style="text-align: left;">
+            @Html.Encode(Model.DocumentName);
+        </td>
+        <td style="text-align: right;">
+            @Html.HiddenFor(d => Model.Id)
+            @Html.HiddenFor(d => Model.DocumentName)
+            @Html.HiddenFor(d => Model.DetailId)
+            @Html.HiddenFor(d => Model.DocumentTypeId)
+            @Html.HiddenFor(d => Model.Attachment)
+            @Html.HiddenFor(d => Model.DocumentExtension)
+            @Html.HiddenFor(d => Model.DocumentSizeInMB)
+            
+            @Html.Encode((Model.DocumentUploadDate.ToString(DateAndTime.GlobalDateFormat)))
+            <div style="display:none;">
+                @Html.TextBoxFor(d => Model.DocumentUploadDate)
+            </div>
+        </td>
+
+        <td>
+            <a href="#" class="deleteRow deleteItem"
+               title="delete"
+               onclick="RemoveDb(this, @Model.Id, @Model.DetailId, '@Url.Action("DeleteDocument")')"></a>
+        </td>
+    }
+</tr>
+
+

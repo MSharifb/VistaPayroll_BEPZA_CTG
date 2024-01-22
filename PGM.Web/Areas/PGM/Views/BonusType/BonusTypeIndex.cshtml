@@ -1,0 +1,130 @@
+﻿@model PGM.Web.Areas.PGM.Models.BonusType.BonusTypeViewModel
+
+@{
+    ViewBag.Title = "Bonus Type";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+    .checkBoxClass {
+        margin-top: 10px;
+    }
+</style>
+
+@using (Ajax.BeginForm("Index"
+            , null
+            , new AjaxOptions { HttpMethod = "POST", OnComplete = "OnComplete" }
+            , new { id = "frm", action = Url.Action(Model.Mode == "Create" ? "Create" : "Edit") }))
+{
+
+    <fieldset>
+        <div class="GroupBox" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+        </div>
+        @Html.HiddenFor(model => model.Id)
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BonusType)
+                    <label class="required-field">*</label>
+                </span><span class="field">
+                    @Html.TextBoxFor(d => d.BonusType)
+                </span>
+                <span class="label-right">
+                    @*@Html.LabelFor(model => model.BonusTypeB)*@
+                </span>
+                <span class="field">
+                    @*@Html.TextBoxFor(d => d.BonusTypeB)*@
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.ReligionId)
+                </span><span class="field">
+                    @Html.DropDownListFor(d => d.ReligionId, Model.ReligionList, @String.Format("{0}", Content.DDLOptionalAllLabel()))
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.IsTaxable)
+                </span><span class="field">
+                    @Html.CheckBoxFor(m => m.IsTaxable)
+                </span>
+            </div>
+        </div>
+
+        <div class="GroupBox">
+            <div class="button-crude button-left">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="display: none;" />
+                }
+                @if ((new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+                {
+                    <input type="submit" value="Update" id="btnUpdate" name="btnUpdate" style="display: none;" />
+                }
+
+                <input type="button" value="Clear" id="btnClear" name="btnClear" />
+            </div>
+            <div class="clear"></div>
+        </div>
+        
+        @if (String.IsNullOrEmpty(Model.Mode))
+        {
+            <div class="GroupBox">
+                <div class="row">
+
+                    <table id="jqGrid" cellpadding="0" cellspacing="0"></table>
+                    <div id="jqGridPager" style="text-align: center;">
+                    </div>
+                    @Html.Partial("_GridList", Model.BonusTypeList)
+                </div>
+            </div>
+        }
+        
+    </fieldset>
+
+}
+<script type="text/javascript">
+
+    $(function () {
+        $("#btnClear").live("click", function () {
+            document.getElementById('frm').reset();
+            var url = '@Url.Action("Index", new { })';
+            window.location.href = url;
+        });
+
+        var mode = '@Model.Mode';
+        $.validator.unobtrusive.parse('#frm');
+
+        if (mode == 'Create') {
+            $('#btnSave').show();
+            $('#btnUpdate').hide();
+        }
+        else {
+            $('#btnUpdate').show();
+            $('#btnSave').hide();
+        }
+    })
+
+    function OnComplete(content) {
+
+        var data = $.parseJSON(content.responseText);
+
+        if (data.Success <= 0) {
+
+            $("#message").removeClass('success');
+            $("#message").text(data.Message).addClass('failed');
+        }
+        else {
+
+            $("#message").removeClass('failed');
+            $("#message").text(data.Message).addClass('success');
+            if ($.contains(data.Message, 'updated') || $.contains(data.Message, 'deleted')) {
+                $("#frm").attr('action', '@Url.Action("Create")');
+                $('#btnUpdate').hide();
+                $('#btnSave').show();
+            }
+            document.getElementById('frm').reset();
+            $("#jqGrid").trigger("reloadGrid");
+        }
+    }
+
+</script>

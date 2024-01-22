@@ -1,0 +1,13 @@
+﻿@model PGM.Web.Areas.PGM.Models.ArrearAdjustment.ArrearAdjustmentModel
+
+@using PGM.Web.Helpers
+
+@if (Model != null && Model.ArrearAdjustmentModelList != null)
+{
+    foreach (var x in Model.ArrearAdjustmentModelList)
+    {
+        @Html.Partial("_PartialDetail", x);
+    }
+}
+
+

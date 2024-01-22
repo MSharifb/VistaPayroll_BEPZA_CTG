@@ -1,0 +1,305 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetter.BankAdviceLetterViewModel
+@using PGM.Web.Helpers
+<script type="text/javascript">
+    $(function () {
+
+        $(".type").attr('disabled', true);
+
+    });
+</script>
+<script type="text/javascript">
+
+    $(function () {
+
+        Total = 0;
+
+        $("#SelectAll").click(function () {
+            Total = 0;
+            $('.eachChecked').attr('checked', this.checked);
+
+            if (this.checked == 1) {
+
+                $('.NetPayable').each(function (index) {
+                    Total += parseFloat($(this).val());
+                });
+
+                $('#totalAmount').val(Total);
+                $('#totalAmountFooter').val(Total);
+
+            }
+            else {
+                Total = 0;
+                $('#totalAmount').val(Total);
+                $('#totalAmountFooter').val(Total);
+            }
+        });
+
+        $(".eachChecked").click(function () {
+
+            if ($(".eachChecked").length == $(".eachChecked:checked").length) {
+                $("#SelectAll").attr("checked", "checked");
+            } else {
+                $("#SelectAll").removeAttr("checked");
+
+            }
+
+        });
+
+        $(" #grid tbody tr input[type='checkbox']").click(function () {
+
+            if (this.checked == 1) {
+                var ald = $(this).parent().parent().find('td:last input.NetPayable').val();
+
+                Total += parseFloat(ald);
+                $('#totalAmount').val(Total);
+                $('#totalAmountFooter').val(Total);
+            }
+            else {
+                if (Total >= 0) {
+                    var ald = $(this).parent().parent().find('td:last input.NetPayable').val();
+                    Total -= parseFloat(ald);
+                    $('#totalAmount').val(Total);
+                    $('#totalAmountFooter').val(Total);
+                }
+            }
+
+        });
+
+    });
+</script>
+<script type="text/javascript">
+
+   $(function () {
+     $('.Tgrid tbody tr').each(function(){
+            $(this).find("td:eq(4)").css({'text-align':'left'});
+            $(this).find("td:eq(5)").css({'text-align':'center'});
+            $(this).find("td:eq(6)").css({'text-align':'center'});
+            $(this).find("td:eq(7)").css({'text-align':'right'});
+      });
+    });
+
+    function GetEmp(){
+       
+      
+             i = $('#grid tbody tr').filter(':has(:checkbox:checked)').length;    /// Source Grid Length
+             k=$('.Tgrid tbody tr').length;                                       /// Target/Destination Grid length
+
+            
+            $('#grid tbody tr').filter(':has(:checkbox:checked)').each(function (i) {
+
+                var employeeId = $(this).find("td:eq(1)").text().trim();
+                var empID = $(this).find("td:eq(2)").text().trim();
+                var initial = $(this).find("td:eq(3)").text().trim();
+                var name = $(this).find("td:eq(4)").text().trim();
+                var accountNo = $(this).find("td:eq(5)").text().trim();
+                var bankName = $(this).find("td:eq(6)").text().trim();
+                var payable = $(this).find("td:eq(7)").text().trim();
+
+                    var row = "<tr class='row'>" +
+                    "<td><a class='Rowdelete' title='Delete' href='javascript:void(0)'><img style='border: none; ' src='@Url.Content("~/Content/Images/Delete.png")'/></a></td>" +       
+                    "<td style='display:none'><input style='display:none' class='TempEmployeeID' type='text' name='BankLetterDetails[" + i + "].EmployeeId' value='" + employeeId + "'></input></td>" +
+                    "<td><input style='display:none' type='text' name='BankLetterDetails[" + i + "].EmpID' value='" + empID + "'></input>" + empID + "</td>" +
+                    "<td><input style='display:none' type='text' name='BankLetterDetails[" + i + "].EmployeeInitial' value='" + initial + "'></input>" + initial + "</td>" +
+                    "<td><input style='display:none' type='text' name='BankLetterDetails[" + i + "].FullName' value='" + name + "'></input><span>" + name + "</span></td>" +
+                    "<td><input style='display:none' type='text' name='BankLetterDetails[" + i + "].AccountNo' value='" + accountNo + "'></input><span>" + accountNo + "</span></td>" +
+                    "<td><input style='display:none' type='text' name='BankLetterDetails[" + i + "].BankName' value='" + bankName + "'></input><span>" + bankName + "</span></td>" +
+                    "<td><input style='display:none'class='AmountOfPayable' type='text' name='BankLetterDetails[" + i + "].NetPayable' value='" + payable + "'></input><span>" + payable + "</span></td>";
+
+               $('.Tgrid').find('tbody').append(row);
+            });
+
+             $("#divEmpList").dialog('close');
+
+             $('.Tgrid tbody tr').each(function(){
+
+             $(this).find("td:eq(4)").css({'text-align':'left'});
+             $(this).find("td:eq(5)").css({'text-align':'center'});
+             $(this).find("td:eq(6)").css({'text-align':'center'});
+             $(this).find("td:eq(7)").css({'text-align':'right'});
+
+              var total = 0.0;
+              $('.AmountOfPayable').each(function (index) {
+                total += parseFloat($(this).val());
+            });
+
+            $('#totalPayableAmount').val(total);
+            $('#TotalPayable').val(total);
+
+             });
+
+           // SaveDetail();
+
+             ResetDynamicTableSequenceNumber();
+
+            if ($('.Tgrid tbody tr').length > 0) {
+                $('.doDisabled').attr('disabled', true);
+                $('#SalaryYear').attr('disabled', true);
+                $('#SalaryMonth').attr('disabled', true);
+            }
+        }
+
+        function ResetDynamicTableSequenceNumber() {
+            var counter = 0;
+            $('.Tgrid tbody tr').each(function () {          
+                $(this).find("td input").each(function () {
+                    var toVal=$(this).attr("name");
+                    var v= toVal.substr(0,18);
+                    var v1= toVal.substr(19,toVal.length-18);
+                    $(this).attr("name",v+counter+v1);
+                });
+                counter++;
+            });
+        } 
+
+//       function SaveDetail() {
+
+//            //getting json data from kendo Grid
+//           var data = $("#grid").jqGrid('getGridParam');
+
+//            alert(data.length);
+
+//            //Post json data from kendo Grid to Controller
+//            $.ajax({
+//                type: "POST"
+//                , url: '@Url.Content("~/PGM/BankAdviceLetter/SaveDetail")'
+//                , data: JSON.stringify({ DetailViewModelList: gridData })
+//                , contentType: "application/json"
+//            });
+//        }
+
+</script>
+@using (Html.BeginForm("AddPayee", "BankAdviceLetter", FormMethod.Post, new { id = "frm" }))
+{
+    <div class="GroupBox">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.LetterType)
+                <label class="required-field">
+                    *</label>
+            </span><span class="field" style="width: 300px;">
+                @Html.RadioButtonFor(model => model.SelectedLetterType, "Salary", new { id = "Salary", @class = "type" })
+                @Html.Label(" Salary")
+                @Html.RadioButtonFor(model => model.SelectedLetterType, "Bonus", new { id = "Bonus", @class = "type" })
+                @Html.Label(" Bonus")
+                @Html.RadioButtonFor(model => model.SelectedLetterType, "LeaveEncashment", new { id = "LeaveEncashment", @class = "type" })
+                @Html.Label(" Leave Encashment")
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.SalaryYear)
+                <label class="required-field">*</label>
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.SalaryYear, new { @class = "read-only", @readonly = true })
+            </span><span class="label-right">
+                @Html.LabelFor(model => model.SalaryMonth)
+                <label class="required-field">*</label>
+            </span><span class="field">
+                @Html.TextBoxFor(model => model.SalaryMonth, new { @class = "read-only", @readonly = true })
+            </span>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    <div class="GroupBox">
+
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+            {
+                <input type="button" value="Add" id="btnAdd" name="btnSubmit" onclick="GetEmp()" style="margin-right: 8px;" />           
+            }
+        </div>
+
+        <div class="row" align="center">
+            <div style="width: 90%">
+                <table id="grid" class="contenttable">
+                    <thead>
+                        <tr>
+                            <th width="10%" align="center">
+                                Choose
+                            </th>
+                            <th style="display: none;">
+                            </th>
+                            <th width="10%" align="center">
+                                Employee ID
+                            </th>
+                            <th width="8%" align="center">
+                                Initial
+                            </th>
+                            <th width="30%" align="center">
+                                Employee Name
+                            </th>
+                            <th width="16%" align="center">
+                                Account No.
+                            </th>
+                            <th width="10%" align="center">
+                                Bank Name
+                            </th>
+                            <th width="30%" align="center">
+                                Payable
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>@Html.CheckBoxFor(model => model.SelectAll) </span>
+                            </td>
+                            <td style="display: none;">
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                <input id="totalAmount" class="read-only" style="text-align: right; width: 94%;"
+                                    type="text" value="0" />
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.BankLetterDetails != null)
+                        {
+                            foreach (var x in Model.BankLetterDetails)
+                            {
+                                @Html.Partial("_Detail", x);
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td>
+                            </td>
+                            <td style="display: none;">
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                <input id="totalAmountFooter" class="read-only" style="text-align: right; width: 94%;"
+                                    type="text" value="0" />
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+            {
+                <input type="button" value="Add" id="btnAdd" name="btnSubmit" onclick="GetEmp()" style="margin-right: 8px;" />           
+            }
+        </div>
+    </div>
+}

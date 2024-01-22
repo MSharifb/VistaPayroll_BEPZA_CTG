@@ -1,0 +1,527 @@
+﻿@model PGM.Web.Areas.PGM.Models.EmployeeSalaryStructure.EmployeeSalaryStructureModel
+
+@using (Html.BeginForm(Model.ActionType, "EmployeeSalaryStructure", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.EmployeeId)
+    @Html.HiddenFor(model => model.isConsolidated)
+
+    <fieldset>
+        <div class="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="@Model.errClass">
+                    @Model.Message
+                </div>
+            }
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmpId)
+                </span>
+                <span class="field">
+                    @Html.EditorFor(model => model.EmpId)
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.FullName)
+                </span>
+                <span class="field">@Html.EditorFor(model => model.FullName)</span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.Designation)
+                </span>
+                <span class="field">
+                    @Html.EditorFor(model => model.Designation)
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.PFMembershipStatus, new { id = "lblPFMembershipStatus" })
+                </span>
+                <span class="field">@Html.EditorFor(model => model.PFMembershipStatus)</span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+
+        <div class="GroupBox">
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.SalaryScaleId)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.HiddenFor(model => model.SalaryScaleId)
+                    @Html.EditorFor(model => model.SalaryScale)
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.HouseRentRegionAndAmount)
+                </span>
+                <span class="field">
+                    @Html.EditorFor(model => model.HouseRentRegionAndAmount)
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.GradeId)
+                    <label class="required-field">*</label>
+                </span>
+                <span class="field">
+                    @Html.HiddenFor(model => model.GradeId)
+                    @Html.EditorFor(model => model.JobGrade)
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.StepId)
+                    <label class="required-field"> * </label>
+                </span>
+                <span class="field">
+                    @*For implementation purpose, Job Grade and Job Step has been enabled.*@
+                    @*@if (Model.isConsolidated || Model.ButtonText == "Update")
+                        {
+                            @Html.DropDownListFor(m => m.StepId, Model.StepList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "consolidated" })
+                            @Html.HiddenFor(model => model.StepId)
+                        }
+                        else
+                        {*@
+                    @Html.DropDownListFor(m => m.StepId, Model.StepList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                    @*}*@
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">&nbsp;</span> <span class="field">
+                    @Html.CheckBoxFor(model => model.isConsolidated, new { @disabled = "disabled" })
+                    <label style="color: #3C78B5;">
+                        <label for="isSmoke">@Html.LabelFor(model => model.isConsolidated)</label>
+                    </label>
+                </span>
+                <span class="label-right">@Html.LabelFor(model => model.GrossSalary)</span>
+                <span class="field">@Html.EditorFor(model => model.GrossSalary)</span>
+            </div>
+
+            <div class="row" style="display: none;">
+                <span class="label-right">@Html.LabelFor(model => model.OrgGrossSalary)</span>
+                <span class="field">@Html.EditorFor(model => model.OrgGrossSalary)</span>
+            </div>
+
+        </div>
+
+        <div style="min-width: 825px;" class="GroupBox ssd">
+
+            @Html.Partial("_SalaryStructureDetail", Model)
+
+        </div>
+
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned || (new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+            {
+                <input type="submit" value="@Model.ButtonText" name="btnCreate" id="btnCreate" style="margin: 0 10px 0 0;" />
+            }
+            @if (!@Model.IsSalaryProcess)
+            {
+                @Html.ActionLink("Delete", "DeleteSalaryStructure", new { id = Model.EmployeeId }, new { @class = "delete-confirm" })
+            }
+            <div class="clear">
+            </div>
+        </div>
+
+    </fieldset>
+}
+
+<div class="button-crude">
+    <div class="button-left">
+        @Html.ActionLink("Back to List", "Index", "EmployeeSalaryStructure")
+    </div>
+    <div class="button-right">
+        <input type="button" value="Previous Employee" name="PreviousEmployee" id="PreviousEmployee" />
+        <input type="button" value="Next Employee" name="NextEmployee" id="NextEmployee" />
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    /* If employee is inactive then disable all control */
+    if ('@Model.DateofInactive' != '') {
+        fnDisableEditMode();
+        $(".delete-confirm").hide();
+    }
+
+    $(function () {
+
+        salaryScaleId = $("#SalaryScaleId").val();
+        var gradeId = $("#GradeId").val();
+        var stepId = $("#StepId").val();
+        var employeeId = $("#EmployeeId").val();
+        var isConsolidated = $("#isConsolidated").val();
+
+        var pfMembershipStatus = $('#PFMembershipStatus').val();
+        if (pfMembershipStatus == 'Inactive') {
+            $('#lblPFMembershipStatus').css('color', 'red');
+        }
+
+        //// Only for isConsolidated employee
+        if ('@Model.isConsolidated' == 'True' || '@Model.ButtonText' == 'Update') {
+            gradeId = $("#GradeId").val();
+            stepId = $("#StepId").val();
+
+            isConsolidated = $("#isConsolidated").val();
+            $('.consolidated').attr('disabled', true);
+
+            $("#StepId").val('@Model.StepId');
+        }
+
+        SalaryCalculation();
+        CalculateOrgGross();
+
+        var gradeIdDuringFocusIn = 0;
+        $("#JobGrade").live('click',
+            function () {
+                var url = '@Url.Action("GetGradeId", "SalaryStructure", new {area = "PGM"})' +
+                    '?salaryScaleId=' + salaryScaleId +
+                    '&gradeName=' + $(this).val();
+
+                $.get(url,
+                    function (data) {
+                        gradeIdDuringFocusIn =
+                            data.gradeId; // It will help to make decision whether we need to change step dropdown or not.
+                    });
+            });
+
+
+        $("#JobGrade").live('focusout',
+            function () {
+                var url = '@Url.Action("GetGradeId", "SalaryStructure", new { area = "PGM" })' +
+                    '?salaryScaleId=' + salaryScaleId +
+                    '&gradeName=' + $(this).val();
+
+                $.get(url,
+                    function (data) {
+                        //--- Check if grade id is changed...
+                        if (gradeIdDuringFocusIn != data.gradeId) {
+                            var stepSelect = $('#StepId');
+                            stepSelect.empty();
+                            stepSelect.append($('<option/>',
+                                {
+                                    value: '',
+                                    text: '@Content.DDLOptionalLabel()'
+                                }));
+
+                            if (data.gradeId > 0) {
+                                $("#GradeId").val(data.gradeId);
+
+                                $.getJSON('@Url.Action("GetStep", "SalaryStructure", new {area = "PGM"})', { gradeId: data.gradeId },
+                                    function (data) {
+                                        $.each(data.steps,
+                                            function (index, step) {
+                                                stepSelect.append($('<option/>',
+                                                    {
+                                                        value: step.Id,
+                                                        text: step.StepName
+                                                    }));
+                                            });
+                                    });
+                            }
+                        }
+                        //---
+                    });
+            });
+
+
+        $("#StepId").change(function () {
+            gradeId = $("#GradeId").val();
+            stepId = $("#StepId").val();
+            isConsolidated = $("#isConsolidated").val();
+
+            populateSalaryDetails(gradeId, stepId, isConsolidated);
+        });
+
+        function populateSalaryDetails(gradeId, stepId, isConsolidated) {
+            if (gradeId != '' && stepId != '') {
+
+                var url = '@Url.Action("GetSalaryStructureDetails", "EmployeeSalaryStructure", new {area = "PGM"})' +
+                    '?gradeId=' + gradeId + '&stepId=' + stepId +
+                    '&empId=' + employeeId + '&IsConsolidated=' + isConsolidated;
+
+                $.get(url,
+                    function (data) {
+                        console.log(data);
+                        $('.ssd').empty();
+                        $('.ssd').html(data);
+
+                        var additionSelectedValues = $("#Addition .selected-val");
+                        var aditionDdls = $('#Addition .ddl-addition');
+
+                        var deductionSelectedValues = $("#Deduction .selected-val");
+                        var deductionDdls = $('#Deduction .ddl-deduction');
+
+                        for (var i = 0; i < additionSelectedValues.length; i++) {
+                            var selectedVal = $(additionSelectedValues[i]).text();
+                            $(aditionDdls[i]).val(selectedVal);
+                        }
+
+                        for (var i = 0; i < deductionSelectedValues.length; i++) {
+                            var selectedVal = $(deductionSelectedValues[i]).text();
+                            $(deductionDdls[i]).val(selectedVal).attr('disabled', false);
+                        }
+
+                        SalaryCalculation();
+                        CalculateOrgGross();
+                        if ('@Model.isConsolidated' == 'True') {
+                            disableGrossPayHead(true);
+                        }
+                    });
+            } else {
+                $('.ssd').empty();
+                $('#GrossSalary').val('0');
+            }
+        }
+
+        //check business rule
+        if (!$('input:checkbox[id=isConsolidated]').is(':checked')) {
+            $('#GrossSalary').css({ 'background-color': '#F2F5F8', 'cursor': 'default' });
+            $('#GrossSalary').attr('readonly', true);
+
+            disableBasicAmount();
+        }
+
+        $('#isConsolidated').live('click',
+            function () {
+                if ($("input:checkbox[id=isConsolidated]").is(':checked')) {
+                    $('#GrossSalary').css({ 'background-color': '', 'cursor': '' });
+                    $('#GrossSalary').removeAttr('readonly', true)
+
+                    $('.basic').val('Percent').attr('disabled', true);
+                } else {
+                    $('#GrossSalary').css({ 'background-color': '#F2F5F8', 'cursor': 'default' });
+                    $('#GrossSalary').attr('readonly', true)
+                }
+
+                SalaryCalculation();
+                CalculateOrgGross();
+            });
+
+        $('.ddl-addition').live('change',
+            function () {
+                SalaryCalculation();
+                CalculateOrgGross();
+            });
+
+        //start calculation
+        $('#Addition .td-right :input, #Deduction  .td-right :input, #GrossSalary').live('focusout',
+            function () {
+                SalaryCalculation();
+                CalculateOrgGross();
+            });
+
+
+        $('#NextEmployee').click(function () {
+            var url = '@Url.Action("GetPrevNextEmployeeId", "EmployeeSalaryStructure", new { area = "PGM" })' + '?currentEmployeeId=' + employeeId + '&isNext=' + true;
+
+            $.get(url, function (data) {
+                employeeId = data.employeeId;
+
+                if (employeeId > 0) {
+                    var empUrl =
+                        '@Url.Action("CreateSalaryStructure", "EmployeeSalaryStructure", new {area = "PGM", id="ID"})'.replace("ID", parseInt(employeeId));
+                    window.location.href = empUrl;
+                }
+            });
+        });
+
+        $('#PreviousEmployee').click(function () {
+            var url = '@Url.Action("GetPrevNextEmployeeId", "EmployeeSalaryStructure", new { area = "PGM" })' + '?currentEmployeeId=' + employeeId + '&isNext=' + false;
+
+            $.get(url, function (data) {
+                employeeId = data.employeeId;
+
+                if (employeeId > 0) {
+                    var empUrl =
+                        '@Url.Action("CreateSalaryStructure", "EmployeeSalaryStructure", new {area = "PGM", id="ID"})'.replace("ID", parseInt(employeeId));
+                    window.location.href = empUrl;
+                }
+            });
+        });
+
+        function disableBasicAmount() {
+            //if ($('.basic-amount').val() == "") {
+            //    $('.basic-amount').find('input').css({ 'background-color': '#F2F5F8', 'cursor': 'default' });
+            //    $('.basic-amount').find('input').attr('readonly', true);
+            //} else {
+            //    setTimeout(disableBasicAmount, 10);
+            //}
+        }
+
+        function SalaryCalculation() {
+            CalculateGross();
+            CalculateAddition();
+            CalculateDeduction();
+            CalculateNetpay();
+            CalculateOrgGross();
+        }
+
+        function CalculateAddition() {
+
+            var fields = $('#Addition .td-right :input');
+            var ddlFields = $('#Addition .ddl-addition');
+            var grossSalary = parseFloat($('#GrossSalary').val());
+            var sum = 0;
+
+            if ($('input:checkbox[id=isConsolidated]').is(':checked')) {
+
+                for (var i = 0; i < fields.length; i++) {
+
+                    var fieldVal = parseFloat($(fields[i]).val());
+
+                    if ($(ddlFields[i]).val() == 'Percent') {
+
+                        var percentedAmount = (grossSalary * fieldVal) / 100;
+
+                        sum = sum + percentedAmount;
+                    } else {
+                        sum = sum + fieldVal;
+                    }
+                }
+            } else {
+                for (var i = 0; i < fields.length; i++) {
+                    var basicSalary = parseFloat($('.basic-amount :input').val());
+
+                    var fieldVal = parseFloat($(fields[i]).val());
+
+                    if ($(ddlFields[i]).val() == 'Percent') {
+
+                        var percentedAmount = (basicSalary * fieldVal) / 100;
+
+                        sum = sum + percentedAmount;
+                    } else {
+                        sum = sum + fieldVal;
+                    }
+                }
+            }
+
+            $('#TotalAddition').val(Math.round(sum));
+        }
+
+        function CalculateDeduction() {
+
+            var fields = $('#Deduction .td-right :input');
+            var ddlFields = $('#Deduction .ddl-deduction');
+            var grossSalary = parseFloat($('#GrossSalary').val());
+            var basicSalary = 0;
+            var sum = 0;
+
+            if ($('.basic').val() == 'Percent') {
+                basicSalary = (grossSalary * parseFloat($('.basic-amount :input').val())) / 100;
+            } else {
+                basicSalary = parseFloat($('.basic-amount :input').val());
+            }
+
+            //when pf is zero
+            if ($('input:checkbox[id=isConsolidated]').is(':checked')) {
+                $('.pf-amount :input').val(0);
+            }
+
+            for (var i = 0; i < fields.length; i++) {
+
+                var fieldVal = parseFloat($(fields[i]).val());
+
+                if ($(ddlFields[i]).val() == 'Percent') {
+
+                    var percentedAmount = (basicSalary * fieldVal) / 100;
+
+                    sum = sum + percentedAmount;
+                } else {
+                    sum = sum + fieldVal;
+                }
+            }
+            $('#TotalDeduction').val(Math.round(sum));
+        }
+
+        function CalculateNetpay() {
+            var totalAddition = parseFloat($('#TotalAddition').val());
+            var totalDeduction = parseFloat($('#TotalDeduction').val());
+            var netPay = totalAddition - totalDeduction
+
+            $('#NetPay').val(netPay);
+        }
+
+        function CalculateOrgGross() {
+            var fields = $('#Addition .td-right :input');
+            var ddlFields = $('#Addition .ddl-addition');
+            var isGrossPH = $('.grossPayHead')
+            var basicSalary = parseFloat($('.basic-amount :input').val());
+            var grossSalary = parseFloat($('#GrossSalary').val());
+            var sum = 0;
+            var sumOrg = 0;
+
+            for (var i = 0; i < fields.length; i++) {
+
+                var fieldVal = parseFloat($(fields[i]).val());
+                if ($(isGrossPH[i]).val() == 'True') {
+                    if ($(ddlFields[i]).val() == 'Percent') {
+
+                        var percentedAmount = (grossSalary * fieldVal) / 100;
+
+                        sumOrg = sumOrg + percentedAmount;
+                    } else {
+                        sumOrg = sumOrg + fieldVal;
+                    }
+                }
+            }
+
+            $('#OrgGrossSalary').val(Math.round(sumOrg));
+        }
+
+        function CalculateGross() {
+
+            if (!$('input:checkbox[id=isConsolidated]').is(':checked')) {
+
+                var fields = $('#Addition .td-right :input');
+                var ddlFields = $('#Addition .ddl-addition');
+                var isGrossPH = $('.grossPayHead')
+                var basicSalary = parseFloat($('.basic-amount :input').val());
+                var sum = 0;
+
+                if (!$('input:checkbox[id=isConsolidated]').is(':checked')) {
+
+                    for (var i = 0; i < fields.length; i++) {
+
+                        var fieldVal = parseFloat($(fields[i]).val());
+
+                        if ($(isGrossPH[i]).val() == 'True') {
+                            if ($(ddlFields[i]).val() == 'Percent') {
+
+                                var percentedAmount = (basicSalary * fieldVal) / 100;
+
+                                sum = sum + percentedAmount;
+                            } else {
+                                sum = sum + fieldVal;
+                            }
+                        }
+                    }
+                }
+                $('#GrossSalary').val(Math.round(sum));
+            }
+        }
+
+        function disableGrossPayHead(status) {
+            $('.grossPayHead').each(function (index, value) {
+                typeID = $(this).attr('id').replace('IsGrossPayHead', 'AmountType');
+                if (status) {
+                    if ($(this).val() == 'True') {
+                        //$('#' + typeID).val('Percent');
+                        //$('select#' + typeID).val('Percent');
+                        $('select#' + typeID).attr('disabled', true);
+                    } else {
+                        $('select#' + typeID).removeAttr('disabled');
+                    }
+                } else {
+                    $('select#' + typeID).removeAttr('disabled');
+                }
+            });
+        }
+
+    });
+</script>

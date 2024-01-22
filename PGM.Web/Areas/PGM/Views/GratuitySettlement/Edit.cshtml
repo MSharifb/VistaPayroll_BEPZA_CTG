@@ -1,0 +1,37 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.GratuitySettlement.GratuitySettlementViewModel
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Edit", "GratuitySettlement", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        @Html.HiddenFor(model => model.EmployeeId)
+
+        <div class="GroupBox" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+
+        <div>
+            @Html.Partial("_CreateOrEdit", Model)
+        </div>
+        
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+            {
+                <input type="submit" value="Update" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+            }
+        </div>
+    </fieldset>
+}
+<div class="button-crude button-left">
+    @Html.ActionLink("Back to List", "Index")
+</div>

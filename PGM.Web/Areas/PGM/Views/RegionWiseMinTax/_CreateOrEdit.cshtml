@@ -1,0 +1,71 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxRegion.RegionWiseMinTaxViewModel
+
+@*@{
+    Layout = null;
+}*@
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.strMode)
+            @Html.LabelFor(model => model.IncomeYear)
+            <label class="required-field"> *</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.IncomeYear, Model.IncomeYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.AssessmentYear)
+            <label class="required-field"> *</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.AssessmentYear, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.RegionId)
+            <label class="required-field"> *</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.RegionId, Model.RegionList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.MinimumAmount)
+            <label class="required-field"> *</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.MinimumAmount, new { @class = "required" })
+        </span>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        buttonHide();
+    });
+
+    $(function () {
+        var Url = window.location.href;
+        $("#btnClear").live("click", function (event) {
+            event.preventDefault();
+            window.location.href = Url;
+        });
+    });
+
+    function buttonHide() {
+        if ('@Model.errClass' == "success" && '@Model.IsError' == "0") {
+            $('input[name="btnSave"]').hide();
+        }
+    }
+
+    $('#IncomeYear').live('change', function () {
+        var incomeYear = $(this).val();
+        incomeYear = incomeYear.split('-');
+        $('#AssessmentYear').val((parseInt(incomeYear[0]) + 1) + '-' + (parseInt(incomeYear[1]) + 1));
+    });
+
+</script>

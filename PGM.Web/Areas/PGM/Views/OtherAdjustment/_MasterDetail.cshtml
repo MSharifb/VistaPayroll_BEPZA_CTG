@@ -1,0 +1,50 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustment.OtherAdjustmentModel
+@using PGM.Web.Helpers
+
+
+<div class="row">
+    <span class="label">
+        @Html.LabelFor(model => model.EmployeeId)
+        <label style='color: red'>*</label>
+    </span>
+    <span class="field-LargeWidth">
+        @Html.HiddenFor(model => model.EmpID)
+        @Html.HiddenFor(model => model.EmployeeName)
+        @Html.HiddenFor(model => model.EmployeeDesignation)
+
+        @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "form-control select-single required" })
+    </span>
+    
+</div>
+
+<div class="row">
+    <input type="button" id="btnAddNewEmployee" value="+ Add Employee" class="btn btn-primary" style="float: left" />
+</div>
+<div class="row">
+    <table id="grid" class="contenttable" width="70%">
+        <thead>
+            <tr>
+                <th>Employee Id</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Adjustment Type</th>
+                <th>Salary Head</th>
+                <th>Amount</th>
+                <th>Is Override?</th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        @{
+            if (Model.OtherEmployeeModel != null && Model.OtherEmployeeModel.Any())
+            {
+                foreach (var x in Model.OtherEmployeeModel)
+                {
+                    @Html.Partial("_PartialDetail", x);
+                }
+            }
+        }
+        </tbody>
+    </table>
+</div>
+

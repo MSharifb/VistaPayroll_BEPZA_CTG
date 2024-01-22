@@ -1,0 +1,290 @@
+﻿@model PGM.Web.Areas.PGM.Models.IncentiveBonusProcess.IncentiveBonusViewModel
+@{
+    ViewBag.Title = "BonusDetail";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("BonusDetail", "IncentiveBonusProcess", FormMethod.Post, new { id = "frm" }))
+{<fieldset>
+    <div class="GroupBox" id="message">
+        @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+    </div>
+
+    <div class="GroupBox">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.FinancialYear)
+                @Html.Hidden("IncentiveBonusId", Model.Id)
+            </span>
+            <span class="field">
+                @Html.TextBoxFor(model => model.FinancialYear, new { @class = "read-only", @readonly = true })
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.IncentiveBonusDate)
+            </span>
+            <span class="field">
+                @Html.EditorFor(model => model.IncentiveBonusDate, new { @class = "read-only", @readonly = true })
+            </span>
+        </div>
+
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.OrderRefNo)
+            </span>
+            <span class="field">
+                @Html.TextBoxFor(model => model.OrderRefNo, new { @class = "read-only", @readonly = true })
+            </span>
+            <span class="label-right">
+                @Html.LabelFor(model => model.OrderDate)
+            </span>
+            <span class="field">
+                @Html.EditorFor(model => model.OrderDate, new { @class = "read-only", @readonly = true })
+            </span>
+        </div>
+
+        <div class="row">
+            <div id="jqSearch">
+            </div>
+        </div>
+
+        <div class="clear">
+        </div>
+    </div>
+
+    @*<fieldset>
+            <legend>Individual Bonus Entry</legend>
+            @Html.Partial("_DetailEntryDesign")
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                    
+                    <input id="clearButton" type="button" value="Clear" class="filterbutton" onclick="this.form.reset();"
+                           style="width: auto; overflow: visible; padding-left: .25em; padding-right: .25em;" />
+                }
+            </div>
+            <div class="buttonSubmit">
+            </div>
+        </fieldset>*@
+}
+<div class="clear" style="height: 10px">
+</div>
+<table id="jqGrid" cellpadding="0" cellspacing="0"></table>
+<div id="jqGridPager" style="text-align: center;">
+</div>
+
+<div id="divList">
+    @Html.Partial("_BonusDetailGridList")
+</div>
+</fieldset>
+<div class="button-crude button-left" style="margin: 10px 0;">
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<style type="text/css">
+    div.button-crude {
+        text-align: left;
+    }
+
+    .ColorProperties {
+        border-color: #FF0000;
+        background-color: #FFF2F2;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $('#EmpID').autocomplete({
+            minChars: 0,
+            max: 12,
+            autoFill: true,
+            mustMatch: true,
+            matchContains: false,
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("GetEmployeeAutoComplete", "IncentiveBonusProcess")', type: "POST", dataType: "json", //Url to our action supplying a list of vendors
+                    data: { searchString: request.term, maxRecords: 10 },
+                    success: function (data) {
+                        response($.map(data, function (item) { return { value: item }; }));
+                    }
+                });
+            },
+            select: function (event, ui) {
+                $('#EmpID').val(ui.item ? ui.item.value : 0);         // $('#EmpID').val(ui.item ? ui.item.id : 0);   Set our EmpID hidden for model binding
+                GetEmployeeInfo($('#EmpID').val());
+            }
+        });
+
+        $("#EmpID").keydown(function (event) {
+            if (event.keyCode == 46 || event.keyCode == 8) {
+                $('#FullName').val('');
+                $('#AccountNo').val('');
+                $('#EmpBasicSalary').val('');
+            }
+        });
+    });
+
+    function GetEmployeeInfo(EmpID) {
+
+        var url = '@Url.Action("GetEmployeeInfoForAutoComplete", "IncentiveBonusProcess")';
+
+        $('#EmployeeId').val('');
+        $('#EmployeeInitial').val('');
+        $('#FullName').val('');
+        $('#DivisionId').val('');
+        $('#DesignationId').val('');
+        $('#GradeId').val('');
+        $('#BankId').val('');
+        $('#BranchId').val('');
+        $('#AccountNo').val('');
+        $('#EmpBasicSalary').val('');
+
+        // form = $('#frm');
+        //var serializedForm = form.serialize();
+
+        if (EmpID != '') {
+            $.post(url, { EmpID: EmpID }, function (obj) {
+                //$.post(url, serializedForm, function (obj) {
+
+                if (obj.Result == 'InactiveEmployee') {
+                    $("#EmpID").val('');
+                    alert('The Employee is Inactive.');
+                }
+                else if (obj.Result == 'PermanentEmp') {
+                    $("#EmpID").val('');
+                    alert('The Employee is not permanent.');
+                }
+                else if (obj.Result == 'BonusNotEligible') {
+                    $("#EmpID").val('');
+                    alert('Bonus is not eligible for the selected employee.');
+                }
+                else if (obj.Result == false) {
+                    $("#EmpID").val('');
+                    alert('System is unable to load data please try again.');
+                }
+                else {
+                    $("#EmployeeId").val(obj.EmployeeId);
+                    $("#FullName").val(obj.FullName);
+                    $('#AccountNo').val(obj.AccountNo);
+                    $("#DivisionId").val(obj.DivisionId);
+                    $('#DesignationId').val(obj.DesignationId);
+                    $('#GradeId').val(obj.JobGradeId);
+                    $('#BankId').val(obj.BankId);
+                    $('#BranchId').val(obj.BranchId);
+
+                    $('#EmpBasicSalary').val(obj.BasicSalary);
+                }
+
+            }, "json");
+        }
+        return false;
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        $('#EmpBonusAmount, #EmpRevenueStamp').live('blur', function () {
+
+            var Bonus = $('#EmpBonusAmount').val();
+            var stamp = $('#EmpRevenueStamp').val();
+
+            if (Bonus >= 0)
+                Bonus = parseFloat(Bonus);
+            if (stamp >= 0)
+                stamp = parseFloat(stamp);
+            if (Bonus > stamp) {
+                $('#EmpNetPayable').val(Bonus - stamp);
+            }
+            else {
+                $('#EmpBonusAmount').val(0);
+                $('#EmpRevenueStamp').val(0);
+                $('#EmpNetPayable').val(0);
+
+                alert('Bonus amount must be greater than  R/S .');
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#EmpBonusAmount , #EmpRevenueStamp").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#btnSave').live('click', function () {
+
+            var EmployeeInitial = $('#EmployeeInitial').val();
+            var EmpBonusAmount = $('#EmpBonusAmount').val();
+            var EmpRevenueStamp = $('#EmpRevenueStamp').val();
+
+            var form = $('#frm');
+            var serializedForm = form.serialize();
+
+            var url = '@Url.Action("BonusDetail", "BonusProcess")';
+
+            if ((EmployeeInitial != '') && (EmpBonusAmount > 0) && EmpRevenueStamp > 0) {
+
+                $.post(url, serializedForm, function (obj) {
+
+                    if (obj.Success == false) {
+                        $("#message").show();
+                        $("#message").html("<b>" + obj.result + "</b>").css("color", "red");
+
+                    }
+                    else {
+                        $("#message").show();
+                        $("#message").html("<b>" + obj.result + "</b>").css("color", "green");
+
+                        jQuery('#jqGrid').trigger("reloadGrid");
+                        $('#clearButton').trigger('click');
+
+                    }
+
+                    $('#EmpBonusAmount').removeClass('ColorProperties');
+                    $('#EmpRevenueStamp').removeClass('ColorProperties');
+
+                });
+            }
+            else {
+
+                $("#message").show();
+                $("#message").html("<b>" + 'Please fill up the red marked field(s).' + "</b>").css("color", "red");
+
+                $('#EmpBonusAmount').addClass('ColorProperties');
+
+                $('#EmpRevenueStamp').addClass('ColorProperties');
+
+            }
+
+            return false;
+        });
+    });
+</script>

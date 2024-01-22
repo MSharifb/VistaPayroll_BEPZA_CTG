@@ -1,0 +1,45 @@
+﻿@model PGM.Web.Areas.PGM.Models.VoucherTemplate.VoucherTemplateMasterViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Ajax.BeginForm("Index", "VoucherTemplate", new AjaxOptions { HttpMethod = "POST" }, new { id = "frm" }))
+{
+     <div class="GroupBox" id="message">
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+     </div>   
+     <div class="GroupBox">
+      <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Year)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.Year, new { @class = "read-only", @readonly = true })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.Month)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(m => m.Month, new { @class = "read-only", @readonly = true })
+        </span>
+       </div>
+         <div class="row">
+             <span class="label">
+                 @Html.LabelFor(model => model.ApproverId)
+             </span>
+             <span class="field">
+                 @Html.DropDownListFor(m => m.ApproverId, Model.ApproverList, @String.Format("{0}", Content.DDLOptionalLabel()))
+             </span>
+         </div>
+         <div class="button-crude">
+                 <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+         </div>
+      </div>
+    }

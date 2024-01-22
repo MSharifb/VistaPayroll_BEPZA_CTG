@@ -1,0 +1,26 @@
+﻿@model PGM.Web.Areas.PGM.Models.IncentiveBonusProcess.IncentiveBonusViewModel
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "IncentiveBonusProcess", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        @Html.Partial("_CreateOrEdit", Model)
+        <div class="GroupBox">
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Process" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+    </fieldset>
+}
+
+<div class="button-crude button-left">
+    @Html.ActionLink("Back to List", "Index")
+</div>

@@ -1,0 +1,29 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustment.OtherAdjustDeductEmployeesModel
+@using PGM.Web.Helpers
+
+@using (Html.BeginCollectionItem("OtherEmployeeModel"))
+{
+    <tr>
+        <td class="tDataWithId">
+            @Html.TextBoxFor(model => model.EmpID, new { @required = "required", @readonly = "readonly" })
+            @Html.HiddenFor(model => model.Id)
+        </td>
+
+        <td>@Html.TextBoxFor(model => model.EmployeeName, new { @required = "required", @width = "80px", @readonly = "readonly" })</td>
+        <td>@Html.TextBoxFor(model => model.EmployeeDesignation, new { @required = "required", @readonly = "readonly" })</td>
+
+        <td>@Html.DropDownListFor(m => m.Type, Model.AdjustmentTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required", @onchange = "getSalaryHead(this)", })</td>
+        <td class="pull-left">
+            @Html.DropDownListFor(m => m.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @required = "required", @class = "tdSalaryHead" })
+        </td>
+
+        <td>@Html.TextBoxFor(model => model.Amount, new { @required = "required" })</td>
+        <td>@Html.CheckBoxFor(m => m.IsOverrideStructureAmount)</td>
+
+        <td style="width:70px;">
+            <a href="#" class="deleteRow" title="delete" id="cmdDeleteRow">
+                <img src='@Url.Content("~/Content/Images/Delete.png")' alt="Delete" style="border: none; " />
+            </a>
+        </td>
+    </tr>
+}

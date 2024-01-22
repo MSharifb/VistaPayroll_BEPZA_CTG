@@ -1,0 +1,63 @@
+﻿@model PGM.Web.Areas.PGM.Models.ArrearAdjustment.ArrearAdjustmentModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+
+
+@using (Html.BeginForm("Edit", "ArrearAdjustmentApproval", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        <div class="GroupBox" style="max-height: 30px; height:30px;" id="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            <div id="ErrorMessage" style="color:red; font-weight: bold;">@ViewBag.ErrorMessage</div>
+        </div>
+        @Html.HiddenFor(model => model.Id)
+
+        @Html.Partial("_CreateOrEdit", Model)
+        <br />
+        <div class="GroupBox">
+            <div class="button-crude">
+                <button class="btn btn-sm btn-primary" id="btnApprove" type="button" value="Approve" style="margin-right:8px"> <i class="fa fa-lg fa-check-circle"></i>Approve</button>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </fieldset>
+}
+
+<div class="button-crude button-left" style="padding-left: 5px;">
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<script type="text/javascript">
+    $('#btnApprove').click(function () {
+        var adjustmentId = $('.arrear-detail-list tbody .selectedRow .id-area .id-val :input').val();
+        if (isNaN(adjustmentId)) {
+            adjustmentId = 0;
+        }
+
+        var url = '@Url.Action("ApproveArrearAdjustment", "ArrearAdjustmentApproval")';
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { arrearAdjustmentId: adjustmentId },
+            success: (function (result) {
+                if (result.Message === "Success") {
+                    $('.arrear-detail-list tbody .selectedRow .pmnt-status').html("Approved");
+                    $('#message').html("Successfully approved.");
+                    $('#message').css({ "color": "green", "font-weight": "bold" });
+                    $('#btnApprove').hide();
+                }
+                else {
+                    $('#message').html("Arrear adjustment approval failed.");
+                    $('#message').css({ "color": "red", "font-weight": "bold" });
+                }
+            })
+        });
+        return false;
+    })
+</script>

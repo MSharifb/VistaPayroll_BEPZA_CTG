@@ -1,0 +1,155 @@
+﻿@model PGM.Web.Areas.PGM.Models.EmpChargeAllowance.EmpChargeAllowanceModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    <div class="row">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(m => m.EmployeeId, new { @class = "label-required" })
+            </span>
+            <span class="field" style="width: 50%;">
+                @Html.DropDownListFor(model => model.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Designation)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.Designation, new { @class = "read-only", @readonly = true })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.Department)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.Department, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BasicSalary)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.BasicSalary, new { @class = "read-only", @style = "text-align:right;", @readonly = true })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.MaxAllowance)
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.MaxAllowance, new { @class = "read-only", @style = "text-align:right;", @readonly = true })
+        </span>
+    </div>
+
+</div>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.StartDate)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.StartDate)
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.EndDate)
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.EndDate)
+            &nbsp; &nbsp; &nbsp; &nbsp;
+            @Html.CheckBoxFor(model => model.IsContinuous)
+            @Html.LabelFor(model => model.IsContinuous)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.MonthlyAllowance)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.MonthlyAllowance, new { @class = "doubleNZ", @style = "text-align:right;", @maxLength = "10" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.ActualEndDate)
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.ActualEndDate)
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.ChargeDutyName)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(model => model.ChargeDutyName, new { @style = "width:255px", @maxLength = "50" })
+        </span>
+        <span class="label-right">
+
+        </span>
+        <span class="field">
+
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#IsContinuous').change(function () {
+            if ($(this).is(':checked')) {
+                $("#EndDate").attr('disabled', 'disabled');
+            } else {
+                $("#EndDate").removeAttr('disabled');
+            }
+        });
+
+        $('#EndDate').change(function () {
+            $("#EndDate").removeAttr('disabled');
+            $('#IsContinuous').attr('checked', false); // Checks it
+        });
+
+        $("select#EmployeeId").change(function () {
+            // Employee information
+            var url = '@Url.Action("GetEmployeeInfo", "PGMCommon")' + '?employeeId=' + $(this).val();
+            $.get(url,
+                function (data) {
+                    if (data.Success) {
+                        $("#Designation").val(data.EmployeeDesignation);
+                        $("#Department").val(data.EmployeeDepartment);
+                        $("#BasicSalary").val(data.BasicSalary);
+                    } else {
+                        $("#message").html('Unable to load employee data!');
+                    }
+                });
+            
+            // Monthly Allowance
+            var urlMA = '@Url.Action("GetMonthlyAllowance", "EmpChargeAllowance")' + '?employeeId=' + $(this).val();
+            $.get(urlMA,
+                function (data) {
+                    if (data.Success) {
+                        $("#MonthlyAllowance").val(data.MonthlyAllowance);
+                    } else {
+                        $("#message").html('Unable to load monthly allownace!');
+                    }
+                });
+            
+        });
+
+    });
+
+    //Check string has null or empty
+    var StringHasValue = function (strValue) {
+        if ($.trim(strValue) != "" && $.trim(strValue) != null && $.trim(strValue) != undefined)
+            return true;
+        else
+            return false;
+    };
+
+</script>

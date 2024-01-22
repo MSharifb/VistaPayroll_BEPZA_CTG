@@ -1,0 +1,211 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetter.BankAdviceLetterViewModel
+@using PGM.Web.Helpers
+<script type="text/javascript">
+    $(function () {
+
+        $("input[type='radio']:checked").next().css("font-weight", "bold");
+
+        $("input[type='radio']").live('click', function () {
+            var checkedRadio = $(this).val();
+            if ($(this).val() == 'Salary') {
+                $("input[type='radio']:checked").next().css("font-weight", "bold");
+
+                $("input[type='radio']:not(:checked)").next().css("font-weight", "normal");
+
+            } else if ($(this).val() == 'Bonus') {
+                $("input[type='radio']:checked").next().css("font-weight", "bold");
+                $("input[type='radio']:not(:checked)").next().css("font-weight", "normal");
+            }
+            else {
+                $("input[type='radio']:checked").next().css("font-weight", "bold");
+                $("input[type='radio']:not(:checked)").next().css("font-weight", "normal");
+            }
+
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        bLetterType = $('#hfSelectedLetterType').val();
+
+
+        $('#BankId').live('change', function () {
+            var id = $(this).val();
+            $('#hfBankId').val(id);
+            bLetterType = $('#hfSelectedLetterType').val();
+
+
+            $.ajax({
+                url: '@Url.Action("GetBankAccNo", "BankAdviceLetter")',
+                data: { id: id, LetterType: bLetterType },
+                dataType: "json",
+                type: "POST",
+                error: function () {
+                    alert("System is unable to load data, please try again.");
+                },
+                success: function (data) {
+
+                    if (data != '') {
+
+                        var items = "<option value=\"" + "" + "\">" + "[Select One]" + "</option>";
+                        $.each(data, function (i, item) {
+                            items += "<option value=\"" + item.Value + "\">" + item.Text + "</option>";
+                        });
+
+                        $("#AccountNo").html(items);
+                    }
+                    else {
+
+                        alert("System is unable to load data, please try again.");
+                    }
+
+                }
+
+            });
+        });
+
+        $('#AccountNo').live('change', function () {
+            var changeSelectedLetterType = $('#hfSelectedLetterType').val();
+            bLetterType = changeSelectedLetterType;
+            var bankId = $('#hfBankId').val();
+            var accountNo = $(this).val();
+
+            $('#hfAccountNo').val(accountNo);
+
+            var url = '@Url.Action("GetBranchNbankAddress", "BankAdviceLetter")';
+
+            $('#BranchId').val('');
+            $('#BankAddress').val('');
+
+            if (bankId > 0) {
+                $.post(url, { LetterType: bLetterType, bankId: bankId, accountNo: accountNo }, function (obj) {
+
+                    if (obj.BranchId > 0) {
+                        $("#BranchId").val(obj.BranchId);
+                        $("#BankAddress").val(obj.BankAddress);
+                    }
+                    else {
+                        $("#AccountNo").html("<option value=\"" + "" + "\">" + "[Select One]" + "</option>");
+                        alert('Data is not available for this type of letter, please try again.');
+                    }
+
+                }, "json");
+            }
+        });
+
+        $('#SalaryYear').live('change', function () {
+            var salaryear = $(this).val();
+            $('#hfSalaryYear').val(salaryear);
+        });
+
+        $('#SalaryMonth').live('change', function () {
+            var slaryMonth = $(this).val();
+            $('#hfSalaryMonth').val(slaryMonth);
+        });
+
+        $("input[type='radio']").live('click', function () {
+            var checkedRadio = $(this).val();
+            $('#hfSelectedLetterType').val(checkedRadio);
+        });
+
+    });
+</script>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.LetterType)
+            @Html.HiddenFor(model => model.LetterTypeB)
+            @*@Html.HiddenFor(model => model.LetterType)*@
+            @*@Html.HiddenFor(model => model.BonusTypeId)*@
+            @Html.HiddenFor(model => model.SelectedLetterType, new { id = "hfSelectedLetterType" })
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field" style="width: 300px;">
+            @Html.RadioButtonFor(model => model.SelectedLetterType, "Salary", new { id = "Salary", @class = "doDisabled" })
+            @Html.Label(" Salary")
+            @Html.RadioButtonFor(model => model.SelectedLetterType, "Bonus", new { id = "Bonus", @class = "doDisabled" })
+            @Html.Label(" Bonus")
+            @Html.RadioButtonFor(model => model.SelectedLetterType, "LeaveEncashment", new { id = "LeaveEncashment", @class = "doDisabled" })
+            @Html.Label(" Leave Encashment")
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.HiddenFor(model => model.BranchId)
+            @Html.HiddenFor(model => model.BankAddress)
+            @*@Html.HiddenFor(model => model.TotalPayable)*@
+            @*@Html.HiddenFor(model => model.SalaryYear, new { id = "hfSalaryYear" })
+            @Html.HiddenFor(model => model.SalaryMonth, new { id = "hfSalaryMonth" })*@
+            @Html.LabelFor(model => model.SalaryYear)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(y => y.SalaryYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.SalaryMonth)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(m => m.SalaryMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.ReferenceNo)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.ReferenceNo, new { @maxlength = "50" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.DateofLetter)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.DateofLetter)
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.BankId)
+            @Html.HiddenFor(model => model.BankId, new { id = "hfBankId" })
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.BankId, Model.BankList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.AccountNo)
+            @Html.HiddenFor(model => model.AccountNo, new { id = "hfAccountNo" })
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field dll-BankAccount-No">
+            @Html.DropDownListFor(model => model.AccountNo, Model.AccountNoList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.TotalAmount)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.TextBoxFor(model => model.TotalAmount, new { @maxlength = "10", @style = "text-align:right;" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.BonusTypeId)
+        </span><span class="field">
+            @Html.DropDownListFor(m => m.BonusTypeId, Model.BonusTypeList, @String.Format("{0}", Content.DDLOptionalLabel()))
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+</div>

@@ -1,0 +1,54 @@
+﻿@using System.Data
+@using System.Text
+@model PGM.Web.Areas.PGM.Models.CustomReport.CustomReportModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+<div>
+
+    <u><b> @Model.ReportName </b></u>
+    <br />
+    @{
+        var parameterNames = Model.ReportParameterNameHints.Split(',');
+        var parameterValues = Model.ReportParameterDefaultValue.Split(',');
+
+        StringBuilder param = new StringBuilder();
+        int position = 0;
+        foreach (var name in parameterNames)
+        {
+            param.Append(name).Append(": ").Append(parameterValues[position]).AppendLine();
+            ++position;
+        }
+    }
+    <u> @param.ToString()</u>
+    <br /><br />
+
+    @{
+
+    }
+    <table>
+        <tr style="border: 1px solid gray">
+            @foreach (DataColumn col in Model.ReportDataTable.Columns)
+            {
+                <th style="padding: 2px; border-right: 1px solid gray;">@col.ColumnName</th>
+            }
+        </tr>
+        @foreach (DataRow row in Model.ReportDataTable.Rows)
+        {
+            <tr style="border: 1px solid gray">
+                @foreach (var item in row.ItemArray)
+                {
+                    <td style="padding: 3px; border-right: 1px solid gray;">@item</td>
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+
+<div class="button-crude button-left" style="padding-left: 5px;">
+
+    @Html.ActionLink("Back to List", "Index")
+</div>

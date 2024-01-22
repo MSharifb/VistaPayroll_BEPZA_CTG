@@ -1,0 +1,39 @@
+﻿@model PGM.Web.Areas.PGM.Models.SalaryHeadCOASubledgerMapping.SalaryHeadCOASubledgerMappingViewModel
+
+<div class="GroupBox" id="message">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryHeadId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "select-single required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.COAId)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.COAId, Model.COAList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "select-single required" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SubledgerId)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(m => m.SubledgerId, Model.SubledgerList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "select-single required" })
+        </span>
+        <span class="label-right">
+            @Html.LabelFor(model => model.IsMultiEmpConfig)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsMultiEmpConfig)
+        </span>
+    </div>
+</div>
+
+
+

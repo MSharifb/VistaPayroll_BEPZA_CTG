@@ -1,0 +1,45 @@
+﻿@model PGM.Web.Areas.PGM.Models.CustomProperties.CustomPropertiesModel
+
+@Html.HiddenFor(model => model.Id)
+<div class="GroupBox">
+    <fieldset>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.ModelName)
+            </span><span class="field" style="width: 80%;">
+                @Html.TextBoxFor(model => model.ModelName)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.PropertyName)
+            </span><span class="field-LargeWidth">
+                @Html.TextBoxFor(model => model.PropertyName)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.DisplayText)
+                <label class="required-field">*</label>
+            </span><span class="field-LargeWidth">
+                @Html.EditorFor(model => model.DisplayText)
+            </span>
+        </div>
+
+    </fieldset>
+
+    <div class="row">
+        <span class="label">
+            <label for="PeriodFrom"> Is required field?  </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.IsRequired)
+        </span><span class="label-right">
+            &nbsp;
+        </span><span class="field">
+            &nbsp;
+        </span>
+    </div>
+    <div class="clear">
+    </div>
+
+</div>

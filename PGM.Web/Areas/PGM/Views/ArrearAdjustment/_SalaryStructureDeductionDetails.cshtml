@@ -1,0 +1,53 @@
+﻿@*@model PGM.Web.Areas.PGM.ViewModel.SalaryStructureDetailsViewModel*@
+
+@using PGM.Web.Helpers
+@using (Html.BeginCollectionItem("SalaryStructureDetail"))
+{
+    <tr>
+        <td class='td-head'>
+            @Html.HiddenFor(model => model.HeadId)
+            @Html.DisplayFor(model => model.DisplayHeadName)
+            @Html.HiddenFor(model => model.DisplayHeadName)
+            @Html.HiddenFor(model => model.AmountType)
+        </td>
+        <td class="td-calType">
+            @Html.TextBoxFor(model => model.AmountType, new { @readonly = @"readonly" })
+            @*@Html.DropDownListFor(model => model.AmountType, Model.HeadAmountTypeList)*@
+        </td>
+        <td class="td-basedOn">
+            @*@Html.DropDownListFor(model => model.BasedOn, Model.BasedOnList)*@
+            @Html.TextBoxFor(model => model.BasedOn, new { @readonly = @"readonly" })
+        </td>
+
+        <td class="td-amount">
+            @Html.TextBoxFor(model => model.Amount, "{0:F2}", new { @readonly = @"readonly" })
+        </td>
+        <td class="td-totalamount">
+            @Html.EditorFor(model => model.TotalAmount, "{0:F2}")
+        </td>
+
+        <td style="display:none">
+            @Html.HiddenFor(model => model.HeadType)
+        </td>
+        @* <td>
+                <a href="#" class="deleteRow" title="delete">
+                    <img src='@Url.Content("~/Content/Images/Delete.png")' style="border: none; "/></a>
+            </td>*@
+    </tr>
+}
+
+<style>
+    #Deduction .td-right input[type="text"], input[type="password"] {
+        text-align: right;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.ddl-deduction').change(function () {
+        $('input#' + $(this).attr('id')).val($(this).val());
+    });
+    $(function () {
+        //  $('.basic').attr('disabled', true);
+        $('.cssSalaryHeadClass').css('color', 'Red');
+    });
+</script>

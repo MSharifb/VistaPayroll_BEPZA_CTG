@@ -1,0 +1,122 @@
+﻿@model PGM.Web.Areas.PGM.Models.HouseMaintenanceCharge.HouseMaintenanceChargeViewModel
+@using PGM.Web.Helpers
+
+
+@Html.HiddenFor(model => model.Id)
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryHeadId)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.DropDownListFor(model => model.SalaryHeadId, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span><span class="label-right">
+            @Html.LabelFor(model => model.EffectiveDate)
+            <label class="required-field">
+                *
+            </label>
+        </span><span class="field">
+            @Html.EditorFor(model => model.EffectiveDate)
+        </span>
+    </div>
+
+</div>
+
+<div class="GroupBox">
+    <div class="row" align="center">
+        <div class="button-crude" style="float: right; text-align: right; width: 706px; margin-right: 15%;">
+            <input id="btnAdd" type="button" value="Add" />
+        </div>
+        <div style="width: 70%">
+            <table id="grid" class="contenttable">
+                <thead>
+                    <tr>
+
+                        <th width="30%" align="center">
+                            From Grade
+                            <label style='color: red; font-weight: normal;'>
+                                *
+                            </label>
+                        </th>
+
+                        <th width="30%" align="center">
+                            To Grade
+                            <label style='color: red; font-weight: normal;'>
+                                *
+                            </label>
+                        </th>
+
+                        <th width="30%" align="center">
+                            Amount (% of Basic Salary)
+                            <label style='color: red; font-weight: normal;'>
+                                *
+                            </label>
+                        </th>
+                        <th width="10%" align="center">
+                            Remove
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.HouseMaintenanceDetail != null && Model.HouseMaintenanceDetail.Count > 0)
+                    {
+                        foreach (var item in Model.HouseMaintenanceDetail)
+                        {
+                            @Html.Partial("_Detail", item);
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(function () {
+        $("#btnAdd").live('click', function (e) {
+
+            $.ajax({
+                url: '@Url.Action("AddDetail", "HouseMaintenanceCharge")',
+                type: 'GET',
+                data: { Id: @Model.Id },
+
+                error: function () {
+                    alert("Error In Detail Page");
+                },
+                success: function (result) {
+                    $("#grid tbody").append(result); //$("#grid tbody").html(result);
+                }
+            });
+        });
+
+        $(".deleteRow").live('click',function(e){
+            $(this).parent().parent().remove();
+        });
+    });
+
+    function RemoveDb(el,id){
+
+        $.ajax({
+            url: '@Url.Action("DeleteDetail", "HouseMaintenanceCharge")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({Id:id}),
+            contentType: "application/json; charset=utf-8",
+            error: function () {
+                $("#message").html("<div class=\"validation-summary-errors\" data-valmsg-summary=\"true\"> <span> System Error!</span>  </div> ");
+            },
+            success: function (result) {
+                $(el).parent().parent().remove();
+            }
+        });
+
+
+    }
+
+</script>

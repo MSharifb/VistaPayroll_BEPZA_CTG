@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsSalaryPaySheet" targetNamespace="http://tempuri.org/dsSalaryPaySheet.xsd" xmlns:mstns="http://tempuri.org/dsSalaryPaySheet.xsd" xmlns="http://tempuri.org/dsSalaryPaySheet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="DBConnectionString" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="DBConnectionString (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.DBConnectionString.ConnectionString" Provider="System.Data.SqlClient" />
+        </Connections>
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsSalaryPaySheet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="dsSalaryPaySheet" msprop:Generator_UserDSName="dsSalaryPaySheet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="dtGetTaxableSalaryPaySheetDetail" msprop:Generator_TableClassName="dtGetTaxableSalaryPaySheetDetailDataTable" msprop:Generator_TableVarName="tabledtGetTaxableSalaryPaySheetDetail" msprop:Generator_TablePropName="dtGetTaxableSalaryPaySheetDetail" msprop:Generator_RowDeletingName="dtGetTaxableSalaryPaySheetDetailRowDeleting" msprop:Generator_RowChangingName="dtGetTaxableSalaryPaySheetDetailRowChanging" msprop:Generator_RowEvHandlerName="dtGetTaxableSalaryPaySheetDetailRowChangeEventHandler" msprop:Generator_RowDeletedName="dtGetTaxableSalaryPaySheetDetailRowDeleted" msprop:Generator_UserTableName="dtGetTaxableSalaryPaySheetDetail" msprop:Generator_RowChangedName="dtGetTaxableSalaryPaySheetDetailRowChanged" msprop:Generator_RowEvArgName="dtGetTaxableSalaryPaySheetDetailRowChangeEvent" msprop:Generator_RowClassName="dtGetTaxableSalaryPaySheetDetailRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="EmployeeId" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnEmployeeId" msprop:Generator_ColumnPropNameInRow="EmployeeId" msprop:Generator_ColumnPropNameInTable="EmployeeIdColumn" msprop:Generator_UserColumnName="EmployeeId" type="xs:int" minOccurs="0" />
+              <xs:element name="HeadName" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnHeadName" msprop:Generator_ColumnPropNameInRow="HeadName" msprop:Generator_ColumnPropNameInTable="HeadNameColumn" msprop:Generator_UserColumnName="HeadName" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="1" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="HeadAmount" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnHeadAmount" msprop:Generator_ColumnPropNameInRow="HeadAmount" msprop:Generator_ColumnPropNameInTable="HeadAmountColumn" msprop:Generator_UserColumnName="HeadAmount" type="xs:decimal" minOccurs="0" />
+              <xs:element name="SortPriority" msdata:ReadOnly="true" msprop:Generator_ColumnVarNameInTable="columnSortPriority" msprop:Generator_ColumnPropNameInRow="SortPriority" msprop:Generator_ColumnPropNameInTable="SortPriorityColumn" msprop:Generator_UserColumnName="SortPriority" type="xs:int" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

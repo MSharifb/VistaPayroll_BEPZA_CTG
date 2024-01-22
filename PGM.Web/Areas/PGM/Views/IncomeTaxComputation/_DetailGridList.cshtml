@@ -1,0 +1,116 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.IncomeTaxComputation.IncomeTaxComputationViewModel
+
+@Html.HiddenFor(model => model.IncomeYear, new { id = "hfIncomeYear" })
+@Html.HiddenFor(model => model.AssessmentYear, new { id = "hfAssessmentYear" })
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+        $("a.refreshIcon").live("click", function () {
+            // alert($(this));
+
+            rollbackLinkObj = $(this);  //for future use
+            $('#rollback-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+     
+</script> 
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var incomeYear = $('#hfIncomeYear').val();
+        var assessmentYear = $('#hfAssessmentYear').val();
+      
+        $('#jqGrid').jqGrid({
+
+            url: '@Url.Action("GetDetailList")?incomeYear=' + incomeYear + "&assessmentYear=" + assessmentYear,
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Employee ID', 'Income Year', 'Assessment Year', 'Department', 'Employment Category', 'Name', 'Designation', 'Taxable Income', 'Tax Liability', 'Investment Rebate', 'Net Tax Payable', 'Monthly Tax', 'Tax Deducted', 'Due Tax', 'Tax Computation Sheet', 'Rollback'],
+            colModel: [
+                            { name: 'ID', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+                            { name: 'EmpID', index: 'EmpID', align: 'center', width: '75px', search: false, edittype: 'text' },
+
+                            { name: 'IncomeYear', index: 'IncomeYear', align: 'left', hidden: true, search: true, edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(incomeYear).addClass('read-only') } } },
+                            { name: 'AssessmentYear', index: 'AssessmentYear', align: 'left', hidden: true, search: true, edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(assessmentYear).addClass('read-only') } } },
+                           
+                            { name: 'DivisionId', index: 'DivisionId', hidden: true, search: true, edittype: 'select', surl: '@Url.Action("GetDivisionList")' },
+                            { name: 'EmploymentTypeId', index: 'EmploymentTypeId',  hidden: true, search: true, edittype: 'select', surl: '@Url.Action("GetEmploymentCategoryList")' },
+
+                            { name: 'FullName', index: 'FullName', align: 'left', search: false, edittype: 'text' },
+                            { name: 'DesignationId', index: 'DesignationId', hidden: true, search: true, edittype: 'select', surl: '@Url.Action("GetDesignationList")' },
+
+                            { name: 'TaxableIncome', index: 'TaxableIncome', align: 'right', search: false, width: '90px', edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxLiability', index: 'TaxLiability', align: 'right', width: '70px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'InvestmentRebate', index: 'InvestmentRebate', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxPayable', index: 'TaxPayable', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxPerMonth', index: 'TaxPerMonth', align: 'right', width: '60px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxDeducted', index: 'TaxDeducted', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxDue', index: 'TaxDue', align: 'right', width: '60px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TaxComputationSheet', index: 'TaxComputationSheet', align: 'center', width: '110px', search: false, hidden: IsDeleteAssigned, sortable: false, edittype: 'image', formatter: TaxComputationSheetFormateadorLink },
+                            { name: 'Rollback', index: 'Rollback', align: 'center', search: false, hidden: IsDeleteAssigned, sortable: false, width: '50px', edittype: 'image', formatter: deleteformateadorLink }
+
+                          ],
+            autowidth: true,
+            caption: "Tax Computation Detail Information",
+            rowList: [10, 20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 10,
+            sortname: 'ID',
+            sortorder: 'asc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+        
+    });
+
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "RollbackIndividual", new { idRollbackIndividual = "_idRollback_" }, new { @class = "refreshIcon" })';
+        url = url.replace(/_idRollback_/, rowObject[0]);
+        return url;
+    }
+
+    function TaxComputationSheetFormateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "TaxComputationSheet", new { idYearMonth = "_idYearMonth_" }, new { @class = "mSalaryPDetails" })';
+        url = url.replace(/_idYearMonth_/, rowObject[0]);
+        return url;
+    }
+
+   
+</script>
+<style type="text/css" media="screen">
+    th.ui-th-column div{
+        white-space:normal !important;
+        height:auto !important;
+        padding:1px;
+    }
+</style>

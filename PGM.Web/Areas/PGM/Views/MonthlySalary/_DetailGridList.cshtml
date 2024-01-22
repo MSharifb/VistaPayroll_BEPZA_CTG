@@ -1,0 +1,120 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.MonthlySalaryInfo.MonthlySalaryViewModel
+
+@Html.HiddenFor(model => model.SalaryYear, new { id = "hfSalaryYear" })
+@Html.HiddenFor(model => model.SalaryMonth, new { id = "hfSalaryMonth" })
+@Html.HiddenFor(model => model.IsConfirmed, new { id = "hfIsConfirmed" })
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+        $("a.refreshIcon").live("click", function () {
+            
+            rollbackLinkObj = $(this);  //for future use
+            $('#rollback-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var syear = $('#hfSalaryYear').val();
+        var smonth = $('#hfSalaryMonth').val();
+
+        $('#jqGrid').jqGrid({
+
+            url: '@Url.Action("GetDetailList")?year='+syear + "&month="+smonth,
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Salary Year', 'Salary Month', 'Employee ID', 'Department', 'Employment Type', 'Name', 'Withheld Status', 'Payment Status', 'Account No.', 'Gross Salary', 'Total Deduction', 'Net Pay', "Rollback"],
+            colModel: [
+                            { name: 'ID', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+                            
+                            { name: 'year', index: 'year', align: 'left', hidden: true, search: true, edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(syear).addClass('read-only') } } },
+                            { name: 'month', index: 'month', align: 'left', hidden: true, search: true, edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(smonth).addClass('read-only') } } },
+
+                            { name: 'EmpID', index: 'EmpID', align: 'center', width: '55px', search: true, edittype: 'text' },
+
+                            { name: 'DivisionId', index: 'DivisionId', align: 'center', hidden: true, search: false, edittype: 'select', surl: '@Url.Action("GetDivisionList")' },
+                            { name: 'EmploymentTypeId', index: 'EmploymentTypeId', align: 'center', hidden: true,  search: true, edittype: 'select', surl: '@Url.Action("GetEmployeeTypeList")' },
+
+                            { name: 'FullName', index: 'FullName', align: 'left', search: false, edittype: 'text' },
+                            { name: 'IsWithheld', index: 'IsWithheld', align: 'center', search: true, width: '60px', edittype: 'select', surl: '@Url.Action("GetWithheldStatusList")' },
+                            { name: 'IsPaid', index: 'IsPaid', align: 'center', search: true, width: '60px', edittype: 'test' },
+                            { name: 'AccountNo', index: 'AccountNo', align: 'center', search: false, width: '90px', edittype: 'text' },
+
+                            { name: 'GrossSal', index: 'GrossSal', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'TotalDeduction', index: 'TotalDeduction', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'NetPay', index: 'NetPay', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+
+                            { name: 'Rollback', index: 'Rollback', align: 'center', search: false, hidden: IsDeleteAssigned, sortable: false, width: '50px', edittype: 'image', formatter: deleteformateadorLink }
+                          ],
+            autowidth: true,
+            caption: "Salary Detail Information",
+            rowList: [20, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 20,
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+    });
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var isConfirmed = $('#hfIsConfirmed').val();
+        var url = '';
+
+        if (isConfirmed.toLowerCase() === 'false')
+        {
+            var url = '@Html.ActionLink(" ", "RollbackIndividual", new { idRollbackIndividual = "_idRollback_" }, new { @class = "refreshIcon" })';
+            url = url.replace(/_idRollback_/, rowObject[0]);        
+        }
+
+        return url;
+    }
+
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink("_name_", "Edit", new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+
+</script>
+
+<style type="text/css" media="screen">
+    th.ui-th-column div {
+        white-space: normal !important;
+        height: auto !important;
+        padding: 1px;
+    }
+</style>

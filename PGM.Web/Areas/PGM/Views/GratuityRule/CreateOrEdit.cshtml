@@ -1,0 +1,184 @@
+﻿@model PGM.Web.Areas.PGM.Models.GratuityRule.GratuityRuleModel
+@using PGM.Web.Helpers
+@{
+    ViewBag.Title = "CreateOrEdit";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm(Model.Mode, "GratuityRule", FormMethod.Post,
+                                            new { id = "frm", @encType = "multipart/form-data" }))
+{
+
+    <div class="GroupBox" id="message">
+        @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+    </div>
+
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.Mode)
+
+    <div class="GroupBox">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EffectiveDate)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field">
+                @Html.EditorFor(model => model.EffectiveDate)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.GratuityEligibleFromId)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.GratuityEligibleFromId, Model.GratuityEligibleFromList, @String.Format("{0}", Content.DDLOptionalLabel()))
+            </span>
+        </div>
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.EligibleAfterMonthof)
+                <label style='color: red'>
+                    *
+                </label>
+            </span><span class="field">
+                @Html.EditorFor(model => model.EligibleAfterMonthof)
+        </span>
+    </div>
+</div>
+    <div class="GroupBox">
+        <div class="row">
+            <span class="label">
+                @Html.LabelFor(model => model.SalaryHeadIds)
+                <label style='color: red'>*</label>
+            </span>
+            <span class="field">
+                @Html.DropDownListFor(m => m.SalaryHeadIds, Model.SalaryHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "select-single", @multiple = "true", data_placeholder = "Choose salary head(s).." })
+            </span>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+    <div class="GroupBox">
+        <legend>Gratuity Calculation Formula</legend>
+        <br />
+        &nbsp;&nbsp;Length of service X Gratuity gross salary X 2
+    </div>
+    <div class="GroupBox">
+        <legend>Gratuity Monthly Provision Formula</legend>
+        <br />
+        &nbsp;&nbsp;((Gratuity gross salary X 2)/365) X Days in month
+    </div>
+
+    <div class="GroupBox">
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+            {
+                <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+            }
+            @if ((new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+            {
+                <input type="submit" value="Update" id="btnUpdate" name="btnSubmit" />
+            }
+            @if ((new PGM.Web.Utility.AppConstant()).IsDeleteAssigned)
+            {
+                <input type="submit" value="Delete" id="btnDelete" name="btnSubmit" />
+            }
+            <input type="button" value="Clear" id="btnClear" name="btnSubmit" />
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $(function () {
+
+        if ('@Model.Message' != "") {
+            if ('@Model.IsSuccessful' == 'True') {
+                $('#message').html("<b style='color:Green'>" + '@Model.Message' + "</b>");
+            }
+            else {
+                $('#message').html("<b style='color:Red'>" + '@Model.Message' + "</b>");
+            }
+        }
+
+        $("#btnDelete").live("click", function () {
+            $('#delete-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+
+        $('#delete-dialog').dialog({
+            autoOpen: false, width: 400, resizable: false, modal: true, //Dialog options
+            overlay: {
+                backgroundColor: '#000',
+                opacity: 0.5
+            },
+            buttons: {
+                "Yes": function () {
+                    var btnSubmit = 'Delete';
+                    var url = '@Url.Action("Delete", "GratuityRule", new { id = Model.Id })';
+                    $.post(url, function (obj) {
+                        //Post to action
+                        if (obj.Success) {
+                            var indexUrl = '@Url.Action("Index", "GratuityRule")' + '?message=' + obj.Message + '&IsSuccessful=' + obj.Success;
+                            indexUrl = indexUrl.replace(/_msg_/, obj.Message);
+                            indexUrl = indexUrl.replace(/_isSuccess_/, obj.Success);
+                            window.document.location = indexUrl;
+                        }
+                        else {
+                            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $("#btnClear").live("click", function () {
+            var url = '@Url.Action("Index")';
+            window.location.href = url;
+        });
+
+        if ('@Model.Mode' == 'Edit') {
+            $('#btnSave').hide();
+            $('#btnClear').hide();
+            $('#btnUpdate').show();
+            $('#btnDelete').show();
+        }
+        else {
+            $('#btnUpdate').hide();
+            $('#btnDelete').hide();
+            $('#btnSave').show();
+            $('#btnClear').show();
+        }
+
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#EligibleAfterMonthof").keydown(function (event) {
+
+            //alert(advance);
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>

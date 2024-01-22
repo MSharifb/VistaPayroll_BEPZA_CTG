@@ -1,0 +1,129 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetter.BankAdviceLetterViewModel
+
+@Html.HiddenFor(model => model.LetterTypeClickChange)
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+        $("a.deleteItem").live("click", function () {
+            deleteLinkObj = $(this);  //for future use
+            $('#delete-dialog').dialog('open');
+            return false;       // prevents the default behaviour
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetList")',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Type of Letter', ' ', 'Year', 'Month', 'Reference No.', 'Amount', 'Account No.', 'Bank Name', 'Generate Letter', 'Delete'],
+            colModel: [
+                            { name: 'ID', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+
+                            { name: 'LetterType', index: 'LetterType', align: 'left', hidden: true, search: true },
+                            { name: 'SelectedLetterType', index: 'SelectedLetterType', align: 'left', hidden: true, search: true },
+                            { name: 'SalaryYear', index: 'SalaryYear', align: 'center', width: '40px', search: true, edittype: 'select', surl: '@Url.Action("GetYearList")' },
+                            { name: 'SalaryMonth', index: 'SalaryMonth', align: 'center', width: '70px', search: true, edittype: 'select', surl: '@Url.Action("GetMonthList")' },
+
+                            { name: 'ReferenceNo', index: 'ReferenceNo', align: 'center', width: '110px', search: true, edittype: 'text' },
+                            { name: 'TotalAmount', index: 'TotalAmount', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00' } },
+                            { name: 'AccountNo', index: 'AccountNo', align: 'center', width: '110px', search: false, edittype: 'text' },
+                            { name: 'BankName', index: 'BankName', align: 'left', search: true, edittype: 'text' },
+
+                            { name: 'GenerateLetter', index: 'GenerateLetter', align: 'center', search: false, sortable: false, width: '90px', edittype: 'image', formatter: generateformateadorLink },
+                            { name: 'Delete', index: 'Delete', align: 'center', search: false, hidden: IsDeleteAssigned, sortable: false, width: '50px', edittype: 'image', formatter: deleteformateadorLink }
+                          ],
+            autowidth: true,
+            caption: "Bank Advice Letter Information",
+            rowList: [10, 20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 10,
+            sortname: 'ID',
+            sortorder: 'asc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+    });
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "Delete", new { id = "_id_" }, new { @class = "deleteItem" })';
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink("_name_", "Edit", new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+    function generateformateadorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink(" ", "GenerateBankAdviceLetter", new { id = "_id_" }, new { @class = "payItem" })';
+
+        url = url.replace(/_id_/, rowObject[0]);
+
+        return url;
+    }
+    $(function () {
+
+        $('#sg_LetterType').css({ 'display': 'none' })
+        .parent().append("<input type='radio' id='rdoSalary' name='SelectedLetterType' checked='true' value='Salary' style='width:2px;'/><label id='salaryId'>Salary&nbsp</label> ").append("<input type='radio' id='rdoBonus' name='SelectedLetterType' value='Bonus' style='width:2px;'/><label> Bonus &nbsp</label> ").append("<input type='radio' id='rdoLeaveEncashment' name='SelectedLetterType' value='LeaveEncashment' style='width:2px;'/><label> Leave Encashment </label> ");
+        $('#sg_SelectedLetterType').css({ 'display': 'none' });
+
+    })
+
+</script>
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+        $("input[type='radio']:checked").live("change", function () {
+
+            var letterType = $(this).val();
+            $('#LetterTypeClickChange').val(letterType);
+            featureLinkObj = $(this).val();
+
+            $('#sg_LetterType').val(featureLinkObj);
+            $('#sg_SelectedLetterType').val(featureLinkObj);
+
+            $('#sButton').trigger('click');
+
+            return false;
+        });
+    });
+
+</script>

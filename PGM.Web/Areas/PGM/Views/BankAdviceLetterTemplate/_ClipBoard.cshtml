@@ -1,0 +1,17 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.BankAdviceLetterTemplate.BankAdviceLetterBodyVariable
+@using PGM.Web.Helpers
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("BankLetterBodyVariableList"))
+    { 
+        <td style="text-align: left;">
+            @Html.DisplayFor(model => model.VariableNames)
+        </td>
+        @*<td style="text-align: center; width: 60px;">
+            <div class="button-crude">
+                <input id="btnCopy" type="button" value="Copy" name="@Model.VariableNames" />
+            </div>
+        </td> *@
+    }
+</tr>

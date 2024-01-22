@@ -1,0 +1,10 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.BankAdviceLetter.BankAdviceLetterViewModel
+<span class="field" style="width: 300px;">
+    @Html.RadioButtonFor(model => model.SelectedLetterType, "Salary", new { id = "Salary" })
+    @Html.Label(" Salary")
+    @Html.RadioButtonFor(model => model.SelectedLetterType, "Bonus", new { id = "Bonus" })
+    @Html.Label(" Bonus")
+    @Html.RadioButtonFor(model => model.SelectedLetterType, "LeaveEncashment", new { id = "LeaveEncashment" })
+    @Html.Label(" Leave Encashment")
+</span>

@@ -1,0 +1,36 @@
+﻿@model PGM.Web.Areas.PGM.Models.Document.DocumentViewModel
+
+@using PGM.Web.Helpers
+@using PGM.Web.Utility
+
+<tr class="dynamicRow">
+    @using (Html.BeginCollectionItem("OtherInvestmentDocumentList"))
+    {
+        if (@Model != null)
+        {
+            <td class="documentInfo" style="display:none;">
+                @Html.HiddenFor(d => Model.Id)
+                @Html.HiddenFor(d => Model.DetailId)
+                @Html.HiddenFor(model => model.Attachment)
+                @Html.HiddenFor(model => model.DocumentExtension)
+                @Html.HiddenFor(model => model.DocumentSizeInMB)
+                @Html.HiddenFor(model => model.DocumentName)
+                @Html.HiddenFor(model => model.DocumentUploadDate)
+            </td>
+       
+        <td style="text-align: left;">
+            @Html.Encode(Model.DocumentName)
+        </td>
+        <td style="text-align: left;">
+            @Html.HiddenFor(model => model.DocumentTypeId)
+            @Html.Encode(Model.DocumentUploadDate.ToString(DateAndTime.GlobalDateFormat))
+        </td>
+
+        <td>
+            <a href="#" class="deleteRow" title="delete" onclick="RemoveDb(this, @Model.Id, @Model.DetailId,'@Url.Action("DeleteDocument")')">
+                <img src='@Url.Content("~/Content/Images/Delete.png")' alt="Delete" style="border: none; " />
+            </a>
+        </td>
+        }
+    }
+</tr>

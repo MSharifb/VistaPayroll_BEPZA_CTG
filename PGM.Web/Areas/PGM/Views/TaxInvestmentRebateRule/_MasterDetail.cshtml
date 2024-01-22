@@ -1,0 +1,11 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxInvestmentRebateRule.TaxInvestmentRebateRuleMasterViewModel
+@using PGM.Web.Helpers
+
+@if (Model != null && Model.RuleDetail != null)
+{
+    foreach (var x in Model.RuleDetail)
+    {
+        @Html.Partial("_PartialDetail", x);
+    }
+
+}

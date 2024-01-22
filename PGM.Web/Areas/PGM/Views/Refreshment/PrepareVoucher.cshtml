@@ -1,0 +1,39 @@
+﻿@model PGM.Web.Areas.PGM.Models.Refreshment.RefreshmentViewModel
+@{
+    ViewBag.Title = "Prepare Voucher";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("Create", "Refreshment", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        <div class="GroupBox" id="message">
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.errClass">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+
+        @Html.Partial("_CreateOrEdit", Model)
+        <div class="text-right row">
+            @*@if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <button class="btn btn-success" id="btnSave"><i class="fa fa-save"></i> Save</button>
+                }*@
+            <a href="#" id="btnVoucherPosting" class="btn btn-success" onclick="VoucherPosting()">
+                <i class=" fa fa-file-powerpoint-o">
+                </i> Prepare Voucher
+            </a>
+        </div>
+    </fieldset>
+    <div class="row">
+        <div class="button-crude button-left" style="padding-left: 5px;">
+            @Html.ActionLink("Back to List", "GoToDetails", null, new { @idYearMonth = Model.RYear + "-" + Model.RMonth }, null)
+        </div>
+    </div>
+
+}
+
+
+

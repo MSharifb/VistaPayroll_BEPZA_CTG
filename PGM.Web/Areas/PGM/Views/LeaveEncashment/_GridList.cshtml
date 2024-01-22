@@ -1,0 +1,84 @@
+﻿<script type="text/javascript">
+
+
+    $(function () {
+
+        $("a.deleteItem").live("click", function () {
+            deleteLinkObj = $(this);  //for future use
+            $('#delete-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+     
+</script> 
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetList")',
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Year', 'Month', 'Employee ID', 'Employee Name', 'Days', 'Rate', 'Amount', 'Delete'],
+            colModel: [
+                            { name: 'ID', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+                           // { name: 'FullName', index: 'FullName', align: 'left', search: false, hidden: true, edittype: 'text' },
+                            { name: 'SalaryYear', index: 'SalaryYear', align: 'center', width: '40px', search: true, edittype: 'select',  surl: '@Url.Action("GetYearList")' },
+                            { name: 'SalaryMonth', index: 'SalaryMonth', align: 'center', width: '95px', search: true, edittype: 'select', surl: '@Url.Action("GetMonthList")' },
+                            { name: 'EmpID', index: 'EmpID', align: 'center', width: '100px', search: true, edittype: 'text' },
+                            { name: 'FullName', index: 'FullName', align: 'left', search: true, edittype: 'text'},
+                            { name: 'EncasementDays', index: 'EncasementDays', align: 'center', width: '40px', search: false, edittype: 'text' },
+                            { name: 'EncasementRate', index: 'EncasementRate', align: 'right', width: '60px', search: false, edittype: 'text' },
+                            { name: 'EncasementAmount', index: 'EncasementAmount', align: 'right', width: '90px', search: false, edittype: 'text', formatter: 'currency', formatoptions: { thousandsSeparator: ",", decimalPlaces: 2, prefix: "", suffix: "", defaultValue: '0.00'} },
+                            { name: 'Delete', index: 'Delete', align: 'center', search: false, hidden: IsDeleteAssigned, sortable: false, width: '50px', edittype: 'image', formatter: deleteformateadorLink }
+                          ],
+            autowidth: true,
+            caption: "Leave Encashment Information",
+            rowList: [10, 20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 10,
+            sortname: 'ID',
+            sortorder: 'asc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+    });
+
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "Delete", new { id = "_id_" }, new { @class = "deleteItem" })';
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+
+        var url = '@Html.ActionLink("_name_", "Edit", new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+</script>

@@ -1,0 +1,40 @@
+﻿
+@model PGM.Web.Areas.PGM.Models.BonusProcess.BonusDetailsViewModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    <div class="row">
+        <div class="ui-widget" style="width: 130px; float: left; margin-left: 10px;">
+            @Html.LabelFor(model => model.EmpID)
+            @Html.TextBoxFor(model => model.EmpID)
+            @Html.HiddenFor(model => model.EmpID)
+        </div>
+        <div style="width: 220px; float: left; margin-left: 10px;">
+            Name
+            @Html.TextBoxFor(model => model.FullName, new { @class = "read-only", @readonly = true, @style = "width:220px;height:18px;text-align:left;" })
+        </div>
+        <div style="width: 110px; float: left; margin-left: 10px;">
+            @Html.LabelFor(model => model.AccountNo)
+            @Html.TextBoxFor(model => model.AccountNo, new { @class = "read-only", @readonly = true, @style = "width:110px;height:18px;text-align:left;" })
+        </div>
+        <div style="width: 90px; float: left; margin-left: 10px;">
+            Basic
+            @Html.TextBoxFor(model => model.EmpBasicSalary, new { @class = "read-only", @readonly = true, @style = "width:90px;height:18px;text-align:right;" })
+        </div>
+        <div style="width: 90px; float: left; margin-left: 10px;">
+            Bonus Amount
+            @Html.TextBoxFor(model => model.EmpBonusAmount, new { @style = "width:90px;height:18px;text-align:right;", @maxlength = "18" })
+        </div>
+        <div style="width: 80px; float: left; margin-left: 10px;">
+            R/S
+            @Html.TextBoxFor(model => model.EmpRevenueStamp, new { @style = "width:80px;height:18px;text-align:right;", @maxlength = "10" })
+        </div>
+        <div style="width: 90px; float: left; margin-left: 10px;">
+            Net Payable
+            @Html.TextBoxFor(model => model.EmpNetPayable, new { @class = "read-only", @readonly = true, @style = "width:90px;height:18px;text-align:right;" })
+        </div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+

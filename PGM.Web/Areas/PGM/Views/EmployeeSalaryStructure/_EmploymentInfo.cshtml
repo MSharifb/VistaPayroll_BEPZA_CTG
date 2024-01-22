@@ -1,0 +1,570 @@
+﻿@using PGM.Web.Utility
+@model PGM.Web.Areas.PGM.Models.EmployeeSalaryStructure.EmployeeInfoModel
+
+@using (Html.BeginForm(Model.ActionType, "EmployeeSalaryStructure", FormMethod.Post, new { id = "frm" }))
+{
+    @Html.HiddenFor(model => model.Id)
+
+    <fieldset>
+        <div class="message">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="@Model.errClass">
+                    @Model.Message
+                </div>
+            }
+        </div>
+
+        <div class="GroupBox">
+            <div class="leftColumn">
+                <div class="row">
+                    <span class="label" style="width:32%">
+                        @Html.LabelFor(model => model.EmpID)
+                    </span><span class="field" style="width:60%">
+                        @Html.TextBoxFor(model => model.EmpID, new { @class = "read-only", @readonly = true })
+                        <div id="divIsEmpIdAvailable"></div>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="label" style="width:32%">
+                        @Html.LabelFor(model => model.FullName)
+                    </span>
+                    <span class="field" style="width:60%">
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "read-only", @readonly = true })
+                    </span>
+                </div>
+            </div>
+            <div class="rightColumn">
+                <div class="row">
+                    <div class="field" style="width: auto;">
+                        @if (Model.IsPhotoExist)
+                        {
+                            <div class="Photo-Top">
+                                @*<img alt="Employe Photo" height="110" width="110" src="@Url.Action("GetImage", "Employee", new { id = Model.Id, isPhoto = true, area="PRM" })" />*@
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.FullNameBangla)
+                </span><span class="field">
+                    @Html.TextBoxFor(model => model.FullNameBangla, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.Gender)
+                </span><span class="field">
+                    @Html.TextBoxFor(model => model.Gender, new { @class = "read-only", @readonly = true })
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => Model.Religion)
+                </span><span class="field">
+                    @Html.TextBoxFor(model => model.Religion, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.DateofBirth)
+                </span><span class="field">
+                    @{
+                        var dateOfBirth = Convert.ToDateTime(Model.DateofBirth).ToString(DateAndTime.GlobalDateFormat);
+
+                        @Html.TextBoxFor(model => dateOfBirth, new { @class = "read-only", @readonly = true });
+                    }
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.DateofJoining)
+                </span>
+                <span class="field">
+                    @{
+                        var dateOfJoining = Convert.ToDateTime(Model.DateofJoining).ToString(DateAndTime.GlobalDateFormat);
+
+                        @Html.TextBoxFor(model => dateOfJoining, new { @class = "read-only", @readonly = true });
+                    }
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.DateofConfirmation)
+                </span>
+                <span class="field">
+                    @{
+                        var dateOfConfirm = Model.DateofConfirmation.HasValue ? Convert.ToDateTime(Model.DateofConfirmation).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                        @Html.TextBoxFor(model => dateOfConfirm, new { @class = "read-only", @readonly = true })
+                    }
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmpStatusName)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.EmpStatusName, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.DateofInactive)
+                </span>
+                <span class="field">
+                    @{
+                        var dateOfInactive = Model.DateofInactive.HasValue ? Convert.ToDateTime(Model.DateofInactive).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                        @Html.TextBoxFor(model => dateOfInactive, new { @class = "read-only", @readonly = true })
+                    }
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmpTypeName)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.EmpTypeName, new { @class = "read-only", @readonly = true })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.DateofAppointment)
+                </span>
+                <span class="field">
+                    @{
+                        var dateOfAppointment = Model.DateofAppointment.HasValue ? Convert.ToDateTime(Model.DateofAppointment).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                        @Html.TextBoxFor(model => dateOfAppointment, new { @class = "read-only", @readonly = true })
+                    }
+
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.EmialAddress)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.EmialAddress, new {  })
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.MobileNo)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.MobileNo, new {  })
+                </span>
+            </div>
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.SalaryScaleName)
+                </span>
+                <span class="field">
+                    @Html.TextBoxFor(model => model.SalaryScaleName, new { @class = "read-only", @readonly = true })
+                </span>
+
+                @if (@Model.IsSalaryAlreadyProcessed)
+                {
+                    <span class="label-right">
+                        @Html.LabelFor(model => model.JobGradeId, new { @class = "label-required" })
+                        @Html.HiddenFor(model => model.JobGradeId)
+                    </span>
+                    <span class="field">
+                        @Html.TextBoxFor(model => model.JobGradeName, new { @class = "read-only", @readonly = true, @title = "Salary has been processed for this employee." })
+                    </span>
+                }
+                else
+                {
+                    <span class="label-right">
+                        @Html.LabelFor(model => model.JobGradeId, new { @class = "label-required" })
+                    </span>
+                    <span class="field">
+                        @Html.DropDownListFor(model => model.JobGradeId, Model.JobGradeList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                    </span>
+                }
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BankId)
+                </span>
+                <span class="field">
+                    @Html.DropDownListFor(model => model.BankId, Model.BankList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                </span>
+                <span class="label-right">
+                    @Html.LabelFor(model => model.BankBranchId)
+                </span>
+                <span class="field">
+                    @Html.DropDownListFor(model => model.BankBranchId, Model.BankBranchList, @String.Format("{0}", Content.DDLOptionalLabel()))
+                </span>
+            </div>
+
+            <div class="row">
+                <span class="label">
+                    @Html.LabelFor(model => model.BankAccountNo)
+                </span><span class="field">
+                    @Html.EditorFor(model => model.BankAccountNo)
+                </span>
+                <span class="label-right">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    &nbsp;
+                </span>
+            </div>
+            <div class="GroupBox">
+                <div class="row">
+                    <span class="label">
+                        @Html.LabelFor(model => model.WorkingZoneId, new { @class = "label-required" })
+                    </span><span class="field">
+                        @Html.DropDownListFor(model => model.WorkingZoneId, Model.WorkingZoneList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+                    </span>
+                    <span class="label-right">
+                        @Html.LabelFor(model => model.SalaryWithdrawFromZoneId, new { @class = "label-required" })
+                    </span>
+                    <span class="field">
+                        @Html.DropDownListFor(model => model.SalaryWithdrawFromZoneId, Model.SalaryWithdrawFromList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+                    </span>
+                </div>
+            </div>
+
+            <div class="GroupBox">
+                <div class="row">
+                    <span class="label">
+                        @Html.LabelFor(model => model.MembershipStatus, new { @class = "label-required" })
+                    </span><span class="field">
+                        @Html.DropDownListFor(model => model.MembershipStatus, Model.MembershipStatusList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+                    </span>
+                    <span class="label-right">
+                        @Html.LabelFor(model => model.PFMembershipDate)
+                    </span>
+                    <span class="field">
+                        @{
+                            var pfMembershipDate = Model.PFMembershipDate.HasValue ? Convert.ToDateTime(Model.PFMembershipDate).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                            @Html.TextBoxFor(model => pfMembershipDate, new { @class = "read-only", @readonly = true })
+                        }
+                    </span>
+                </div>
+            </div>
+
+            <div class="GroupBox">
+                <div class="row">
+                    <span class="label">
+                        @Html.LabelFor(model => model.TaxRegionId, new { @class = "label-required" })
+                    </span>
+                    <span class="field">
+                        @Html.DropDownListFor(model => model.TaxRegionId, Model.TaxRegionList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+                    </span>
+                    <span class="label-right">
+                        @Html.LabelFor(model => model.TaxAssesseeType, new { @class = "label-required" })
+                    </span>
+                    <span class="field">
+                        @Html.DropDownListFor(model => model.TaxAssesseeType, Model.AssesseTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required select-single" })
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="label">
+                        &nbsp;
+                    </span>
+                    <span class="field">
+                        @Html.CheckBoxFor(model => model.HavingChildWithDisability) &nbsp;Having Child With Disability
+                    </span>
+                </div>
+            </div>
+            <div class="GroupBox">
+                <div class="row" id="DivDateOfRetirement">
+                    <span class="label">
+                        @Html.LabelFor(model => model.DateofRetirement)
+                    </span>
+                    <span class="field">
+                        @{
+                            var dateOfRetirement = Model.DateofRetirement.HasValue ? Convert.ToDateTime(Model.DateofRetirement).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                            @Html.TextBoxFor(model => dateOfRetirement, new { @class = "read-only", @readonly = true })
+                        }
+                    </span>
+                </div>
+
+                <div class="row" id="DivContractExpireDate">
+                    <span class="label">
+                        @Html.LabelFor(model => model.ContractExpireDate, new { @class = "label-required" })
+                    </span>
+                    <span class="field">
+                        @{
+                            var dateOfExpire = Model.ContractExpireDate.HasValue ? Convert.ToDateTime(Model.ContractExpireDate).ToString(DateAndTime.GlobalDateFormat) : string.Empty;
+
+                            @Html.TextBoxFor(model => dateOfExpire, new { @class = "read-only", @readonly = true })
+                        }
+                    </span>
+                </div>
+
+                <div class="row" id="DivContractDuration">
+                    <span class="label">
+                        @Html.LabelFor(model => model.ContractDuration)
+                    </span><span class="field">
+                        @Html.TextBoxFor(model => model.ContractDuration, new { @class = "read-only", @readonly = true })
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="GroupBox">
+            <div class="row">
+                <span class="label">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @Html.CheckBoxFor(model => model.IsContractual, new { onclick = "return false", @class = "read-only", @readonly = true })&nbsp;Is Contractual Employee?
+                </span>
+                <span class="label-right">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @Html.CheckBoxFor(model => model.IsPensionEligible)&nbsp;Is Pension Eligible?
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @{
+                        var isBonusEligible = Convert.ToBoolean(@Model.IsBonusEligible);
+                        @Html.CheckBoxFor(model => isBonusEligible)
+                    }&nbsp; Is Bonus Eligible?
+                </span>
+                <span class="label-right">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @Html.CheckBoxFor(model => model.IsLeverageEligible)&nbsp;Is Leverage Eligible?
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @{
+                        var isOvertimeEligible = Convert.ToBoolean(@Model.IsOvertimeEligible);
+                        @Html.CheckBoxFor(model => isOvertimeEligible)
+                    }&nbsp;Is Overtime Eligible?
+                </span>
+                <span class="label-right">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @{
+                        var isRefreshmentEligible = Convert.ToBoolean(@Model.IsRefreshmentEligible);
+                        @Html.CheckBoxFor(model => isRefreshmentEligible)
+                    }&nbsp;Is Refreshment Eligible?
+                </span>
+            </div>
+            <div class="row">
+                <span class="label">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    @{
+                        var isGPFEligible = Convert.ToBoolean(@Model.IsGPFEligible);
+                        @Html.CheckBoxFor(model => isGPFEligible)
+                    }&nbsp;Is GPF Eligible?
+                </span>
+                <span class="label-right">
+                    &nbsp;
+                </span>
+                <span class="field">
+                    &nbsp;
+                </span>
+            </div>
+            <div class="clear">
+            </div>
+        </div>
+
+        <div class="clear">
+        </div>
+        <div class="button-crude">
+            @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned || (new PGM.Web.Utility.AppConstant()).IsEditAssigned)
+            {
+                <input type="submit" value="@Model.ButtonText" name="btnCreate" id="btnCreate" style="margin: 0 10px 0 0;" />
+            }
+
+            <div class="clear">
+            </div>
+        </div>
+    </fieldset>
+
+    <div id="divChangeSalaryZoneHistory" style="display: none;"></div>
+
+    <fieldset>
+        <legend>Salary Zone Change History</legend>
+
+        <table id="jqGrid" cellpadding="0" cellspacing="0"></table>
+        <div id="jqGridPager" style="text-align: center;">
+        </div>
+
+        <div id="divList">
+            <div id='delete-dialog' title='Delete Record' style="height: 20px">
+                <p style="line-height: 1em">
+                    <span class='ui-icon ui-icon-alert' style='float: left; margin: 0 7px 20px 0;'></span>
+                    Do you want to delete this record?
+                </p>
+            </div>
+            @*@Html.Partial("_GridListSalaryZoneChangeHistory")*@
+            <script type="text/javascript">
+
+                $(document).ready(function () {
+
+                    $('#jqGrid').jqGrid({
+                        url: '@Url.Action("GetListSalaryZoneChangeHistory")?employeeId=' + @Model.Id,
+                        editurl: '@Url.Action("EditSalaryZoneChangeHistory")',
+                        datatype: 'json',
+                        mtype: 'POST',
+                        colNames: ['ID', 'Salary Zone Name', 'Change Date', 'IsInactive'],
+                        colModel: [
+                            { name: 'ID', index: 'Id', search: false, hidden: true },
+                            { name: 'SalaryZoneName', index: 'SalaryZoneName', align: 'left', width: '100px', search: false, sortable: 'false', editable: true, formoptions:{colpos:1, rowpos: 1}, editoptions:{readonly: true} },
+                            { name: 'ChangeDate', index: 'ChangeDate', align: 'center', width: '100px', search: false, sortable: 'false',
+                                editable: true,
+                                editrules: {required: true},
+                                formoptions: {colpos: 1, rowpos: 2, elmsuffix: ' {required}'},
+                                editoptions:{dataInit: function(element) {
+                                    $(element).datepicker({ dateFormat: 'yy.mm.dd' });
+                                }} },
+                            { name: 'IsInactive', index: 'IsInactive', search: false, hidden: true }
+                        ],
+                        autowidth: true,
+                        rowList: [20, 30, 40, 50, 100],
+                        pager: $('#jqGridPager'),
+                        rowNum: 20,
+                        viewrecords: true,
+                        height: '100%',
+                        width: '50%'
+                    });
+                    $('#jqGrid').navGrid('#jqGridPager', {edit: true, add: false, del: false, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
+                        {height: 'auto' ,width: 420, editCaption: "Edit Salary Zone Change Date", recreateForm: true, closeAfterEdit: true, errorTextFormat: function(data) {return 'Error: ' + data.responseText;}});
+                });
+            </script>
+        </div>
+    </fieldset>
+                        }
+
+<div class="button-crude button-left" style="float: left;">
+    @Html.ActionLink("Back to List", "Index", "EmployeeSalaryStructure")
+</div>
+
+<br />
+<div class="clear">
+</div>
+
+<script type="text/javascript">
+    //Regular
+    $(function () {
+
+        var employmentType = $('#EmpTypeName').val();
+
+        if ((employmentType == '') || (employmentType.toLowerCase() == 'Contractual'.toLowerCase()) || (employmentType.toLowerCase() == 'Contract'.toLowerCase())) {
+            $('#DivContractExpireDate').show();
+            $('#DivDateOfRetirement').hide();
+            $('#DivContractDuration').show();
+            $('#DivContractualType').show();
+        }
+        else if (employmentType.toLowerCase() == 'Permanent'.toLowerCase()) {
+            $('#DivDateOfRetirement').show();
+            $('#DivContractExpireDate').hide();
+            $('#DivContractDuration').hide();
+            $('#DivContractualType').hide();
+        }
+        else {
+            $('#DivDateOfRetirement').hide();
+            $('#DivContractExpireDate').hide();
+            $('#DivContractDuration').hide();
+        }
+    });
+
+
+</script>
+<script type="text/javascript">
+
+    $(function () {
+        $("form").submit(function () {
+            var selTypeText = $("#EmploymentTypeId option:selected").text();
+            $("#SelectedEmploymentType").val(selTypeText);
+        });
+    });
+
+    if ('@Model.DateofInactive' != '') {
+        fnDisableEditMode();
+        $(".delete-confirm").hide();
+    }
+
+    $("#IsContractual").click(function (e) {
+        e.preventDefault();
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function LoadBankBranchDDLByBankId(BankId) {
+        var BranchSelect = $('select#BankBranchId');
+        BranchSelect.empty();
+
+        BranchSelect.append($('<option/>',
+        {
+            value: '',
+            text: '@Content.DDLOptionalLabel()'
+        }));
+
+        if (BankId != null && BankId != '') {
+            var url = '@Url.Action("GetBankBranchByBankId", "EmployeeSalaryStructure", new { area = "PGM" })' + '?Id=' + BankId;
+            $.get(url, function (response) {
+                var heads = $.parseJSON(response);
+
+                var ddl = $("#BankBranchId");
+                // clear all previous options
+                $("#BankBranchId>option").remove();
+
+                // populate the products
+                for (i = 0; i < heads.length; i++) {
+
+                    ddl.append($("<option />").val(heads[i].Value).text(heads[i].Text));
+                }
+            });
+        }
+        else {
+
+            $("#BankBranchId>option").remove();
+            $("#BankBranchId").html("<option value=\"" + "" + "\">" + "[Select One]" + "</option>");
+        }
+    }
+
+    $(document).ready(function () {
+        //cascading dropdown
+        $("select#BankId").change(function () {
+            $("input#BankId").val($(this).val());
+            LoadBankBranchDDLByBankId($(this).val());
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        buttonHide();
+    });
+
+    function buttonHide() {
+        if ('@Model.errClass' == "success delete-emp" && '@Model.IsError' == "0") {
+            $('#btnCreate').hide();
+        }
+    }
+
+</script>

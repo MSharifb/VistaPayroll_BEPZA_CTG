@@ -1,0 +1,319 @@
+﻿@model PGM.Web.Areas.PGM.Models.SalaryHead.SalaryHeadViewModel
+@using PGM.Web.Helpers
+
+<script type="text/javascript">
+
+    $(function () {
+        showErrMsg();
+    });
+    function showErrMsg() {
+        $(".message").hide();
+        $("#message1").hide();
+        if ('@Model.IsError' == "1") {
+            $("#message1").show();
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message1").html("<b>" + msg + "</b>").css("color", "red");
+        }
+        else {
+            var msg = '@Model.ErrMsg'.replace(/#/gi, "<br/>* ");
+            $("#message").html("<b>" + msg + "</b>").css("color", "green");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#HeadName").focus();
+
+        $("#SortOrder").keydown(function (event) {
+
+            // Allow: backspace, delete, tab, escape, and enter
+            if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                // Allow: Ctrl+A
+                (event.keyCode == 65 && event.ctrlKey === true) ||
+                // Allow: home, end, left, right
+                (event.keyCode >= 35 && event.keyCode <= 39)) {
+                // let it happen, don't do anything
+                return;
+            }
+            else {
+                // Ensure that it is a number and stop the keypress
+                if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                    event.preventDefault();
+                }
+            }
+        });
+    });
+
+</script>
+
+<div class="GroupBox" style="max-height: 15px" id="message1">
+    @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+</div>
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.HeadName)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.HeadName)
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.ShortName)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.EditorFor(model => model.ShortName)
+        </span>
+    </div>
+    
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.HeadType)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.HeadType, Model.HeadTypeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required", onchange = "LoadHeadGroup();" })
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.GroupId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.GroupId, new SelectList(ViewBag.HeadGroup, "Id", "Name"), @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.AmountType)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.AmountType, PGM.Web.Utility.Common.PopulateAmountType(), @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "required" })
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.IsGrossPayHead)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsGrossPayHead)
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.IsTaxable)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsTaxable)
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.IsBasicHead)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsBasicHead)
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EntityNameId)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.EntityNameId, Model.AccEntityList, @String.Format("{0}", Content.DDLNotApplicableLabel()))
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.AccountHeadId)
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.AccountHeadId, Model.AccountHeadList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "select-single required" })
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.IsOtherAddition)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsOtherAddition)
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.IsOtherDeduction)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(model => model.IsOtherDeduction)
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SortOrder)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.SortOrder, new { @style = "text-align:right; width:50px;" })
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(model => model.HeadMappingId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.DropDownListFor(model => model.HeadMappingId, Model.HeadMappingList, @String.Format("{0}", Content.DDLNotApplicableLabel()))
+        </span>
+    </div>
+        
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.DefaultAmount)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @Html.TextBoxFor(model => model.DefaultAmount, new { @style = "text-align:right; width:50px", @class = "required" })
+        </span>
+
+        <span class="label-right">
+            @Html.LabelFor(m => m.IsActiveHead)
+        </span>
+        <span class="field">
+            @Html.CheckBoxFor(m => m.IsActiveHead)
+        </span>
+    </div>
+        
+    <div class="clear">
+    </div>
+    
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        var Url = window.location.href;
+        $("#btnClear").live("click", function (event) {
+            event.preventDefault();
+            window.location.href = Url;
+        });
+
+        $('#IsOtherAddition').attr("disabled", true);
+        $('#IsOtherDeduction').attr("disabled", true);
+
+        if ("@Model.HeadType" == "") {
+            // Do nothing...
+        }
+        else if ("@Model.HeadType" == "Deduction") {
+            $('#IsTaxable').attr("checked", false);
+            $('#IsTaxable').attr("disabled", true);
+
+            $('#IsGrossPayHead').attr("checked", false);
+            $('#IsGrossPayHead').attr("disabled", true);
+
+            $('#IsOtherDeduction').attr("disabled", false);
+        } else {
+            $('#IsOtherAddition').attr("disabled", false);
+        }
+
+    });
+
+
+    $('#HeadType').live('change', function () {
+
+        var headType = $(this).val();
+        if (headType != null && headType != '') {
+            $.getJSON('@Url.Action("LoadSortOrder")', { headType: headType }, function (item) {
+                $('#SortOrder').val(item);
+            });
+        }
+        else {
+            $('#SortOrder').val(0);
+        }
+
+        if (headType == 'Deduction') {
+            $('#IsGrossPayHead').attr('disabled', true);
+            $('#IsGrossPayHead').attr('checked', false);
+            $('#IsTaxable').attr('disabled', true);
+            $('#IsTaxable').attr('checked', false);
+        }
+        else {
+            $('#IsGrossPayHead').attr('disabled', false);
+            $('#IsTaxable').attr('disabled', false);
+        }
+
+        return false;
+    });
+
+
+    $('#SortOrder').live('blur', function () {
+
+        var SortOrder = $(this).val();
+        var HeadTypeName = $('#HeadType').val();
+
+        if (HeadTypeName != '') {
+
+            if (HeadTypeName == 'Addition') {
+
+                if (SortOrder <= 0 || SortOrder > 99) {
+                    $('#SortOrder').val(1);
+                    alert('Sort Order must be 1-99.');
+                }
+            }
+            else if (HeadTypeName == 'Deduction') {
+
+                if (SortOrder <= 100 || SortOrder > 199) {
+                    $('#SortOrder').val(101);
+                    alert('Sort Order must be 101-199.');
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    });
+
+
+
+    function LoadHeadGroup() {
+        var HeadType = $('#HeadType').val();
+        var HeadGroup = $('#GroupId');
+        HeadGroup.empty();
+        HeadGroup.append($('<option/>', {
+            value: '',
+            text: '@Content.DDLOptionalLabel()'
+        }));
+
+        $('#IsOtherAddition').attr("checked", false);
+        $('#IsOtherAddition').attr("disabled", true);
+        $('#IsOtherDeduction').attr("checked", false);
+        $('#IsOtherDeduction').attr("disabled", true);
+
+        if (HeadType == 'Deduction') {
+            $('#IsTaxable').attr("checked", false);
+            $('#IsTaxable').attr("disabled", true);
+
+            $('#IsOtherDeduction').attr("disabled", false);
+        }
+        else {
+            $('#IsTaxable').attr("disabled", false);
+
+            $('#IsOtherAddition').attr("disabled", false);
+        }
+
+        if (HeadType != null && HeadType != '') {
+            $.getJSON('@Url.Action("LoadHeadGroup")', { Id: HeadType }, function (items) {
+                $.each(items, function (index, item) {
+                    HeadGroup.append($('<option/>', {
+                        value: item.Id,
+                        text: item.Name
+                    }));
+                });
+            });
+        }
+    }
+
+</script>

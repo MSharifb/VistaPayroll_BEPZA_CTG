@@ -1,0 +1,85 @@
+﻿@model PGM.Web.Areas.PGM.Models.ArrearAdjustment.ArrearAdjustmentModel
+
+@using PGM.Web.Helpers
+
+<tr class="dynamicRow">
+
+    @using (Html.BeginCollectionItem("ArrearAdjustmentModelList"))
+    {
+        <td width="15%" style="text-align: center">
+            @*@Html.CheckBoxFor(model => model.Select, new { id = Model.Id })*@
+            @Html.CheckBox("Select", Model.Select, new { @class = "rchk", @value = Model.Id, @disabled = true })
+        </td>
+        
+        <td width="15%" style="text-align: center">
+            @Html.Encode(Convert.ToDateTime(Model.ArrearFromDate).ToString(PGM.Web.Utility.DateAndTime.GlobalDateFormat))
+        </td>
+        
+        <td width="15%" style="text-align: center">
+            @Html.Encode(Convert.ToDateTime(Model.OrderDate).ToString(PGM.Web.Utility.DateAndTime.GlobalDateFormat))
+        </td>
+
+        <td width="15%" style="text-align: center">
+            @Html.Encode(Convert.ToDateTime(Model.ArrearFromDate).ToString(PGM.Web.Utility.DateAndTime.GlobalDateFormat))
+        </td>
+        
+        <td width="15%" style="text-align: center">
+            @Html.Encode(Convert.ToDateTime(Model.ArrearToDate).ToString(PGM.Web.Utility.DateAndTime.GlobalDateFormat))
+        </td>
+
+        <td width="15%" style="text-align: center">
+            @Html.Encode(Model.AdjustmentType)
+        </td>
+
+        @*
+            <td width="5%" style="text-align: center">
+                <a href="#" title="view" onclick="ViewTypeDetails(this,@Model.TypeId,'@Url.Action(@Html.Encode(Model.ActionName), @Html.Encode(Model.ControllerName))')">
+                    <img src='@Url.Content("~/Content/Images/view.png")' alt="view" style="border: none; " />
+                </a>
+            </td>
+        *@
+    }
+</tr>
+
+
+@*<script type="text/javascript">
+
+    $(document).ready(function () {
+        checKIsIndividual();
+    });
+
+    ////on page load
+    function checKIsIndividual()
+    {
+        var val = $('input[name=IsIndividual]:checked').val();
+        if (val === "False")
+        {
+            $("input.rchk").attr("disabled", true);
+        }
+        else
+        {
+            $("input.rchk").attr("disabled", false);
+        }
+    }
+
+    $(".chkIndividual").live('click', function ()
+    {
+        if ($(this).attr('checked'))
+        {
+            var val = $(this).val();
+            if (val === "False")
+            {
+                // alert("All Checked");
+                $('input.rchk').attr('checked', true);
+                $("input.rchk").attr("disabled", true);
+            }
+            else
+            {
+                //alert("Individual");
+                $('input.rchk').attr('checked', false);
+                $("input.rchk").attr("disabled", false);
+            }
+        }
+    });
+
+</script>*@

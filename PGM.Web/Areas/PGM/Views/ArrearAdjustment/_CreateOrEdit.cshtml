@@ -1,0 +1,556 @@
+﻿@model PGM.Web.Areas.PGM.Models.ArrearAdjustment.ArrearAdjustmentModel
+@using PGM.Web.Helpers
+
+<fieldset style="float: left; overflow: hidden; width: 49%; height: 120px;">
+    <div class="row">
+        <span class="label" style="width:30%;">
+            @Html.HiddenFor(model => model.Id)
+            @Html.LabelFor(model => model.EmpID)
+            <label class="required-field">*</label>
+        </span>
+        <span class="field" style="width:65%;">
+            @Html.HiddenFor(model => model.EmployeeId)
+            @Html.TextBoxFor(model => model.EmpID, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label" style="width:30%;">
+            @Html.LabelFor(model => model.EmployeeName)
+        </span>
+        <span class="field" style="width:65%;">
+            @Html.TextBoxFor(model => model.EmployeeName, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label" style="width:30%;">
+            @Html.LabelFor(model => model.DesignationName)
+        </span>
+        <span class="field" style="width:65%;">
+            @Html.TextBoxFor(model => model.DesignationName, new { @class = "read-only", @readonly = true })
+        </span>
+    </div>
+</fieldset>
+<fieldset style="float:right; overflow:hidden; width:49%;height:120px;" id="withSalary">
+    <div class="row">
+        <span class="label" style="width:30%;">
+            @Html.LabelFor(model => model.AdjustmentYear)
+        </span>
+        <span class="field" style="width: 65%;">
+            @Html.DropDownListFor(model => model.AdjustmentYear, Model.YearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { style = "width:180px" })
+        </span>
+    </div>
+    <div class="row">
+        <span class="label" style="width:30%;">
+            @Html.LabelFor(model => model.AdjustmentMonth)
+        </span>
+        <span class="field" style="width: 65%;">
+            @Html.DropDownListFor(model => model.AdjustmentMonth, Model.MonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { style = "width:180px" })
+        </span>
+    </div>
+</fieldset>
+<div class="GroupBox" id="divAdjustWith">
+    <div class="row">
+        <span class="label ">
+            @Html.LabelFor(model => model.IsAdjustWithSalary)
+        </span>
+        <span class="field adjustWithSalary">
+            @Html.CheckBoxFor(model => model.IsAdjustWithSalary)
+        </span>
+        <div id="withoutSalary">
+            <span class="label">
+                @Html.LabelFor(model => model.PaymentDate)
+            </span>
+            <span class="field">
+                @Html.EditorFor(model => model.PaymentDate)
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="clear"></div>
+
+<fieldset>
+    <legend> Arrear Detail Information </legend>
+    <div class="row" align="center">
+        <div style="width:70%; align-content:center">
+            <table class="contenttable fixedcontenttable custom-grid arrear-detail-list">
+                <thead>
+                    <tr>
+                        <th>Arrear Type</th>
+                        <th>Order Date</th>
+                        <th>Arrear From</th>
+                        <th>Arrear To</th>
+                        <th>Effective Date</th>
+                        <th class="pmnt-status">Payment Status</th>
+                        <th style="display:none;" class="app-status">Payment Status</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in @Model.ArrearAdjustmentViewModelList)
+                    {
+                    <tr>
+                        <td class="id-area">
+                            <span class="id-val">
+                                @Html.HiddenFor(model => item.Id)
+                            </span>
+                        </td>
+                        <td>@item.ArrearType</td>
+                        <td>@item.OrderDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.ArrearFromDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.ArrearToDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.EffectiveDate.ToString("yyyy-MM-dd")</td>
+                        <td class="pmnt-status">@item.PaymentStatus</td>
+                        <td style="display:none;" class="app-status">@item.IsApproved</td>
+                        <td class="remove-adjustment">
+                            @if (@item.IsApproved == false)
+                                {
+                            <button type="button" style="color:red;" class="btn btn-sm btn-default"><i class="fa fa-lg fa-trash"></i></button>
+                                }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @*</div>*@
+
+    <div class="spacer"></div>
+    @{
+        Html.RenderPartial("_ArrearAddjustDetail", Model);
+    }
+</fieldset>
+
+<fieldset>
+    <div style="float:left; overflow:hidden; width:49%;">
+        <div class="row">
+            <span class="label" style="width:30%;">
+                @Html.LabelFor(model => model.Remarks)
+            </span>
+            <span class="field" style="width:65%;">
+                @Html.TextAreaFor(model => model.Remarks, new { style = "height: 90px" })
+            </span>
+        </div>
+    </div>
+    <div style="float:right; overflow:hidden; width:49%;">
+        <div class="row">
+            <span class="label-right" style="width:30%;">
+                @Html.LabelFor(model => model.TotalAddition)
+            </span>
+            <span class="field" style="width:45%;">
+                @Html.EditorFor(model => model.TotalAddition)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label-right" style="width:30%;">
+                @Html.LabelFor(model => model.TotalDeduction)
+            </span>
+            <span class="field" style="width:45%;">
+                @Html.EditorFor(model => model.TotalDeduction)
+            </span>
+        </div>
+        <div class="row">
+            <span class="label-right" style="width:30%;">
+                @Html.LabelFor(model => model.NetArrear)
+            </span>
+            <span class="field" style="width:45%;">
+                @Html.EditorFor(model => model.NetArrear)
+            </span>
+        </div>
+    </div>
+</fieldset>
+
+<script type="text/javascript">
+
+    function GetArrearAdjustmentListByEmployeeId(pEmployeeId) {
+        var url = '@Url.Action("GetArrearAdjustmentListByEmployeeId", "ArrearAdjustment")';
+        if (pEmployeeId > 0) {
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: { pEmployeeId: pEmployeeId },
+                success: (function (result) {
+                    $("#ArrearAdjustmentList tbody").html(result);
+                })
+            });
+        }
+    }
+
+    function FillArrarDetailTable() {
+        var employeeId = $("#EmployeeId").val();
+        if (employeeId != null) {
+            GetArrearAdjustmentListByEmployeeId(employeeId);
+        }
+    }
+
+    //Check string has null or empty
+    var StringHasValue = function (strValue) {
+        if ($.trim(strValue) != "" && $.trim(strValue) != null && $.trim(strValue) != undefined)
+            return true;
+        else
+            return false;
+    };
+
+    function LoadArrearAdjustmentDDLByEmployeeId(EmployeeId) {
+
+        var BranchSelect = $('select#ArrearAdjustmentId');
+        BranchSelect.empty();
+
+        // clear all previous options
+        $("#ArrearAdjustmentId>option").remove();
+        BranchSelect.append($('<option/>',
+            {
+                value: '',
+                text: '@Content.DDLOptionalLabel()'
+            }));
+
+        if (EmployeeId != null && EmployeeId != '') {
+
+            var url = '@Url.Action("GetArrearAdjustmentDDLListByEmployeeId", "ArrearAdjustment")' + '?pEmployeeId=' + EmployeeId;
+            $.get(url, function (response) {
+                var heads = $.parseJSON(response);
+
+                var ddl = $("#ArrearAdjustmentId");
+
+                // populate the products
+                for (i = 0; i < heads.length; i++) {
+                    ddl.append($("<option />").val(heads[i].Value).text(heads[i].Text));
+                }
+            });
+        }
+        else {
+
+            $("#ArrearAdjustmentId>option").remove();
+            $("#ArrearAdjustmentId").html("<option value=\"" + "" + "\">" + "[Select One]" + "</option>");
+        }
+    }
+
+    $("select#ArrearAdjustmentId").change
+    (
+        function() {
+            SetArrearAdjustmentDetail($(this).val());
+        }
+    );
+
+    function SetArrearAdjustmentDetail(ArrearAdjustmentId) {
+        var url = '@Url.Action("SetArrearAdjustmentDetail", "ArrearAdjustment")';
+
+        if (ArrearAdjustmentId > 0) {
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: { pArrearAdjustmentId: ArrearAdjustmentId },
+                success: (function (result) {
+                    $("#ArrearAdjustmentList tbody").html(result);
+                })
+            });
+        }
+    }
+
+    function ShowHideAdjDetailDiv(IsShow) {
+        if (IsShow == true) {
+            $(".leftColumn").show();
+            $(".rightColumn").show();
+        }
+        else {
+            $(".leftColumn").hide();
+            $(".rightColumn").hide();
+        }
+    }
+
+    $('.adjustWithSalary input[type=checkbox]').click(function() {
+        TogglePayment();
+    });
+
+    var TogglePayment = function () {
+            var checked = $(".adjustWithSalary input:checked").val();
+            if (checked != undefined) {
+                $('#withoutSalary').hide();
+                $('#withSalary').show();
+            }
+            else {
+                $('#withoutSalary').show();
+                $('#withSalary').hide();
+            }
+    }
+
+    $(document).ready(TogglePayment);
+
+    // --DELETE ARREAR--
+    $('.arrear-detail-list tbody tr .remove-adjustment button').click(function() {
+
+        var id = $(this).closest('tr').find('.id-area .id-val :input').val();
+        var url = '@Url.Action("DeleteArrearInformation", "ArrearAdjustment")';
+
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { id: id },
+            success: (function(result) {
+                $("#message").html(result.Message);
+                if (result.type === "Success") {
+                    $('#message').css({ "color": "green", "font-weight": "bold" });
+                    $(this).closest('tr').remove();
+                } else {
+                    $('#message').css({ "color": "red", "font-weight": "bold" });
+                    $(this).closest('tr').remove();
+                }
+            }),
+            error: (function() {
+                $("#message").html("Delete failed.");
+                $('#message').css({ "color": "red", "font-weight": "bold" });
+            })
+        });
+
+        return false;
+    });
+
+    var ToggleRowBackground = function (obj) {
+        var checkedSts = $(obj).is(':checked');
+        if (checkedSts === true) {
+            $(obj).closest('tr').addClass("selectedRow");
+        }
+        else {
+            $(obj).closest('tr').removeClass("selectedRow");
+        }
+    }
+
+    // --SHOW ARREAR DETAIL--
+    $('.arrear-detail-list tbody tr').click(function () {
+
+        ShowHideAdjustWithPart(false);
+        if ($(this).closest('tr').hasClass('selectedRow')) {
+            $(this).removeClass("selectedRow");
+        }
+        else {
+            $(this).closest('tr').addClass("selectedRow");
+            ShowHideAdjustWithPart(true);
+        }
+
+        $(this).closest('tr').prevAll().each(function () {
+            $(this).removeClass("selectedRow");
+        });
+        $(this).closest('tr').nextAll().each(function () {
+            $(this).removeClass("selectedRow");
+        });
+
+        var id = $('.arrear-detail-list tbody .selectedRow').find('.id-area .id-val :input').val();
+        var paymentStatus = $('.arrear-detail-list tbody .selectedRow').find('.pmnt-status').html();
+        var approvalStatus = $(this).find('.app-status').html();
+
+        if (paymentStatus === "Paid" || approvalStatus === "True") {
+            $('.button-crude').hide();
+        }
+        else {
+            $('.button-crude').show();
+        }
+
+        $('#Id').val(id);
+        var url = '@Url.Action("GenerateSalaryStructure", "ArrearAdjustment")';
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { selectedIdString: id },
+            success: (function (result) {
+                $("#ArrearAdjustmentList tbody").html(result);
+                $('.td-calType option:not(option:selected)').attr('disabled', true);
+                $('.td-basedOn option:not(option:selected)').attr('disabled', true);
+                $('.td-totalamount input').unbind().focusout(CalculateNetArrear);
+
+                CalculateNetArrear();
+            })
+        });
+
+        var masterUrl = '@Url.Action("GetAdjustmentMasterInfo", "ArrearAdjustment")';
+        $.ajax({
+            type: "GET",
+            url: masterUrl,
+            data: { selectedIdString: id },
+            success: (function (result) {
+                $('#AdjustmentMonth').val(result.AdjustmentMonth);
+                $('#AdjustmentYear').val(result.AdjustmentYear);
+                if (result.IsArrearFound) {
+                    $('#IsAdjustWithSalary').prop('checked', result.IsAdjustWithSalary);
+                    TogglePayment();
+                    if (!result.IsAdjustWithSalary) {
+                        var paymentDate = moment(result.PaymentDate).format('YYYY-MM-DD');
+                        $('#PaymentDate').val(paymentDate);
+                    }
+                }
+                $('#Remarks').val(result.Remarks);
+            })
+        });
+
+        return false;
+    })
+
+
+    $('.arrear-detail-list tbody tr .id-area .chk input').change(function () {
+        ToggleRowBackground(this);
+        var idList = GetSelectedItemsIdList();
+        var selectedIds = idList.toString();
+
+        var url = '@Url.Action("GenerateSalaryStructure", "ArrearAdjustment")';
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: { selectedIdString: selectedIds },
+            success: (function (result) {
+                $("#ArrearAdjustmentList tbody").html(result);
+                $('.td-calType option:not(option:selected)').attr('disabled', true);
+                $('.td-basedOn option:not(option:selected)').attr('disabled', true);
+                $('.td-totalamount input').unbind().focusout(CalculateNetArrear);
+
+                CalculateNetArrear();
+            })
+        });
+        return false;
+    })
+
+    var GetSelectedItemsIdList = function () {
+        var idArray = new Array();
+        $('.arrear-detail-list tbody tr').each(function() {
+            var checkedSts = $(this).find('.id-area .chk input').is(':checked');
+            if (checkedSts === true) {
+                var id = $(this).closest('tr').find('.id-area .id-val :input').val();
+                idArray.push(id);
+            }
+        });
+        return idArray;
+    }
+
+    var CalculateTotalAddition = function () {
+        var totalAmount = 0;
+        $('#Addition tbody tr').each(function() {
+            var amount = $(this).find('.td-totalamount :input').val();
+            if (isNaN(amount)) {
+                amount = 0;
+            }
+            amount = parseFloat(amount);
+            totalAmount += amount;
+        });
+
+        return totalAmount;
+    }
+
+    var CalculateTotalDeduction = function () {
+        var totalAmount = 0;
+        $('#Deduction tbody tr').each(function () {
+            var amount = $(this).find('.td-totalamount :input').val();
+            if (isNaN(amount)) {
+                amount = 0;
+            }
+            amount = parseFloat(amount);
+            totalAmount += amount;
+        })
+        return totalAmount;
+    }
+
+    var CalculateNetArrear = function () {
+        var totalAddition = CalculateTotalAddition();
+        var totalDeduction = CalculateTotalDeduction();
+        var netArrear = parseFloat(totalAddition) - parseFloat(totalDeduction);
+
+        $('#TotalAddition').val(totalAddition);
+        $('#TotalDeduction').val(totalDeduction);
+        $('#NetArrear').val(netArrear);
+
+    }
+
+    $('.td-totalamount input').focusout(CalculateNetArrear);
+
+
+    $(function () {
+        ShowHideAdjustWithPart(false);
+    });
+
+    function ShowHideAdjustWithPart(isShow) {
+        $('#divAdjustWith').hide();
+        $('#withSalary').hide();
+
+        if (isShow) {
+            $('#divAdjustWith').show();
+            $('#withSalary').show();
+
+            TogglePayment();
+        }
+    }
+
+
+</script>
+
+<style type="text/css">
+    .arrear-detail-list tbody tr:hover {
+        background: #F2F5F8;
+    }
+
+    .arrear-detail-list tbody tr td {
+        padding: 2px 5px;
+    }
+
+    .arrear-detail-list tbody tr .remove-adjustment button {
+        padding: 2px 5px;
+    }
+
+    .td-amount {
+        width: 75px;
+        max-width: 75px;
+    }
+
+        .td-amount input[type='text'] {
+            text-align: right;
+            background: #F2F5F8;
+            width: 70px;
+        }
+
+    .td-totalamount {
+        width: 85px;
+        max-width: 85px;
+    }
+
+        .td-totalamount input[type='text'] {
+            width: 80px;
+            max-width: 80px;
+            text-align: right;
+        }
+
+    .td-calType {
+        width: 80px;
+        max-width: 80px;
+    }
+
+        .td-calType input[type='text'] {
+            width: 98%;
+            background: #F2F5F8;
+        }
+
+    .td-basedOn {
+        width: 75px;
+        max-width: 75px;
+    }
+
+        .td-basedOn input[type='text'] {
+            width: 98%;
+            background: #F2F5F8;
+        }
+
+    .td-head {
+        text-align: left !important;
+        padding-left: 5px !important;
+    }
+
+    .selectedRow td {
+        background: #2980b9;
+        color: #FFFFFF;
+    }
+
+    .arrear-detail-list tbody tr td:hover {
+        cursor: pointer;
+    }
+
+    .id-area {
+        display: none;
+    }
+</style>

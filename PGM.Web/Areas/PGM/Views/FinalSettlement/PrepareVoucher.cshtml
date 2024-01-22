@@ -1,0 +1,35 @@
+﻿@model PGM.Web.Areas.PGM.Models.FinalSettlement.FinalSettlementViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm("Create", "FinalSettlement", FormMethod.Post, new { id = "frm" }))
+{
+    <fieldset>
+        <div id="message" class="form-group messageBox clearfix">
+            @Html.ValidationSummary(false, PGM.Web.Utility.Common.ValidationSummaryHead)
+            @if (!string.IsNullOrEmpty(Model.ErrMsg))
+            {
+                <div id="ErrMsg" class="@Model.ErrClss">
+                    @Model.ErrMsg
+                </div>
+            }
+        </div>
+        @Html.Partial("_CreateOrEdit", Model)
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-3 text-right">
+                    @*@if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                    {
+                        <button class="btn btn-success" id="btnSave"><i class="fa fa-save"></i> Save</button>
+                    }*@
+                    <a href="#" id="btnVoucherPosting" class="btn btn-success" onclick="FinalSVoucherPosting()"> <i class="fa fa-file-powerpoint-o"></i> Prepare Voucher</a>
+                    <a href="@Url.Action("Index")" class="btn btn-warning"> <i class="fa fa-backward"></i> Back</a>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+}
+
+
+

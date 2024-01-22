@@ -1,0 +1,59 @@
+﻿@model PGM.Web.Areas.PGM.Models.EmployeeSalaryStructure.EmployeeModel
+
+@{
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+<input type="hidden" id="Id" value="@Model.Id" />
+@{
+    string Id = "#";
+    if (Model.Id != 0)
+    {
+        Id = "/" + Model.Id.ToString();
+    }
+}
+
+<div class="panel with-nav-tabs panel-default">
+    <div class="panel-heading" style="border-bottom:0;padding-bottom:0">
+        <ul class="nav nav-tabs">
+            <li class="@Model.EmploymentInfo.SelectedClass">@Html.ActionLink("Employment Information", "EditEmploymentInfo" + Id, "EmployeeSalaryStructure", new { @class = "emp-info" })</li>
+            <li class="@Model.EmployeeSalary.SelectedClass">@Html.ActionLink("Salary Structure", "CreateSalaryStructure" + Id, "EmployeeSalaryStructure", new { @class = "emp-salary" })</li>
+        </ul>
+    </div>
+
+
+    <!-- Tab panes -->
+    <div class="panel-body">
+        <div class="tab-content">
+            @switch (Model.ViewType)
+            {
+
+                case "EmployeeSalaryStructure":
+                    @Html.Partial("_CreateSalaryStructure", Model.EmployeeSalary);
+                    break;
+
+
+                case "EmploymentInfo":
+                    @Html.Partial("_EmploymentInfo", Model.EmploymentInfo);
+                    break;
+
+                default:
+                    break;
+            }
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(function () {
+        if ($('#Id').val() == 0) {
+            $('.emp-info, .emp-salary').attr('href', '#');
+        }
+    });
+
+    function DeleteConfirm() {
+        return confirm('Pressing OK will delete this record. Do you want to continue?');
+    }
+
+</script>

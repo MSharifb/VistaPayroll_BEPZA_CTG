@@ -1,0 +1,23 @@
+﻿@model PGM.Web.Areas.PGM.Models.BankAdviceLetterTemplate.BankAdviceLetterTemplateViewModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/PGM/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("Create", "VoucherTemplate", FormMethod.Post, new { id = "frm", @encType = "multipart/form-data" }))
+{
+    <fieldset>
+        @Html.Partial("_CreateOrEdit", Model)
+        <div class="GroupBox">
+            <div class="button-crude">
+                @if ((new PGM.Web.Utility.AppConstant()).IsAddAssigned)
+                {
+                    <input type="submit" value="Save" id="btnSave" name="btnSubmit" style="margin-right: 8px;" />
+                }
+            </div>
+        </div>
+    </fieldset>
+}
+<div class="button-crude button-left">
+    @Html.ActionLink("Back to List", "BackToList")
+</div>

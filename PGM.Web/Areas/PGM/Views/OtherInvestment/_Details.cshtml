@@ -1,0 +1,11 @@
+﻿@model PGM.Web.Areas.PGM.Models.TaxOtherInvestment.TaxOtherInvestmentDetailViewModel
+@using PGM.Web.Helpers
+
+@if (Model != null && Model.OtherInvestmentDocumentList!= null)
+{
+    foreach (var x in Model.OtherInvestmentDocumentList)
+    {
+        @Html.Partial("_DocumentDetail", x);
+    }
+
+}

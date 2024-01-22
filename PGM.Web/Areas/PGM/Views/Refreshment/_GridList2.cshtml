@@ -1,0 +1,146 @@
+﻿@using PGM.Web.Areas.PGM.Models.Refreshment
+@model RefreshmentViewModel
+
+@Html.HiddenFor(model => model.RYear, new { id = "hfSalaryYear" })
+@Html.HiddenFor(model => model.RMonth, new { id = "hfSalaryMonth" })
+
+<script type="text/javascript">
+
+    $(function () {
+
+        $("a.deleteItem").live("click", function () {
+            deleteLinkObj = $(this);  //for future use
+            $('#delete-dialog').dialog('open');
+            return false; // prevents the default behaviour
+        });
+        $('#delete-dialog').dialog({
+            autoOpen: false, width: 320, resizable: false, modal: true, //Dialog options
+            overlay: {
+                backgroundColor: '#000',
+                opacity: 0.5
+            },
+            buttons: {
+                "Yes": function () {
+
+                    $.post(deleteLinkObj[0].href, function (obj) {  //Post to action
+
+                        if (obj.Success) {
+                            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+                            $('#sButton').trigger('click');
+                        }
+                        else {
+                            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "No": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function handleDeleteSuccess() {
+    }
+
+    function handleDeleteFailure() {
+        $("#message").html('There is an Ajax call back error!');
+    }
+
+    function JsonDelete_OnComplete(context) {
+        var obj = eval("(" + context.responseText + ")");
+        if (obj.Success) {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "Green");
+            $('#sButton').trigger('click');
+        }
+        else {
+            $("#message").html("<b>" + obj.Message + "</b>").css("color", "red");
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var syear = $('#hfSalaryYear').val();
+        var smonth = $('#hfSalaryMonth').val();
+
+        $('#jqGrid').jqGrid({
+            url: '@Url.Action("GetDetailList")?year=' + syear + "&month=" + smonth,
+            datatype: 'json',
+            mtype: 'POST',
+            colNames: ['ID', 'Employee ID', 'Employee Id', 'Employee Name', 'Designation', 'Year', 'Month', 'Per-Day Amount', 'Total Days', 'Revenue Stamp', 'Net Payable', 'Delete'],
+            colModel: [
+                            { name: 'Id', index: 'ID', align: 'left', search: false, hidden: true, edittype: 'text' },
+                            { name: 'EmpID', index: 'EmpID', align: 'center', search: true, width: '100px', edittype: 'text', formatter: viewformatEdiorLink },
+                            { name: 'EmployeeId', index: 'EmployeeId', align: 'left', search: false, hidden: true, edittype: 'text' },
+                            { name: 'EmployeeName', index: 'EmployeeName', align: 'left', search: true, width: '150px', edittype: 'text' },
+                            { name: 'Designation', index: 'Designation', align: 'left', search: false, edittype: 'select' },
+                            { name: 'RYear', index: 'RYear', align: 'left', search: true, width: '95px', edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(syear).addClass('read-only') } } },
+                            { name: 'RMonth', index: 'RMonth', align: 'left', search: true, width: '95px', edittype: 'text', editoptions: { readonly: true, dataInit: function () { $(this).val(smonth).addClass('read-only') } } },
+                            { name: 'PerDayAmount', index: 'PerDayAmount', align: 'left', search: false, width: '80px', edittype: 'text' },
+                            { name: 'TotalDays', index: 'TotalDays', align: 'right', search: false, width: '50px', edittype: 'text' },
+                            { name: 'RevenueStamp', index: 'RevenueStamp', align: 'right', search: false, width: '50px', edittype: 'text' },
+                            { name: 'NetPayable', index: 'NetPayable', align: 'right', search: false, width: '50px', edittype: 'text' },
+                            { name: 'Delete', index: 'Delete', align: 'right', search: false, hidden: IsDeleteAssigned, sortable: false, width: '60px', edittype: 'image', formatter: deleteformateadorLink }
+            ],
+            autowidth: true,
+            caption: 'Monthly Refreshment List',
+            rowList: [20, 30, 40, 50, 100],
+            pager: $('#jqGridPager'),
+            rowNum: 20,
+            sortname: 'ID,SalaryYear,SalaryMonth',
+            sortorder: 'asc',
+            viewrecords: true,
+            height: '100%',
+            width: '50%'
+        });
+        // Pager Function
+        $("#jqSearch").jqGrid('filterGrid', '#jqGrid', { gridModel: true, gridNames: true, formtype: 'horizontal', autosearch: true, enableSearch: true, enableClear: true });
+
+        $('#sg_Type').css({ 'display': 'none' })
+        .parent()
+        .append("<input type='radio' id='rdoAll' name='SelectedType' value='All' style='width:0px'/> <label> All/ </label> ")
+        .append("<input type='radio' id='rdoAdjustment' name='SelectedType' value='Addition' style='width:0px'/> <label> Addition/  </label> ")
+        .append("<input type='radio' id='rdoDeduction' name='SelectedType' value='Deduction' style='width:0px'/> <label> Deduction </label> ");
+
+        $('#rdoAll').attr('checked', true);
+
+    });
+
+    function deleteformateadorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink(" ", "Delete", new { id = "_id_" }, new { @class = "deleteItem" })';
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+
+    function viewformatEdiorLink(cellvalue, options, rowObject) {
+        var url = '@Html.ActionLink("_name_", "Edit", new { id = "_id_" })';
+        url = url.replace(/_name_/, cellvalue);
+        url = url.replace(/_id_/, rowObject[0]);
+        return url;
+    }
+</script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $("input[type='radio']:checked").live("change", function () {
+            featureLinkObj = $(this).val();
+            $('#sg_Type').val(featureLinkObj);
+            $('#adjustType').val(featureLinkObj);
+
+            $('#sButton').trigger('click');
+
+            return false;
+        });
+
+    });
+
+</script>

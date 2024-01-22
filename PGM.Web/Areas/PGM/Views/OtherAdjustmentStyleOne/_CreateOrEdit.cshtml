@@ -1,0 +1,257 @@
+﻿@model PGM.Web.Areas.PGM.Models.OtherAdjustmentStyleOne.OtherAdjustmentStyleOneModel
+@using PGM.Web.Helpers
+
+<div class="GroupBox">
+    @Html.HiddenFor(m=> m.SalaryYear)
+    @Html.HiddenFor(m => m.SalaryMonth)
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.SalaryMonth)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field">
+            @if (Model.LockYearMonth)
+            {
+                <span>@Html.DisplayFor(m => m.SalaryYear)</span><span>&nbsp;-&nbsp;@Html.DisplayFor(m => m.SalaryMonth)</span><span style="color: red;">&nbsp;(Salary has already processed for this month.)</span>
+            }
+            else
+            {
+                @Html.DropDownListFor(m => m.SalaryYear, Model.SalaryYearList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 127px;", @required = "required" })
+                @Html.DropDownListFor(m => m.SalaryMonth, Model.SalaryMonthList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @style = "width: 128px;", @required = "required" })
+            }
+        </span>
+        <span class="label-right">
+            &nbsp;
+        </span>
+        <span class="field">
+            &nbsp;
+        </span>
+    </div>
+
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.Remarks)
+        </span>
+        <span class="field">
+            @Html.TextAreaFor(m => m.Remarks, new { @style = "width:300px" })
+        </span>
+        <span class="label-right">
+
+        </span>
+        <span class="field">
+
+        </span>
+    </div>
+
+    <div class="clear">
+    </div>
+</div>
+
+
+<div class="GroupBox">
+    <div class="row">
+        <span class="label">
+            @Html.LabelFor(model => model.EmployeeId)
+            <label style='color: red'>*</label>
+        </span>
+        <span class="field-LargeWidth">
+            @if (Model.LockEmpDDL)
+            {
+                @Html.HiddenFor(m=> m.EmployeeId)
+                <span>@Html.DisplayFor(m => m.EmployeeName)</span><span>&nbsp;-&nbsp;@Html.DisplayFor(m => m.EmpID)</span>
+            }
+            else
+            {
+                @Html.DropDownListFor(m => m.EmployeeId, Model.EmployeeList, @String.Format("{0}", Content.DDLOptionalLabel()), new { @class = "form-control select-single required" })
+            }
+        </span>
+    </div>
+</div>
+
+<div style="min-width: 825px;" class="GroupBox ssd">
+    @Html.Partial("_SalaryStructureDetail", Model)
+</div>
+
+<script type="text/javascript">
+
+    $(function () {
+        SalaryCalculation();
+
+        $("#SalaryYear").live("change", function () {
+            var selectedEmployeeId = $('#EmployeeId').val();
+            var selectedSalaryYear = $('#SalaryYear').val();
+            var selectedSalaryMonth = $('#SalaryMonth').val();
+
+            populateSalaryDetails(selectedEmployeeId, selectedSalaryYear, selectedSalaryMonth);
+        });
+
+        $("#SalaryMonth").live("change", function () {
+            var selectedEmployeeId = $('#EmployeeId').val();
+            var selectedSalaryYear = $('#SalaryYear').val();
+            var selectedSalaryMonth = $('#SalaryMonth').val();
+
+            populateSalaryDetails(selectedEmployeeId, selectedSalaryYear, selectedSalaryMonth);
+        });
+
+        $("#EmployeeId").live("change", function () {
+            var selectedEmployeeId = $('#EmployeeId').val();
+            var selectedSalaryYear = $('#SalaryYear').val();
+            var selectedSalaryMonth = $('#SalaryMonth').val();
+
+            populateSalaryDetails(selectedEmployeeId, selectedSalaryYear, selectedSalaryMonth);
+        });
+        
+    });
+
+    $('.ddl-addition').live('change',
+        function () {
+            SalaryCalculation();
+        });
+
+    //start calculation
+    $('#Addition .td-right :input, #Deduction  .td-right :input').live('focusout',
+        function () {
+            SalaryCalculation();
+        });
+
+    function populateSalaryDetails(employeeId, salaryYear, salaryMonth) {
+        if (employeeId > 0) {
+            var url = '@Url.Action("GetEmployeeSalaryStructure", "OtherAdjustmentStyleOne", new { area = "PGM" })' + '?employeeId=' + employeeId + '&salaryYear=' + salaryYear + '&salaryMonth=' + salaryMonth;
+
+            $.get(url, function (data) {
+
+                $('.ssd').empty();
+                $('.ssd').html(data);
+
+                var additionSelectedValues = $("#Addition .selected-val");
+                var aditionDdls = $('#Addition .ddl-addition');
+
+                var deductionSelectedValues = $("#Deduction .selected-val");
+                var deductionDdls = $('#Deduction .ddl-deduction');
+
+                for (var i = 0; i < additionSelectedValues.length; i++) {
+                    var selectedVal = $(additionSelectedValues[i]).text();
+                    $(aditionDdls[i]).val(selectedVal);
+                }
+
+                for (var i = 0; i < deductionSelectedValues.length; i++) {
+                    var selectedVal = $(deductionSelectedValues[i]).text();
+                    $(deductionDdls[i]).val(selectedVal).attr('disabled', false);
+                }
+
+                SalaryCalculation();
+
+            });
+        }
+    }
+
+    function SalaryCalculation() {
+        CalculateAddition();
+        CalculateDeduction();
+        CalculateNetpay();
+    }
+
+    function CalculateAddition() {
+
+        var fields = $('#Addition .td-right :input');
+        var ddlFields = $('#Addition .ddl-addition');
+        var rightMostFields = $('#Addition .td-rightPercentAmount :input');
+
+        var sum = 0;
+
+        for (var i = 0; i < fields.length; i++) {
+            var basicSalary = parseFloat($('.basic-amount :input').val());
+
+            var fieldVal = parseFloat($(fields[i]).val());
+
+            if ($(ddlFields[i]).val() == 'Percent') {
+
+                var percentedAmount = (basicSalary * fieldVal) / 100;
+
+                $(rightMostFields[i]).val(Math.round(percentedAmount));
+
+                sum = sum + percentedAmount;
+            } else {
+                sum = sum + fieldVal;
+
+                $(rightMostFields[i]).val(Math.round(fieldVal));
+            }
+        }
+
+        $('#TotalAddition').val(Math.round(sum));
+    }
+
+    function CalculateDeduction() {
+
+        var fields = $('#Deduction .td-right :input');
+        var ddlFields = $('#Deduction .ddl-deduction');
+        var rightMostFields = $('#Deduction .td-rightPercentAmount :input');
+
+        var sum = 0;
+        var basicSalary = parseFloat($('.basic-amount :input').val());
+
+        for (var i = 0; i < fields.length; i++) {
+
+            var fieldVal = parseFloat($(fields[i]).val());
+
+            if ($(ddlFields[i]).val() == 'Percent') {
+
+                var percentedAmount = (basicSalary * fieldVal) / 100;
+
+                $(rightMostFields[i]).val(Math.round(percentedAmount));
+
+                sum = sum + percentedAmount;
+            } else {
+                sum = sum + fieldVal;
+
+                $(rightMostFields[i]).val(Math.round(fieldVal));
+            }
+        }
+
+        $('#TotalDeduction').val(Math.round(sum));
+    }
+
+    function CalculateNetpay() {
+        var totalAddition = parseFloat($('#TotalAddition').val());
+        var totalDeduction = parseFloat($('#TotalDeduction').val());
+        var netPay = totalAddition - totalDeduction;
+
+        $('#NetPay').val(netPay);
+    }
+
+
+
+</script>
+
+<script type="text/javascript">
+    $('#NextEmployee').live('click', function () {
+        var url = '@Url.Action("GetPrevNextEmployeeId", "OtherAdjustmentStyleOne", new { area = "PGM" })' + '?currentEmployeeId=' + $('#EmployeeId').val() + '&isNext=' + true;
+        
+        $.get(url, function (data) {
+            var employeeId = data.employeeId;
+            if (employeeId > 0) {
+                var id = employeeId + '-' + $('#SalaryYear').val() + '-' + $('#SalaryMonth').val();
+                
+                var empUrl =
+                    '@Url.Action("Edit", "OtherAdjustmentStyleOne", new { area = "PGM", id = "ID" })'.replace("ID", id);
+                window.location.href = empUrl;
+            }
+        });
+    });
+
+    $('#PreviousEmployee').live('click', function () {
+        var url = '@Url.Action("GetPrevNextEmployeeId", "OtherAdjustmentStyleOne", new { area = "PGM" })' + '?currentEmployeeId=' + $('#EmployeeId').val() + '&isNext=' + false;
+
+        $.get(url, function (data) {
+            var employeeId = data.employeeId;
+            if (employeeId > 0) {
+                var id = employeeId + '-' + $('#SalaryYear').val() + '-' + $('#SalaryMonth').val();
+                
+                var empUrl =
+                    '@Url.Action("Edit", "OtherAdjustmentStyleOne", new { area = "PGM", id = "ID" })'.replace("ID", id);
+                window.location.href = empUrl;
+            }
+        });
+    });
+</script>
